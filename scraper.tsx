@@ -1,12 +1,10 @@
 // @ts-check
-import { UserInformation } from './lib/definitions';
 import playwright from 'playwright';
 import dotenv from 'dotenv';
 dotenv.config();
 
 
 (async () => {
-   
 
     const browser = await playwright.chromium.launch();
     const context = await browser.newContext({
