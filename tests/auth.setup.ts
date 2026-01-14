@@ -7,7 +7,7 @@ const user: UserInformation = {
     credential: process.env.CRENDENTIAL ?? '',
     password: process.env.PASSWORD ?? ''
 }
-const authFile = process.env.FILE;
+const authFile ='playwright/.auth/user.json';
 
 setup('authenticate', async ({ page }) => {
 
