@@ -6,17 +6,16 @@ dotenv.config();
 
 
 (async () => {
-    const user: UserInformation = {
-        credential: process.env.CRENDENTIAL ?? '',
-        password: process.env.PASSWORD ?? ''
-    }
+   
+
     const browser = await playwright.chromium.launch();
-    const context = await browser.newContext();
+    const context = await browser.newContext({
+        storageState:'playwright/.auth/user.json',
+        timezoneId: 'America/Sao_Paulo',
+        locale:'pt-BR'
+    });
     const page = await context.newPage();
-    await page.goto('https://proconsumidor.mj.gov.br/#/login', { waitUntil: 'load' });
-    await page.getByLabel('CPF').fill(user.credential);
-    await page.getByLabel('Senha').fill(user.password);
-    await page.screenshot({ path: `example-${playwright.chromium.name()}.png` });
+    await page.goto('https://proconsumidor.mj.gov.br/#/inicio', { waitUntil: 'load' });
 
 
     await browser.close();
