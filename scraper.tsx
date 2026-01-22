@@ -4,7 +4,7 @@ import dotenv from 'dotenv';
 import { NA, TratativaCarta } from './lib/definitions';
 dotenv.config();
 
-const numeroAtendimento: NA = (process.env.NA_CARTAS2 ?? '').slice(0,22);
+const numeroAtendimento: NA = (process.env.NA_CARTAS1 ?? '').slice(0, 22);
 const textoBusca = 'Carta';
 const regexBusca = new RegExp(`[0-9] - ${textoBusca}`, '');
 
@@ -27,23 +27,23 @@ const regexBusca = new RegExp(`[0-9] - ${textoBusca}`, '');
     const lista = [];
 
     for (const correspondencia of await page.getByText(regexBusca).all()) {
+        
         await correspondencia.click();
+        const situacaoCarta = await page.locator('app-tratativa span').filter({ hasText: /(Finalizada|Cancelada|Aberta)/ }).textContent() ?? '';
         await page.waitForSelector('.loader-container', { state: 'hidden' });
+
         for (const linha of await page.locator('app-tratativa table tbody tr:nth-child(n)').all()) {
             const conteudo: string[] = await linha.locator('> td').allInnerTexts();
             const args: [string, string, string, string] = conteudo as [string, string, string, string];
-            const situacao = await page.locator('app-tratativa span').filter({ hasText: /(Finalizada|Cancelada|Aberta)/ }).textContent() ?? '';
-            const codFornecedor = await page.getByText(args[0]).all();
-            //await page.locator('app-reclamacao-fornecedor').filter({hasText:args[0]}).textContent();
-            //const carta = new TratativaCarta(numeroAtendimento, situacao, 'codFornecedor', ...args);
-            //const obj = carta.retornaEstrutura();
-            //lista.push(obj);
-            console.log(codFornecedor)
+            const cd = await page.locator('app-reclamacao-fornecedor div.row.mb-2').filter({has:page.locator('div.col-md-3', {hasText:args[0]})});
+            const codFornecedor = await cd.locator('input').nth(1).inputValue(); 
+            const carta = new TratativaCarta(numeroAtendimento, situacaoCarta, codFornecedor.slice(22,24), ...args);
+            const obj = carta.retornaEstrutura();
+            lista.push(obj);
         }
 
     }
-    //await page.screenshot({ path: `example-${playwright.chromium.name()}.png` });
-    //console.log(lista)
+    console.log(lista)
     await browser.close();
 
 })();
