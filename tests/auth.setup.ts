@@ -11,7 +11,7 @@ const authFile ='playwright/.auth/user.json';
 
 setup('authenticate', async ({ page }) => {
 
-    await page.goto('https://proconsumidor.mj.gov.br/#/login', { waitUntil: 'load' });
+    await page.goto('https://proconsumidor.mj.gov.br/#/login', { waitUntil: 'networkidle' });
     await page.getByLabel('CPF').fill(user.credential);
     await page.getByLabel('Senha').fill(user.password);
     await page.getByRole('button').filter({hasText:'Entrar'}).click();
