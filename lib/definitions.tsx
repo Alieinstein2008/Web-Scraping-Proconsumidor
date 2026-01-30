@@ -13,6 +13,7 @@ export type Carta = {
     Situacao: string;
     NumeroAtendimento: NA;
     CodigoFornecedor: string;
+    CNPJ: string;
 }
 
 export class TratativaCarta {
@@ -23,8 +24,9 @@ export class TratativaCarta {
     numeroAtendimento: NA;
     situacao: string;
     codFornecedor: string;
+    cnpj: string;
 
-    constructor(numeroAtendimento: NA, situacao: string, codFornecedor: string, fornecedor: string, data: string, prazo: string, resposta: string) {
+    constructor(numeroAtendimento: NA, situacao: string, codFornecedor: string, cnpj: string, fornecedor: string, data: string, prazo: string, resposta: string) {
         this.fornecedor = fornecedor;
         this.data = data;
         this.prazo = prazo;
@@ -32,18 +34,24 @@ export class TratativaCarta {
         this.numeroAtendimento = numeroAtendimento;
         this.situacao = situacao;
         this.codFornecedor = codFornecedor;
+        this.cnpj = cnpj;
     }
 
-    retornaEstrutura() {
-        const obj: Carta = {
-            Fornecedor: this.fornecedor,
-            Data: this.data,
-            Prazo: this.prazo,
-            Resposta: this.resposta,
-            Situacao: this.situacao,
-            NumeroAtendimento: this.numeroAtendimento,
-            CodigoFornecedor: this.codFornecedor
-        };
-        return obj;
+    retornaEstrutura(tipo: number) {
+        switch (tipo) {
+            default:
+                const estrutura: Carta = {
+                    NumeroAtendimento: this.numeroAtendimento,
+                    CodigoFornecedor: this.codFornecedor,
+                    Fornecedor: this.fornecedor,
+                    CNPJ: this.cnpj,
+                    Data: this.data,
+                    Prazo: this.prazo,
+                    Resposta: this.resposta,
+                    Situacao: this.situacao,
+                };
+                return estrutura;
+        }
+
     }
 };
