@@ -13,47 +13,49 @@ import xlsx from "xlsx";
     });
     const page = await context.newPage();
 
-    const lista = [];
+    const json = [];
+
     await page.goto('https://proconsumidor.mj.gov.br/#/atendimento', { waitUntil: 'networkidle' });
+    const selectAssunto = page.locator(`label:has-text("Assunto") + select`);
+    const optionsOfSelectAssunto = await selectAssunto.getByRole('option').all();
 
-    const assuntoLocator = page.locator(`label:has-text("Assunto") + select`);
-    const optionsAssunto = await assuntoLocator.getByRole('option').allTextContents();
-    for (const assunto of optionsAssunto) {
-        if (assunto == 'Produtos para Uso Industrial ') {
-            await assuntoLocator.selectOption(assunto); 
+    for (const option of optionsOfSelectAssunto) {
+
+        const optInfo = {
+            assunto: await option.textContent(),
+            value: await option.getAttribute('value')
+        };
+
+        if (optInfo.assunto != 'Selecione') {
+            await selectAssunto.selectOption(optInfo.value);
             await page.waitForSelector('.loader-container', { state: 'hidden' });
-            const problemaLocator = page.locator(`label:has-text("Problema") + select`);
-            const optionsProblema = await problemaLocator.getByRole('option').all();
-            console.log(optionsProblema);
-            /*
-            for (const label of all) {
-                const optionsOfLabel = await label.getByRole('option').all();
 
-                for (const option of optionsOfLabel) {
-                    const obj = {
-                        assunto: assunto,
-                        categoria: await label.getAttribute('label'),
-                        problema: await option.textContent()
+            const selectProblema = page.locator(`label:has-text("Problema") + select`);
+            const categoriesOfSelectProblema = await selectProblema.locator('optgroup').evaluateAll(
+                (categories) => categories.map((category) => category.getAttribute('label'))
+            );
 
+            for (const category of categoriesOfSelectProblema) {
+                const problemOfCategory = await selectProblema.locator(`optgroup[label="${category}"] > option`).allTextContents();
+                for (const problem of problemOfCategory) {
+                    const struct = {
+                        Assunto: optInfo.assunto,
+                        Categoria: category,
+                        Problema: problem,
                     };
-                    //console.log(obj);
-                    list.push(obj);
+                    json.push(struct);
                 }
-
-            }**/
+            }
         }
+    }
 
-    };
-    /**
-      const date = Date();
-    const worksheet = xlsx.utils.json_to_sheet(list);
+    const currentDate = new Date();
+    const formatedDate = currentDate.toLocaleDateString('pt-br').replace(/\//g, '_');
+    const worksheet = xlsx.utils.json_to_sheet(json);
     const workbook = xlsx.utils.book_new();
-    xlsx.utils.book_append_sheet(workbook, worksheet, `Assuntos e Problemas Proconsumidor`);
-    xlsx.writeFile(workbook, `Assuntos_Problemas-${date}.xlsx`);
+    xlsx.utils.book_append_sheet(workbook, worksheet, `${formatedDate}`);
+    xlsx.writeFile(workbook, `Assuntos_Problemas_${formatedDate}.xlsx`);
     console.log("Arquivo criado com sucesso")
-
-     */
-
 
     await browser.close();
 
