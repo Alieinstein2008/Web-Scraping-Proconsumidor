@@ -55341,7 +55341,6 @@ const listaDeNa = [
     "25.12.0532.004.00011-301",
     "25.12.0532.004.00015-301"];
 
-
 (async () => {
 
     console.time("Tempo-de-Execução-Total");
@@ -55353,7 +55352,9 @@ const listaDeNa = [
     });
     const page = await context.newPage();
 
-    const lista = [];
+    const passed = [];
+    const failed = [];
+    const allTested = [];
     var cont = 0;
 
     for (const NA of listaDeNa) {
@@ -55385,9 +55386,10 @@ const listaDeNa = [
                     const fornecedor = page.locator('app-reclamacao-fornecedor div.row.mb-2').filter({ has: page.locator('div.col-md-3', { hasText: args[0] }) });
                     const fornecedorCodigo = await fornecedor.locator('input').nth(1).inputValue();
                     const fornecedorCNPJ = await fornecedor.locator('input').nth(3).inputValue();
-                    const carta = new TratativaCarta(numeroAtendimento.Formatacao(1), situacaoCarta, fornecedorCodigo.slice(22, 24), fornecedorCNPJ, ...args);
+                    const carta = new TratativaCarta('passed', numeroAtendimento.Formatacao(1), situacaoCarta, fornecedorCodigo.slice(22, 24), fornecedorCNPJ, ...args);
                     const estrutura = carta.retornaEstrutura(1);
-                    lista.push(estrutura);
+                    passed.push(estrutura);
+                    allTested.push(estrutura);
 
                 }
 
@@ -55402,18 +55404,30 @@ const listaDeNa = [
             const fim = performance.now();
             const time = ((fim - inicio) / 1000).toFixed(2);
             console.log(`NA: ${numeroAtendimento.Formatacao(1)} Tempo de Execução: ${time}s ❌  ${cont + 1}°`);
+            const argsFailed: [string, string, string, string, string, string, string] = ['', '', '', '', '', '', ''];
+            const cartaFailed = new TratativaCarta('failed', numeroAtendimento.Formatacao(1), ...argsFailed,);
+            const estruturaFailed = cartaFailed.retornaEstrutura(1);
+            failed.push(estruturaFailed);
+            allTested.push(estruturaFailed);
             cont++;
-            lista.push(`Erro na NA ${numeroAtendimento.Formatacao(1)}`);
             continue;
         }
 
     }
 
-    const worksheet = xlsx.utils.json_to_sheet(lista);
-    const workbook = xlsx.utils.book_new();
-    xlsx.utils.book_append_sheet(workbook, worksheet, `Cartas Base BI Web Scraping`);
-    xlsx.writeFile(workbook, `Cartas-Web-Scraping.xlsx`);
-    console.log("Arquivo criado com sucesso")
+    const worksheetPassed = xlsx.utils.json_to_sheet(passed);
+    const worksheetFailed = xlsx.utils.json_to_sheet(failed);
+    const worksheetAllTested = xlsx.utils.json_to_sheet(allTested);
+    const workbookPassed = xlsx.utils.book_new();
+    const workbookFailed = xlsx.utils.book_new();
+    const workbookAllTested = xlsx.utils.book_new();
+    xlsx.utils.book_append_sheet(workbookPassed, worksheetPassed, `Passed`);
+    xlsx.utils.book_append_sheet(workbookFailed, worksheetFailed, `Failed`);
+    xlsx.utils.book_append_sheet(workbookAllTested, worksheetAllTested, `All`);
+    xlsx.writeFile(workbookPassed, `Cartas-Passed-Web-Scraping.xlsx`);
+    xlsx.writeFile(workbookFailed, `Cartas-Failed-Web-Scraping.xlsx`);
+    xlsx.writeFile(workbookAllTested, `Cartas-All-Web-Scraping.xlsx`);
+    console.log('\nPlanilhas Geradas ✅\n');
     console.timeEnd("Tempo-de-Execução-Total");
     await browser.close();
 
