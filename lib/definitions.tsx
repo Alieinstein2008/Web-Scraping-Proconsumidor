@@ -1,6 +1,6 @@
 export type UserInformation = {
     credential: string,
-    password: string 
+    password: string
 }
 
 export type EstruturaCarta = {
@@ -12,6 +12,7 @@ export type EstruturaCarta = {
     NumeroAtendimento?: string;
     CodigoFornecedor?: string;
     CNPJ?: string;
+    Scraping?: string;
 }
 
 export class NumeroAtendimento {
@@ -43,8 +44,10 @@ export class TratativaCarta {
     situacao: string;
     codFornecedor: string;
     cnpj: string;
+    scraping: string;
 
-    constructor(numeroAtendimento: string, situacao: string, codFornecedor: string, cnpj: string, fornecedor: string, data: string, prazo: string, resposta: string) {
+
+    constructor(scraping: 'failed' | 'passed',numeroAtendimento: string, situacao: string, codFornecedor: string, cnpj: string, fornecedor: string, data: string, prazo: string, resposta: string) {
         this.fornecedor = fornecedor;
         this.data = data;
         this.prazo = prazo;
@@ -53,6 +56,7 @@ export class TratativaCarta {
         this.situacao = situacao;
         this.codFornecedor = codFornecedor;
         this.cnpj = cnpj;
+        this.scraping = scraping;
     }
 
     retornaEstrutura(tipo: number) {
@@ -67,6 +71,7 @@ export class TratativaCarta {
                     Prazo: this.prazo,
                     Resposta: this.resposta,
                     Situacao: this.situacao,
+                    Scraping:this.scraping
                 };
                 return estrutura;
         }
