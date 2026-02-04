@@ -55359,58 +55359,77 @@ const listaDeNa = [
 
     for (const NA of listaDeNa) {
 
-        const inicio = performance.now();
-        await page.goto('https://proconsumidor.mj.gov.br/#/inicio', { waitUntil: 'networkidle' });
-        const numeroAtendimento = new NumeroAtendimento(NA);
-
         try {
-            await page.getByPlaceholder('Nº de Atendimento').fill(numeroAtendimento.Formatacao(1));
-            await page.getByTitle('Pesquisar').click();
-            await page.waitForURL(`https://proconsumidor.mj.gov.br/#/reclamacao/pesquisa/${numeroAtendimento.Formatacao(2)}`);
-            await page.waitForSelector('.loader-container', { state: 'hidden' });
 
-            //Abre o painel suspenso de tratativas caso esteja fechado/recolhido
-            if (!await page.locator('app-tratativa').isVisible()) {
-                await page.getByTitle('Clique para Expandir/Recolher').filter({ hasText: "Tratativas" }).click();
-            }
+            const inicio = performance.now();
+            await page.goto('https://proconsumidor.mj.gov.br/#/inicio', { waitUntil: 'networkidle' });
+            const numeroAtendimento = new NumeroAtendimento(NA);
 
-            for (const correspondencia of await page.getByText(regexBusca).all()) {
-
-                await correspondencia.click();
+            try {
+                await page.getByPlaceholder('Nº de Atendimento').fill(numeroAtendimento.Formatacao(1));
+                await page.getByTitle('Pesquisar').click();
+                await page.waitForURL(`https://proconsumidor.mj.gov.br/#/reclamacao/pesquisa/${numeroAtendimento.Formatacao(2)}`);
                 await page.waitForSelector('.loader-container', { state: 'hidden' });
-                const situacaoCarta = await page.locator('app-tratativa span').filter({ hasText: regexSituacao }).textContent() ?? '';
 
-                for (const linha of await page.locator('app-tratativa table tbody tr:nth-child(n)').all()) {
-                    const conteudoLinha: string[] = await linha.locator('> td').allInnerTexts();
-                    const args: [string, string, string, string] = conteudoLinha as [string, string, string, string];
-                    const fornecedor = page.locator('app-reclamacao-fornecedor div.row.mb-2').filter({ has: page.locator('div.col-md-3', { hasText: args[0] }) });
-                    const fornecedorCodigo = await fornecedor.locator('input').nth(1).inputValue();
-                    const fornecedorCNPJ = await fornecedor.locator('input').nth(3).inputValue();
-                    const carta = new TratativaCarta('passed', numeroAtendimento.Formatacao(1), situacaoCarta, fornecedorCodigo.slice(22, 24), fornecedorCNPJ, ...args);
-                    const estrutura = carta.retornaEstrutura(1);
-                    passed.push(estrutura);
-                    allTested.push(estrutura);
-
+                //Abre o painel suspenso de tratativas caso esteja fechado/recolhido
+                if (!await page.locator('app-tratativa').isVisible()) {
+                    await page.getByTitle('Clique para Expandir/Recolher').filter({ hasText: "Tratativas" }).click();
                 }
 
+                for (const correspondencia of await page.getByText(regexBusca).all()) {
+
+                    await correspondencia.click();
+                    await page.waitForSelector('.loader-container', { state: 'hidden' });
+                    const situacaoCarta = await page.locator('app-tratativa span').filter({ hasText: regexSituacao }).textContent() ?? '';
+
+                    for (const linha of await page.locator('app-tratativa table tbody tr:nth-child(n)').all()) {
+                        const conteudoLinha: string[] = await linha.locator('> td').allInnerTexts();
+                        const args: [string, string, string, string] = conteudoLinha as [string, string, string, string];
+                        const fornecedor = page.locator('app-reclamacao-fornecedor div.row.mb-2').filter({ has: page.locator('div.col-md-3', { hasText: args[0] }) });
+                        const fornecedorCodigo = await fornecedor.locator('input').nth(1).inputValue();
+                        const fornecedorCNPJ = await fornecedor.locator('input').nth(3).inputValue();
+                        const carta = new TratativaCarta('passed', numeroAtendimento.Formatacao(1), situacaoCarta, fornecedorCodigo.slice(22, 24), fornecedorCNPJ, ...args);
+                        const estrutura = carta.retornaEstrutura(1);
+                        passed.push(estrutura);
+                        allTested.push(estrutura);
+
+                    }
+                }
+
+                const fim = performance.now();
+                const time = ((fim - inicio) / 1000).toFixed(2);
+                console.log(`NA: ${numeroAtendimento.Formatacao(1)} Tempo de Execução: ${time}s  ✅  ${cont + 1}°`);
+                cont++;
+
+            } catch (error) {
+                const fim = performance.now();
+                const time = ((fim - inicio) / 1000).toFixed(2);
+                console.log(`NA: ${numeroAtendimento.Formatacao(1)} Tempo de Execução: ${time}s ❌  ${cont + 1}°`);
+                const argsFailed: [string, string, string, string, string, string, string] = ['', '', '', '', '', '', ''];
+                const cartaFailed = new TratativaCarta('failed', numeroAtendimento.Formatacao(1), ...argsFailed,);
+                const estruturaFailed = cartaFailed.retornaEstrutura(1);
+                failed.push(estruturaFailed);
+                allTested.push(estruturaFailed);
+                cont++;
+                continue;
             }
-            const fim = performance.now();
-            const time = ((fim - inicio) / 1000).toFixed(2);
-            console.log(`NA: ${numeroAtendimento.Formatacao(1)} Tempo de Execução: ${time}s  ✅  ${cont + 1}°`);
-            cont++;
-
-
         } catch (error) {
-            const fim = performance.now();
-            const time = ((fim - inicio) / 1000).toFixed(2);
-            console.log(`NA: ${numeroAtendimento.Formatacao(1)} Tempo de Execução: ${time}s ❌  ${cont + 1}°`);
-            const argsFailed: [string, string, string, string, string, string, string] = ['', '', '', '', '', '', ''];
-            const cartaFailed = new TratativaCarta('failed', numeroAtendimento.Formatacao(1), ...argsFailed,);
-            const estruturaFailed = cartaFailed.retornaEstrutura(1);
-            failed.push(estruturaFailed);
-            allTested.push(estruturaFailed);
-            cont++;
-            continue;
+            const worksheetPassed = xlsx.utils.json_to_sheet(passed);
+            const worksheetFailed = xlsx.utils.json_to_sheet(failed);
+            const worksheetAllTested = xlsx.utils.json_to_sheet(allTested);
+            const workbookPassed = xlsx.utils.book_new();
+            const workbookFailed = xlsx.utils.book_new();
+            const workbookAllTested = xlsx.utils.book_new();
+            xlsx.utils.book_append_sheet(workbookPassed, worksheetPassed, `Passed`);
+            xlsx.utils.book_append_sheet(workbookFailed, worksheetFailed, `Failed`);
+            xlsx.utils.book_append_sheet(workbookAllTested, worksheetAllTested, `All`);
+            xlsx.writeFile(workbookPassed, `Cartas-Passed-Web-Scraping.xlsx`);
+            xlsx.writeFile(workbookFailed, `Cartas-Failed-Web-Scraping.xlsx`);
+            xlsx.writeFile(workbookAllTested, `Cartas-All-Web-Scraping.xlsx`);
+            console.log('\nPlanilhas Geradas com erro! 🔺\n');
+            console.timeEnd("Tempo-de-Execução-Total");
+            console.log('User foi deslogado do site', error);
+            break;
         }
 
     }
