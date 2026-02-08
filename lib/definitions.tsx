@@ -1,3 +1,5 @@
+import { extrairBaseCompleta, extrairColunaBase, atualizarBase } from "./functions";
+
 export type UserInformation = {
     credential: string,
     password: string
@@ -47,7 +49,7 @@ export class TratativaCarta {
     scraping: string;
 
 
-    constructor(scraping: 'failed' | 'passed',numeroAtendimento: string, situacao: string, codFornecedor: string, cnpj: string, fornecedor: string, data: string, prazo: string, resposta: string) {
+    constructor(scraping: 'failed' | 'passed', numeroAtendimento: string, situacao: string, codFornecedor: string, cnpj: string, fornecedor: string, data: string, prazo: string, resposta: string) {
         this.fornecedor = fornecedor;
         this.data = data;
         this.prazo = prazo;
@@ -71,10 +73,48 @@ export class TratativaCarta {
                     Prazo: this.prazo,
                     Resposta: this.resposta,
                     Situacao: this.situacao,
-                    Scraping:this.scraping
+                    Scraping: this.scraping
                 };
                 return estrutura;
         }
 
     }
-};
+}
+
+export class BaseDados {
+
+    protected caminho: string;
+    private baseModificada: any[] = [];
+
+    constructor(caminho: string) {
+        this.caminho = caminho;
+        this.obterDadosGerais = extrairBaseCompleta.bind(this);
+        this.obterDadosColuna = extrairColunaBase.bind({ base: this.obterDadosGerais() });
+        this.carregarAlteracoes = atualizarBase.bind({ base: this.obterDadosGerais() });
+
+    }
+
+    //Extração
+    public obterDadosGerais: () => any[];
+    public obterDadosColuna: (coluna: string) => any[];
+
+    //Transformação
+    public filtrar(coluna: string): this {
+        this.baseModificada = this.obterDadosColuna(coluna);
+        return this;
+    }
+
+    public removerDuplicatas(): this {
+        this.baseModificada = [...new Set(this.baseModificada)];
+        return this;
+    }
+
+    public quantificarDados(): number {
+        return this.baseModificada.length;
+    }
+
+    //Carga
+    public carregarAlteracoes: (novosDados: any, nomeArquivo: string, nomeAba: string) => void;
+
+
+}
