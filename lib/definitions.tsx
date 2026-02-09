@@ -118,3 +118,37 @@ export class BaseDados {
 
 
 }
+
+export class Calendario {
+
+    public dataAtual: any = new Date().toLocaleDateString();
+
+    public data(): this {
+        this.dataAtual = new Date();
+        return this;
+    }
+
+    public subtrairMeses(meses: number) {
+        
+        const data = this.dataAtual;
+        const dia = data.getDate();
+
+        data.setDate(1);
+
+        const mes = new Date(data).getMonth();
+
+        data.setMonth(mes - meses);
+
+        const ultimoDia = new Date(
+            data.getFullYear(),
+            data.getMonth() + 1,
+            0
+        ).getDate();
+
+        data.setDate(Math.min(dia, ultimoDia));
+
+        return new Date(data).toLocaleDateString();
+
+    }
+
+}
