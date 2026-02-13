@@ -39,3 +39,11 @@ export function extrairDivergenciasColunaBaseComparativa(this: { basePrimaria: B
 
     return elementosDivergentes;
 }
+
+export function extrairDadosBasePorValorColuna(this: { base: any[] }, { colunaFiltro, valorFiltro, colunaRetorno }: { colunaFiltro: string; valorFiltro: string; colunaRetorno?: string }) {
+    const dadosGeraisFiltrados = this.base.filter(colunas => colunas[colunaFiltro] == valorFiltro);
+    if (colunaRetorno !== undefined) {
+        return dadosGeraisFiltrados.map(colunas => colunas[colunaRetorno]);
+    };
+    return dadosGeraisFiltrados;
+}
