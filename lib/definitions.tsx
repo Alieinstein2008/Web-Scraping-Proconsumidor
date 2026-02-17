@@ -1,4 +1,4 @@
-import { extrairBaseCompleta, extrairColunaBase, atualizarBase, extrairDivergenciasColunaBaseComparativa, extrairDadosBasePorValorColuna } from "./functions";
+import { extrairBaseCompleta, extrairColunaBase, atualizarBase, extrairDivergenciasColunaBaseComparativa, extrairDadosBasePorValorColuna, realizarBackupBase } from "./functions";
 
 export type UserInformation = {
     credential: string,
@@ -80,6 +80,8 @@ export class TratativaCarta {
     }
 }
 
+export type TipoNumeroAtendimento = ('Reclamacao' | 'Atendimento' | 'Consulta');
+
 export class BaseDados {
 
     protected caminho: string;
@@ -89,17 +91,18 @@ export class BaseDados {
         this.caminho = caminho;
         this.obterDadosGerais = extrairBaseCompleta.bind({ caminho: this.caminho });
         this.obterDadosColuna = extrairColunaBase.bind({ base: this.obterDadosGerais() });
-        this.obterDadosDivergentes = extrairDivergenciasColunaBaseComparativa.bind({ basePrimaria: this })
+        this.obterDadosDivergentes = extrairDivergenciasColunaBaseComparativa.bind({ basePrimaria: this });
         this.carregarAlteracoes = atualizarBase.bind({ base: this.obterDadosGerais() });
-        this.criarFiltroColunaBase = extrairDadosBasePorValorColuna.bind({ base: this.obterDadosGerais() })
-
+        this.criarFiltroColunaBase = extrairDadosBasePorValorColuna.bind({ base: this.obterDadosGerais() });
+        this.executarBackup = realizarBackupBase.bind({ dadosBackup: this.obterDadosGerais() });
     }
 
     //Extração
     public obterDadosGerais: () => any[];
     public obterDadosColuna: (coluna: string) => any[];
-    public obterDadosDivergentes: ({ colunaHomologa, baseComparativa }: { colunaHomologa: string, baseComparativa: BaseDados }) => any[];
-    public criarFiltroColunaBase: ({ }: { colunaFiltro: string, valorFiltro: string, colunaRetorno?: string }) => any[];
+    public obterDadosDivergentes: ({ }: { colunaHomologa: string, baseComparativa: BaseDados, tipoNumeroAtendimento?: TipoNumeroAtendimento }) => any[];
+    public criarFiltroColunaBase: ({ }: { colunaFiltro: string, valorFiltro: string, colunaRetorno?: string, tipoNumeroAtendimento?: TipoNumeroAtendimento }) => any[];
+    public executarBackup: ({ }: { nomeArquivo: string, nomeAba: string }) => void;
 
     //Transformação
     public selecionar(coluna: string): this {
@@ -107,22 +110,36 @@ export class BaseDados {
         return this;
     }
 
-    public tipoNumeroAtendimento(tipo: 'Reclamacao' | 'Consulta' | 'Atendimento'): this {
-        switch (tipo) {
-            case "Consulta":
-                this.baseModificada = this.baseModificada.filter(dado => dado.slice(21, 22) == '1');
-                break;
-            case 'Atendimento':
-                this.baseModificada = this.baseModificada.filter(dado => dado.slice(21, 22) == '2');
-                break;
-            case 'Reclamacao':
-                this.baseModificada = this.baseModificada.filter(dado => dado.slice(21, 22) == '3');
-                break;
-            default:
-                this.baseModificada = this.baseModificada.filter(dado => dado.slice(21, 22) == '3');
-                break;
+    public tipoNumeroAtendimento(tipo?: 'Reclamacao' | 'Consulta' | 'Atendimento'): this {
+        const relacaoTipoNumerico = {
+            'Consulta': '1',
+            'Atendimento': '2',
+            'Reclamacao': '3'
+        };
+
+        if (tipo !== undefined) {
+            this.baseModificada = this.baseModificada.filter((elemento) => {
+                if (elemento.slice(21, 22) == relacaoTipoNumerico[tipo]) {
+                    return elemento;
+                };
+            });
         }
         return this;
+    }
+
+    public obterRegistrosUltimosMeses({ quantidadeMeses }: { quantidadeMeses: number }): this {
+
+        const dataBusca = new Calendario().data().subtrairMeses(quantidadeMeses);
+        const diaMesAno: string[] = dataBusca.split('/');
+        const mesBusca = diaMesAno[1];
+        const anoBusca = diaMesAno[2].slice(2, 4);
+        this.baseModificada = this.baseModificada.filter((elemento) => {
+            if (elemento.slice(0, 2) == anoBusca && elemento.slice(3, 5) == mesBusca) {
+                return elemento;
+            }
+        });
+        return this;
+
     }
 
     public removerDuplicatas(): string[] {
