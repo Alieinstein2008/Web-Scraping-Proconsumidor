@@ -24,10 +24,22 @@ export function extrairColunaBase(this: { base: any[] }, coluna: string): any[] 
     return baseFiltrada;
 };
 
-export function extrairDadosBasePorValorColuna(this: { base: any[] }, { colunaFiltro, valorFiltro, colunaRetorno }: { colunaFiltro: string; valorFiltro: string; colunaRetorno?: string }) {
+export function extrairDadosBasePorValorColuna(this: { base: any[] }, { colunaFiltro, valorFiltro, colunaRetorno, tipoNumeroAtendimento }: { colunaFiltro: string; valorFiltro: string; colunaRetorno?: string, tipoNumeroAtendimento?: TipoNumeroAtendimento }) {
+
+    const relacaoTipoNumerico = {
+        'Consulta': '1',
+        'Atendimento': '2',
+        'Reclamacao': '3'
+    };
+
     const dadosGeraisFiltrados = this.base.filter(colunas => colunas[colunaFiltro] == valorFiltro);
+
     if (colunaRetorno !== undefined) {
-        return dadosGeraisFiltrados.map(colunas => colunas[colunaRetorno]);
+        let dadosMapeadosRetorno = dadosGeraisFiltrados.map(colunas => colunas[colunaRetorno]);
+        if (tipoNumeroAtendimento != undefined && colunaRetorno == 'NumeroAtendimento') {
+            dadosMapeadosRetorno = dadosMapeadosRetorno.filter(NumeroAtendimento => NumeroAtendimento.slice(21, 22) == relacaoTipoNumerico[tipoNumeroAtendimento]);
+        }
+        return dadosMapeadosRetorno;
     };
     return dadosGeraisFiltrados;
 };
