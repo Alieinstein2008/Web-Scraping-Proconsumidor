@@ -123,6 +123,7 @@ export class BaseDados {
                     return elemento;
                 };
             });
+            this.baseModificada = this.baseModificada.map(elemento => elemento.slice(0, 22));
         }
         return this;
     }
