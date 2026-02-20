@@ -1,5 +1,5 @@
 import playwright from 'playwright';
-import { NumeroAtendimento, TratativaCarta, TuplaInformacoesFailedCarta, TuplaInformacoesParciaisCarta } from './lib/definitions';
+import { NumeroAtendimento, TratativaCarta, TuplaInformacoesFailedCarta, TuplaInformacoesNulasCarta, TuplaInformacoesParciaisCarta } from './lib/definitions';
 import { carregarAlteracoesBaseCartas, executarBackupBaseCartas, retornaReclamacoesDivergentes, retornaReclamacoesFalhas, retornaReclamacoesUltimos4Meses } from './utils/database.quickAccessFunctions';
 
 const textoBusca = 'Carta';
@@ -51,25 +51,35 @@ var cont = 0;
                     await page.getByTitle('Clique para Expandir/Recolher').filter({ hasText: "Tratativas" }).click();
                 }
 
-                for (const correspondencia of await page.getByText(regexBusca).all()) {
+                const conjuntoCorrespondencia = await page.getByText(regexBusca).all();
+                if (conjuntoCorrespondencia.length == 0) {
+                   
+                    const argsBlank = Array().fill('') as TuplaInformacoesNulasCarta;
+                    const cartaBlank = new TratativaCarta('blank', numeroAtendimento.Formatacao(1), 'Ausência de Tratativa', ...argsBlank);
+                    const estruturaBlank = cartaBlank.retornaEstrutura(1);
+                    allTested.push(estruturaBlank);
+                
+                } else {
+                    for (const correspondencia of await page.getByText(regexBusca).all()) {
 
-                    await correspondencia.click({ timeout: 60000 });
-                    await page.waitForSelector('.loader-container', { state: 'hidden' });
-                    const situacaoCarta = await page.locator('app-tratativa span').filter({ hasText: regexSituacao }).textContent() ?? '';
+                        await correspondencia.click({ timeout: 60000 });
+                        await page.waitForSelector('.loader-container', { state: 'hidden' });
+                        const situacaoCarta = await page.locator('app-tratativa span').filter({ hasText: regexSituacao }).textContent() ?? '';
 
-                    const tabelaCarta = await page.locator('app-tratativa table tbody tr:nth-child(n)').all()
-                    for (const linha of tabelaCarta) {
+                        const tabelaCarta = await page.locator('app-tratativa table tbody tr:nth-child(n)').all()
+                        for (const linha of tabelaCarta) {
 
-                        const conteudoLinha: string[] = await linha.locator('> td').allInnerTexts();
-                        const args = conteudoLinha as TuplaInformacoesParciaisCarta;
-                        const fornecedor = page.locator('app-reclamacao-fornecedor div.row.mb-2').filter({ has: page.locator('div.col-md-3', { hasText: args[0] }) });
-                        const fornecedorCodigo = (await fornecedor.locator('input').nth(1).inputValue()).slice(22, 24);
-                        const fornecedorCNPJ = await fornecedor.locator('input').nth(3).inputValue();
-                        const carta = new TratativaCarta('passed', numeroAtendimento.Formatacao(1), situacaoCarta, fornecedorCodigo, fornecedorCNPJ, ...args);
-                        const estrutura = carta.retornaEstrutura(1);
-                        passed.push(estrutura);
-                        allTested.push(estrutura);
+                            const conteudoLinha: string[] = await linha.locator('> td').allInnerTexts();
+                            const args = conteudoLinha as TuplaInformacoesParciaisCarta;
+                            const fornecedor = page.locator('app-reclamacao-fornecedor div.row.mb-2').filter({ has: page.locator('div.col-md-3', { hasText: args[0] }) });
+                            const fornecedorCodigo = (await fornecedor.locator('input').nth(1).inputValue()).slice(22, 24);
+                            const fornecedorCNPJ = await fornecedor.locator('input').nth(3).inputValue();
+                            const carta = new TratativaCarta('passed', numeroAtendimento.Formatacao(1), situacaoCarta, fornecedorCodigo, fornecedorCNPJ, ...args);
+                            const estrutura = carta.retornaEstrutura(1);
+                            passed.push(estrutura);
+                            allTested.push(estrutura);
 
+                        }
                     }
                 }
 
@@ -81,7 +91,7 @@ var cont = 0;
             } catch (error) {
                 const fim = performance.now();
                 const time = ((fim - inicio) / 1000).toFixed(2);
-                const argsFailed =  Array().fill('') as TuplaInformacoesFailedCarta;
+                const argsFailed = Array().fill('') as TuplaInformacoesFailedCarta;
                 const cartaFailed = new TratativaCarta('failed', numeroAtendimento.Formatacao(1), ...argsFailed,);
                 const estruturaFailed = cartaFailed.retornaEstrutura(1);
                 console.log(`NA: ${numeroAtendimento.Formatacao(1)} Tempo de Execução: ${time}s ❌  ${cont + 1}°`);
