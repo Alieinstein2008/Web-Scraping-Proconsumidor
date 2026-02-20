@@ -5,7 +5,7 @@ export type UserInformation = {
     password: string
 }
 
-export type TipoNumeroAtendimento = ('Reclamacao' | 'Atendimento' | 'Consulta');
+export type TipoNumeroAtendimento = ('Reclamacao' | 'Denuncia' | 'Consulta');
 
 export class NumeroAtendimento {
     numeroAtendimento: string;
@@ -115,10 +115,10 @@ export class BaseDados {
         return this;
     }
 
-    public tipoNumeroAtendimento(tipo?: 'Reclamacao' | 'Consulta' | 'Atendimento'): this {
+    public tipoNumeroAtendimento(tipo?: 'Reclamacao' | 'Consulta' | 'Denuncia'): this {
         const relacaoTipoNumerico = {
             'Consulta': '1',
-            'Atendimento': '2',
+            'Denuncia': '2',
             'Reclamacao': '3'
         };
 
@@ -195,6 +195,7 @@ export class Calendario {
 }
 
 export type EstruturaConsumidor = {
+    NumeroAtendimento:string;
     CPF?: string;
     Nome?: string;
     Nascimento?: string;
@@ -207,12 +208,15 @@ export type EstruturaConsumidor = {
     Bairro?: string;
     Cidade?: string;
     UF?: string;
-    Telefone?: string[];
+    Telefone?: string;
+    Scraping: string;
+
 }
 
 export type TuplaInformacoesParciaisConsumidor = [string, string, string, string, string, string, string, string, string, string, string, string];
 
 export class Consumidor {
+    NumeroAtendimento: string;
     CPF: string;
     Nome: string;
     Nascimento: string;
@@ -225,9 +229,11 @@ export class Consumidor {
     Bairro: string;
     Cidade: string;
     UF: string;
-    Telefone: string[];
+    Telefone: string;
+    Scraping: string;
 
-    constructor(cpf: string, nome: string, nascimento: string, sexo: string, racaCorEtnia: string, nomeSocial: string, cep: string, logradouro: string, complementoNumero: string, bairro: string, cidade: string, uf: string, telefone: string[]) {
+
+    constructor(scraping: 'failed' | 'passed', numeroAtendimento: string,cpf: string, nome: string, nascimento: string, sexo: string, racaCorEtnia: string, nomeSocial: string, cep: string, logradouro: string, complementoNumero: string, bairro: string, cidade: string, uf: string, telefone: string) {
         this.CPF = cpf;
         this.Nome = nome;
         this.Nascimento = nascimento;
@@ -241,12 +247,15 @@ export class Consumidor {
         this.Cidade = cidade;
         this.UF = uf;
         this.Telefone = telefone;
+        this.Scraping = scraping;
+        this.NumeroAtendimento = numeroAtendimento;
     };
 
     retornaEstrutura(tipo: number) {
         switch (tipo) {
             default:
                 const estrutura: EstruturaConsumidor = {
+                    NumeroAtendimento: this.NumeroAtendimento,
                     Nome: this.Nome,
                     NomeSocial: this.NomeSocial,
                     CPF: this.CPF,
@@ -259,8 +268,10 @@ export class Consumidor {
                     Bairro: this.Bairro,
                     Logradouro: this.Logradouro,
                     ComplementoNumero: this.ComplementoNumero,
-                    Telefone: this.Telefone
-                }
+                    Telefone: this.Telefone,
+                    Scraping: this.Scraping
+                };
+                return estrutura;
         }
     }
 }
