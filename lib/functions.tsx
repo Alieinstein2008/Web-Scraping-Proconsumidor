@@ -1,8 +1,13 @@
 import xlsx from 'xlsx';
 import { BaseDados, TipoNumeroAtendimento } from './definitions';
+import dotenv from 'dotenv';
+dotenv.config();
 
 export function atualizarBase(this: { base: any[] }, novosDados: any[], nomeArquivo: string, nomeAba: string): void {
-    this.base.push(novosDados);
+    
+    for (const obj of novosDados) {
+        this.base.push(obj);
+    };
     const worksheet = xlsx.utils.json_to_sheet(this.base);
     const workbook = xlsx.utils.book_new();
     xlsx.utils.book_append_sheet(workbook, worksheet, `${nomeAba}`);
@@ -73,4 +78,3 @@ export function realizarBackupBase(this: { dadosBackup: any[] }, { nomeArquivo, 
         nomeAba: nomeAba
     });
 };
-

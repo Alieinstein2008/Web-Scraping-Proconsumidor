@@ -1,13 +1,15 @@
 import playwright from 'playwright';
 import { NumeroAtendimento, TratativaCarta, TuplaInformacoesFailedCarta, TuplaInformacoesNulasCarta, TuplaInformacoesParciaisCarta } from './lib/definitions';
-import { carregarAlteracoesBaseCartas, executarBackupBaseCartas, retornaReclamacoesDivergentes, retornaReclamacoesFalhas, retornaReclamacoesUltimos4Meses } from './utils/database.quickAccessFunctions';
+import { carregarAlteracoesBaseCartas, executarBackupBaseCartas, retornaReclamacoesDivergentes, retornaReclamacoesFalhas, retornaReclamacoesUltimos4Meses, salvamentoPorInterrupcao } from './utils/database.quickAccessFunctions';
+import dotenv from 'dotenv';
+dotenv.config();
 
 const textoBusca = 'Carta';
 const regexBusca = new RegExp(`[0-9] - ${textoBusca}`, '');
 const regexSituacao = new RegExp(`(Finalizada|Cancelada|Aberta)`, 'i');
 
 let passed = [];
-let allTested = [];
+let allTested: any[] = [];
 let failed = [];
 var cont = 0;
 
@@ -25,9 +27,11 @@ var cont = 0;
 
     const reclamacoesDivergentes = retornaReclamacoesDivergentes();
     const grupoBusca = [...reclamacoesDivergentes];
-    const listaBusca = [...new Set(grupoBusca)];
+    const listaBusca = ['23.08.0532.001.00362-3',...new Set(grupoBusca)];
 
-    executarBackupBaseCartas();
+    //executarBackupBaseCartas();
+
+    process.on('SIGINT', () => salvamentoPorInterrupcao('SIGINT', allTested, cont));
 
     for (const NA of listaBusca) {
 
@@ -53,12 +57,11 @@ var cont = 0;
 
                 const conjuntoCorrespondencia = await page.getByText(regexBusca).all();
                 if (conjuntoCorrespondencia.length == 0) {
-                   
-                    const argsBlank = Array().fill('') as TuplaInformacoesNulasCarta;
+                    const argsBlank = Array(6).fill('') as TuplaInformacoesNulasCarta;
                     const cartaBlank = new TratativaCarta('blank', numeroAtendimento.Formatacao(1), 'Ausência de Tratativa', ...argsBlank);
                     const estruturaBlank = cartaBlank.retornaEstrutura(1);
                     allTested.push(estruturaBlank);
-                
+
                 } else {
                     for (const correspondencia of await page.getByText(regexBusca).all()) {
 
@@ -86,20 +89,22 @@ var cont = 0;
                 const fim = performance.now();
                 const time = ((fim - inicio) / 1000).toFixed(2);
                 console.log(`NA: ${numeroAtendimento.Formatacao(1)} Tempo de Execução: ${time}s  ✅  ${cont + 1}°`);
-                cont++;
 
             } catch (error) {
                 const fim = performance.now();
                 const time = ((fim - inicio) / 1000).toFixed(2);
-                const argsFailed = Array().fill('') as TuplaInformacoesFailedCarta;
+                const argsFailed = Array(7).fill('') as TuplaInformacoesFailedCarta;
                 const cartaFailed = new TratativaCarta('failed', numeroAtendimento.Formatacao(1), ...argsFailed,);
                 const estruturaFailed = cartaFailed.retornaEstrutura(1);
                 console.log(`NA: ${numeroAtendimento.Formatacao(1)} Tempo de Execução: ${time}s ❌  ${cont + 1}°`);
                 failed.push(estruturaFailed);
                 allTested.push(estruturaFailed);
-                cont++;
                 continue;
             }
+            carregarAlteracoesBaseCartas(allTested);
+            console.log(`${cont + 1} alterações carregadas com sucesso 👌 `);
+            cont++;
+
         } catch (error) {
 
             carregarAlteracoesBaseCartas(allTested);

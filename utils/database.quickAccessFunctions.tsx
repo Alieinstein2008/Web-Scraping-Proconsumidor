@@ -35,8 +35,15 @@ export function executarBackupBaseCartas() {
     console.log('Backup Executado com sucesso! 🗃');
 };
 
-export function carregarAlteracoesBaseCartas(data: any) {
+export function carregarAlteracoesBaseCartas(data: any[]) {
     baseDadosCartas.atual.carregarAlteracoes(
         data, 'Cartas-Base-Web-Scraping', 'All'
     )
+}
+
+export function salvamentoPorInterrupcao(signal: string, dados: any[], contador: number) {
+    console.log(`\n${signal} recebido. Iniciando o carregamento de ${contador + 1} novos itens`);
+    carregarAlteracoesBaseCartas(dados);
+    console.log('Finalizando processo.');
+    process.exit(0);
 }
