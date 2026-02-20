@@ -5,17 +5,7 @@ export type UserInformation = {
     password: string
 }
 
-export type EstruturaCarta = {
-    Fornecedor?: string;
-    Data?: string;
-    Prazo?: string;
-    Resposta?: string;
-    Situacao?: string;
-    NumeroAtendimento?: string;
-    CodigoFornecedor?: string;
-    CNPJ?: string;
-    Scraping?: string;
-}
+export type TipoNumeroAtendimento = ('Reclamacao' | 'Denuncia' | 'Consulta');
 
 export class NumeroAtendimento {
     numeroAtendimento: string;
@@ -35,6 +25,23 @@ export class NumeroAtendimento {
         }
     }
 }
+
+export type EstruturaCarta = {
+    Fornecedor?: string;
+    Data?: string;
+    Prazo?: string;
+    Resposta?: string;
+    Situacao?: string;
+    NumeroAtendimento?: string;
+    CodigoFornecedor?: string;
+    CNPJ?: string;
+    Scraping?: string;
+}
+
+export type TuplaInformacoesFailedCarta = [string, string, string, string, string, string, string]
+
+export type TuplaInformacoesParciaisCarta = [string, string, string, string]
+
 
 export class TratativaCarta {
     fornecedor: string;
@@ -80,8 +87,6 @@ export class TratativaCarta {
     }
 }
 
-export type TipoNumeroAtendimento = ('Reclamacao' | 'Atendimento' | 'Consulta');
-
 export class BaseDados {
 
     protected caminho: string;
@@ -110,10 +115,10 @@ export class BaseDados {
         return this;
     }
 
-    public tipoNumeroAtendimento(tipo?: 'Reclamacao' | 'Consulta' | 'Atendimento'): this {
+    public tipoNumeroAtendimento(tipo?: 'Reclamacao' | 'Consulta' | 'Denuncia'): this {
         const relacaoTipoNumerico = {
             'Consulta': '1',
-            'Atendimento': '2',
+            'Denuncia': '2',
             'Reclamacao': '3'
         };
 
@@ -188,4 +193,86 @@ export class Calendario {
         return new Date(data).toLocaleDateString();
     }
 
+}
+
+export type EstruturaConsumidor = {
+    NumeroAtendimento:string;
+    CPF?: string;
+    Nome?: string;
+    Nascimento?: string;
+    Sexo?: string;
+    RacaCorEtnia?: string;
+    NomeSocial?: string;
+    CEP?: string;
+    Logradouro?: string;
+    ComplementoNumero?: string;
+    Bairro?: string;
+    Cidade?: string;
+    UF?: string;
+    Telefone?: string;
+    Scraping: string;
+
+}
+
+export type TuplaInformacoesParciaisConsumidor = [string, string, string, string, string, string, string, string, string, string, string, string];
+
+export class Consumidor {
+    NumeroAtendimento: string;
+    CPF: string;
+    Nome: string;
+    Nascimento: string;
+    Sexo: string;
+    RacaCorEtnia: string;
+    NomeSocial: string;
+    CEP: string;
+    Logradouro: string;
+    ComplementoNumero: string;
+    Bairro: string;
+    Cidade: string;
+    UF: string;
+    Telefone: string;
+    Scraping: string;
+
+
+    constructor(scraping: 'failed' | 'passed', numeroAtendimento: string,cpf: string, nome: string, nascimento: string, sexo: string, racaCorEtnia: string, nomeSocial: string, cep: string, logradouro: string, complementoNumero: string, bairro: string, cidade: string, uf: string, telefone: string) {
+        this.CPF = cpf;
+        this.Nome = nome;
+        this.Nascimento = nascimento;
+        this.Sexo = sexo;
+        this.RacaCorEtnia = racaCorEtnia;
+        this.NomeSocial = nomeSocial;
+        this.CEP = cep;
+        this.Logradouro = logradouro;
+        this.ComplementoNumero = complementoNumero;
+        this.Bairro = bairro;
+        this.Cidade = cidade;
+        this.UF = uf;
+        this.Telefone = telefone;
+        this.Scraping = scraping;
+        this.NumeroAtendimento = numeroAtendimento;
+    };
+
+    retornaEstrutura(tipo: number) {
+        switch (tipo) {
+            default:
+                const estrutura: EstruturaConsumidor = {
+                    NumeroAtendimento: this.NumeroAtendimento,
+                    Nome: this.Nome,
+                    NomeSocial: this.NomeSocial,
+                    CPF: this.CPF,
+                    Nascimento: this.Nascimento,
+                    RacaCorEtnia: this.RacaCorEtnia,
+                    Sexo: this.Sexo,
+                    CEP: this.CEP,
+                    UF: this.UF,
+                    Cidade: this.Cidade,
+                    Bairro: this.Bairro,
+                    Logradouro: this.Logradouro,
+                    ComplementoNumero: this.ComplementoNumero,
+                    Telefone: this.Telefone,
+                    Scraping: this.Scraping
+                };
+                return estrutura;
+        }
+    }
 }

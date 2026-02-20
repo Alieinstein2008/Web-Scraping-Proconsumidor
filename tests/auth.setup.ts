@@ -5,7 +5,7 @@ dotenv.config();
 
 const user: UserInformation = {
     credential: process.env.CREDENTIAL ?? " ", //Um caractere vazio IMPORTANTTE
-    password: process.env.PASSWORD ?? " " 
+    password: process.env.PASSWORD ?? " "
 }
 const authFile = 'playwright/.auth/user.json';
 
@@ -20,7 +20,7 @@ setup('authenticate', async ({ page }) => {
                 throw new Error('\n🛑 ERROR 🛑 : CPF ou Senha Invalidos, verifique o arquivo .env e tente novamente. 🛑 🛑\n');
             } else {
                 await page.waitForSelector('.loader-container', { state: 'hidden' });
-                await page.waitForURL('https://proconsumidor.mj.gov.br/#/inicio');
+                await page.waitForURL('https://proconsumidor.mj.gov.br/#/inicio', { timeout: 6000 });
                 await page.context().storageState({ path: authFile });
                 console.log("\n✅ Autenticação realizada com sucesso!\n");
             }

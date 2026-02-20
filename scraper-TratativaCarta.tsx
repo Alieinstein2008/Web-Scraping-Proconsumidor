@@ -1,5 +1,5 @@
 import playwright from 'playwright';
-import { NumeroAtendimento, TratativaCarta } from './lib/definitions';
+import { NumeroAtendimento, TratativaCarta, TuplaInformacoesFailedCarta, TuplaInformacoesParciaisCarta } from './lib/definitions';
 import { carregarAlteracoesBaseCartas, executarBackupBaseCartas, retornaReclamacoesDivergentes, retornaReclamacoesFalhas, retornaReclamacoesUltimos4Meses } from './utils/database.quickAccessFunctions';
 
 const textoBusca = 'Carta';
@@ -61,7 +61,7 @@ var cont = 0;
                     for (const linha of tabelaCarta) {
 
                         const conteudoLinha: string[] = await linha.locator('> td').allInnerTexts();
-                        const args: [string, string, string, string] = conteudoLinha as [string, string, string, string];
+                        const args = conteudoLinha as TuplaInformacoesParciaisCarta;
                         const fornecedor = page.locator('app-reclamacao-fornecedor div.row.mb-2').filter({ has: page.locator('div.col-md-3', { hasText: args[0] }) });
                         const fornecedorCodigo = (await fornecedor.locator('input').nth(1).inputValue()).slice(22, 24);
                         const fornecedorCNPJ = await fornecedor.locator('input').nth(3).inputValue();
@@ -81,7 +81,7 @@ var cont = 0;
             } catch (error) {
                 const fim = performance.now();
                 const time = ((fim - inicio) / 1000).toFixed(2);
-                const argsFailed: [string, string, string, string, string, string, string] = ['', '', '', '', '', '', ''];
+                const argsFailed =  Array().fill('') as TuplaInformacoesFailedCarta;
                 const cartaFailed = new TratativaCarta('failed', numeroAtendimento.Formatacao(1), ...argsFailed,);
                 const estruturaFailed = cartaFailed.retornaEstrutura(1);
                 console.log(`NA: ${numeroAtendimento.Formatacao(1)} Tempo de Execução: ${time}s ❌  ${cont + 1}°`);
