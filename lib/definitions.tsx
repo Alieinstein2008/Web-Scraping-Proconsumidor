@@ -40,6 +40,8 @@ export type EstruturaCarta = {
 
 export type TuplaInformacoesFailedCarta = [string, string, string, string, string, string, string]
 
+export type TuplaInformacoesNulasCarta = [string, string, string, string, string, string]
+
 export type TuplaInformacoesParciaisCarta = [string, string, string, string]
 
 
@@ -55,7 +57,7 @@ export class TratativaCarta {
     scraping: string;
 
 
-    constructor(scraping: 'failed' | 'passed', numeroAtendimento: string, situacao: string, codFornecedor: string, cnpj: string, fornecedor: string, data: string, prazo: string, resposta: string) {
+    constructor(scraping: 'failed' | 'passed' | 'blank', numeroAtendimento: string, situacao: string, codFornecedor: string, cnpj: string, fornecedor: string, data: string, prazo: string, resposta: string) {
         this.fornecedor = fornecedor;
         this.data = data;
         this.prazo = prazo;
@@ -196,7 +198,7 @@ export class Calendario {
 }
 
 export type EstruturaConsumidor = {
-    NumeroAtendimento:string;
+    NumeroAtendimento: string;
     CPF?: string;
     Nome?: string;
     Nascimento?: string;
@@ -234,7 +236,7 @@ export class Consumidor {
     Scraping: string;
 
 
-    constructor(scraping: 'failed' | 'passed', numeroAtendimento: string,cpf: string, nome: string, nascimento: string, sexo: string, racaCorEtnia: string, nomeSocial: string, cep: string, logradouro: string, complementoNumero: string, bairro: string, cidade: string, uf: string, telefone: string) {
+    constructor(scraping: 'failed' | 'passed', numeroAtendimento: string, cpf: string, nome: string, nascimento: string, sexo: string, racaCorEtnia: string, nomeSocial: string, cep: string, logradouro: string, complementoNumero: string, bairro: string, cidade: string, uf: string, telefone: string) {
         this.CPF = cpf;
         this.Nome = nome;
         this.Nascimento = nascimento;
