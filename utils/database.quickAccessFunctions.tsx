@@ -32,6 +32,7 @@ export function executarBackupBaseCartas() {
         nomeArquivo: 'Cartas-Base-Web-Scraping(Backup)',
         nomeAba: 'Cartas(Backup)'
     });
+    console.log('Backup Executado com sucesso! 🗃');
 };
 
 export function carregarAlteracoesBaseCartas(data: any) {
