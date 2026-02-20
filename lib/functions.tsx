@@ -28,7 +28,7 @@ export function extrairDadosBasePorValorColuna(this: { base: any[] }, { colunaFi
 
     const relacaoTipoNumerico = {
         'Consulta': '1',
-        'Atendimento': '2',
+        'Denuncia': '2',
         'Reclamacao': '3'
     };
 
