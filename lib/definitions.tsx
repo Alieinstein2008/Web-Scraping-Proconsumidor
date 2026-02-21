@@ -44,7 +44,6 @@ export type TuplaInformacoesNulasCarta = [string, string, string, string, string
 
 export type TuplaInformacoesParciaisCarta = [string, string, string, string]
 
-
 export class TratativaCarta {
     fornecedor: string;
     data: string;
@@ -82,10 +81,9 @@ export class TratativaCarta {
                     Resposta: this.resposta,
                     Situacao: this.situacao,
                     Scraping: this.scraping
-                };
+                }
                 return estrutura;
         }
-
     }
 }
 
@@ -277,4 +275,16 @@ export class Consumidor {
                 return estrutura;
         }
     }
+}
+
+export class Log {
+    NumeroAtendimento: string;
+    TempoExecucao: string;
+    Situacao: string;
+
+    constructor(numeroAtendimento: string, tempoExecucao: string, situacao: string) {
+        this.NumeroAtendimento = numeroAtendimento;
+        this.TempoExecucao = tempoExecucao;
+        this.Situacao = situacao;
+    };
 }
