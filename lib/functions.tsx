@@ -1,17 +1,16 @@
 import xlsx from 'xlsx';
 import { BaseDados, TipoNumeroAtendimento } from './definitions';
-import dotenv from 'dotenv';
-dotenv.config();
+import { dirnameInput, dirnameOutput } from '../config/directories.config';
 
 export function atualizarBase(this: { base: any[] }, novosDados: any[], nomeArquivo: string, nomeAba: string): void {
-    
-    for (const obj of novosDados) {
-        this.base.push(obj);
+
+    for (const estrutura of novosDados) {
+        this.base.push(estrutura);
     };
     const worksheet = xlsx.utils.json_to_sheet(this.base);
     const workbook = xlsx.utils.book_new();
     xlsx.utils.book_append_sheet(workbook, worksheet, `${nomeAba}`);
-    xlsx.writeFile(workbook, `${nomeArquivo}.xlsx`);
+    xlsx.writeFile(workbook, `${dirnameInput}/${nomeArquivo}.xlsx`);
 };
 
 export function extrairBaseCompleta(this: { caminho: string }): any[] {
@@ -68,7 +67,7 @@ export function criarNovaBaseDados({ dadosJson, nomeArquivo, nomeAba }: { dadosJ
     const worksheet = xlsx.utils.json_to_sheet(dadosJson);
     const workbook = xlsx.utils.book_new();
     xlsx.utils.book_append_sheet(workbook, worksheet, `${nomeAba}`);
-    xlsx.writeFile(workbook, `${nomeArquivo}.xlsx`);
+    xlsx.writeFile(workbook, `${dirnameOutput}/${nomeArquivo}.xlsx`);
 };
 
 export function realizarBackupBase(this: { dadosBackup: any[] }, { nomeArquivo, nomeAba }: { nomeArquivo: string, nomeAba: string }) {
