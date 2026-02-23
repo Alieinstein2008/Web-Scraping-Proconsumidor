@@ -1,8 +1,5 @@
-import { createDirectoriesInRoot } from "../config/directories.config";
+import { createDirectoriesInRoot, dirnameInput, dirnameOutput } from "../config/directories.config";
 import { BaseDados } from "../lib/definitions";
-
-const dirnameInput = 'data/in';
-const dirnameOutput = 'data/out';
 
 await createDirectoriesInRoot({
     dirnameInput: dirnameInput,
