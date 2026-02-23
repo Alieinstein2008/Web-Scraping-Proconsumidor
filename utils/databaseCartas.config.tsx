@@ -1,10 +1,13 @@
 import { createDirectoriesInRoot, dirnameInput, dirnameOutput } from "../config/directories.config";
 import { BaseDados } from "../lib/definitions";
 
-await createDirectoriesInRoot({
-    dirnameInput: dirnameInput,
-    dirnameOutput: dirnameOutput
-});
+(async () => {
+    await createDirectoriesInRoot({
+        dirnameInput: dirnameInput,
+        dirnameOutput: dirnameOutput
+    });
+})();
+
 
 export const baseDadosCartas = {
     atual: new BaseDados(`${dirnameInput}/Cartas-Base-Web-Scraping.xlsx`),
