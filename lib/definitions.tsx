@@ -8,13 +8,13 @@ export type UserInformation = {
 export type TipoNumeroAtendimento = ('Reclamacao' | 'Denuncia' | 'Consulta');
 
 export class NumeroAtendimento {
-    numeroAtendimento: string;
+    protected numeroAtendimento: string;
 
     constructor(numeroAtendimento: string) {
         this.numeroAtendimento = numeroAtendimento;
     }
 
-    Formatacao(tipo: number) {
+    public Formatacao(tipo: number): string {
         switch (tipo) {
             case 1:
                 return this.numeroAtendimento.slice(0, 22);
@@ -45,16 +45,15 @@ export type TuplaInformacoesNulasCarta = [string, string, string, string, string
 export type TuplaInformacoesParciaisCarta = [string, string, string, string]
 
 export class TratativaCarta {
-    fornecedor: string;
-    data: string;
-    prazo: string;
-    resposta: string;
-    numeroAtendimento: string;
-    situacao: string;
-    codFornecedor: string;
-    cnpj: string;
-    scraping: string;
-
+    private fornecedor: string;
+    private data: string;
+    private prazo: string;
+    private resposta: string;
+    private numeroAtendimento: string;
+    private situacao: string;
+    private codFornecedor: string;
+    private cnpj: string;
+    private scraping: string;
 
     constructor(scraping: 'failed' | 'passed' | 'blank', numeroAtendimento: string, situacao: string, codFornecedor: string, cnpj: string, fornecedor: string, data: string, prazo: string, resposta: string) {
         this.fornecedor = fornecedor;
@@ -68,7 +67,7 @@ export class TratativaCarta {
         this.scraping = scraping;
     }
 
-    retornaEstrutura(tipo: number) {
+    public retornaEstrutura(tipo: number): EstruturaCarta {
         switch (tipo) {
             default:
                 const estrutura: EstruturaCarta = {
@@ -123,11 +122,8 @@ export class BaseDados {
         };
 
         if (tipo !== undefined) {
-            this.baseModificada = this.baseModificada.filter((elemento) => {
-                if (elemento.slice(21, 22) == relacaoTipoNumerico[tipo]) {
-                    return elemento;
-                };
-            });
+
+            this.baseModificada = this.baseModificada.filter(elemento => elemento.slice(21, 22) == relacaoTipoNumerico[tipo]);
             this.baseModificada = this.baseModificada.map(elemento => elemento.slice(0, 22));
         }
         return this;
@@ -139,13 +135,10 @@ export class BaseDados {
         const diaMesAno: string[] = dataBusca.split('/');
         const mesBusca = diaMesAno[1];
         const anoBusca = diaMesAno[2].slice(2, 4);
-        this.baseModificada = this.baseModificada.filter((elemento) => {
-            if (elemento.slice(0, 2) == anoBusca && elemento.slice(3, 5) == mesBusca) {
-                return elemento;
-            }
-        });
-        return this;
 
+        this.baseModificada = this.baseModificada.filter(elemento => elemento.slice(0, 2) == anoBusca && elemento.slice(3, 5) == mesBusca);
+
+        return this;
     }
 
     public removerDuplicatas(): string[] {
@@ -216,22 +209,24 @@ export type EstruturaConsumidor = {
 
 export type TuplaInformacoesParciaisConsumidor = [string, string, string, string, string, string, string, string, string, string, string, string];
 
+export type TuplaInformacoesFailedConsumidor = [string, string, string, string, string, string, string, string, string, string, string, string, string, string];
+
 export class Consumidor {
-    NumeroAtendimento: string;
-    CPF: string;
-    Nome: string;
-    Nascimento: string;
-    Sexo: string;
-    RacaCorEtnia: string;
-    NomeSocial: string;
-    CEP: string;
-    Logradouro: string;
-    ComplementoNumero: string;
-    Bairro: string;
-    Cidade: string;
-    UF: string;
-    Telefone: string;
-    Scraping: string;
+    private NumeroAtendimento: string;
+    private CPF: string;
+    private Nome: string;
+    private Nascimento: string;
+    private Sexo: string;
+    private RacaCorEtnia: string;
+    private NomeSocial: string;
+    private CEP: string;
+    private Logradouro: string;
+    private ComplementoNumero: string;
+    private Bairro: string;
+    private Cidade: string;
+    private UF: string;
+    private Telefone: string;
+    private Scraping: string;
 
 
     constructor(scraping: 'failed' | 'passed', numeroAtendimento: string, cpf: string, nome: string, nascimento: string, sexo: string, racaCorEtnia: string, nomeSocial: string, cep: string, logradouro: string, complementoNumero: string, bairro: string, cidade: string, uf: string, telefone: string) {
@@ -252,7 +247,7 @@ export class Consumidor {
         this.NumeroAtendimento = numeroAtendimento;
     };
 
-    retornaEstrutura(tipo: number) {
+    public retornaEstrutura(tipo: number): EstruturaConsumidor {
         switch (tipo) {
             default:
                 const estrutura: EstruturaConsumidor = {
@@ -278,9 +273,9 @@ export class Consumidor {
 }
 
 export class Log {
-    NumeroAtendimento: string;
-    TempoExecucao: string;
-    Situacao: string;
+    private NumeroAtendimento: string;
+    private TempoExecucao: string;
+    private Situacao: string;
 
     constructor(numeroAtendimento: string, tempoExecucao: string, situacao: string) {
         this.NumeroAtendimento = numeroAtendimento;
