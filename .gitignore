@@ -9,3 +9,6 @@ node_modules/
 .env
 **.xlsx
 test.tsx
+**.log
+/logs/
+/log/
