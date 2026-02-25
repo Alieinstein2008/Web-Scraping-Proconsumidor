@@ -67,9 +67,22 @@ export function createLogger({ filenamePassed, filenameFailed, filenameCombine }
       new winston.transports.Console(),
       new winston.transports.File(
         {
+          filename: `logs/${filenameCombine}.log`,
+          format:
+            combine(
+              uncolorize(),
+              align(),
+              timestamp(),
+              ms(),
+              customFormat
+            )
+        }),
+      new winston.transports.File(
+        {
           filename: `logs/${filenamePassed}.log`,
           format:
             combine(
+              passedFilter(),
               uncolorize(),
               align(),
               timestamp(),
@@ -82,18 +95,7 @@ export function createLogger({ filenamePassed, filenameFailed, filenameCombine }
           filename: `logs/${filenameFailed}.log`,
           format:
             combine(
-              uncolorize(),
-              align(),
-              timestamp(),
-              ms(),
-              customFormat
-            )
-        }),
-      new winston.transports.File(
-        {
-          filename: `logs/${filenameCombine}.log`,
-          format:
-            combine(
+              failedFilter(),
               uncolorize(),
               align(),
               timestamp(),
