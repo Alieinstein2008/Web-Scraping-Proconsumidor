@@ -45,7 +45,7 @@ const customLogLevels = {
 
 winston.addColors(customLogLevels.colors);
 
-export function createLogger({ filenamePassed, filenameFailed, filenameCombine }: { filenamePassed: string, filenameFailed: string, filenameCombine: string }): winston.Logger {
+export function createLogger({ filenamePassed, filenameFailed, filenameBlank, filenameCombine }: { filenamePassed: string, filenameFailed: string, filenameBlank: string, filenameCombine: string }): winston.Logger {
 
   const logger = winston.createLogger({
 
@@ -96,6 +96,19 @@ export function createLogger({ filenamePassed, filenameFailed, filenameCombine }
           format:
             combine(
               failedFilter(),
+              uncolorize(),
+              align(),
+              timestamp(),
+              ms(),
+              customFormat
+            )
+        }),
+      new winston.transports.File(
+        {
+          filename: `logs/${filenameBlank}.log`,
+          format:
+            combine(
+              blankFilter(),
               uncolorize(),
               align(),
               timestamp(),
