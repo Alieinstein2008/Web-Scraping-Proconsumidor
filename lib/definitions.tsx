@@ -271,15 +271,3 @@ export class Consumidor {
         }
     }
 }
-
-export class Log {
-    private NumeroAtendimento: string;
-    private TempoExecucao: string;
-    private Situacao: string;
-
-    constructor(numeroAtendimento: string, tempoExecucao: string, situacao: string) {
-        this.NumeroAtendimento = numeroAtendimento;
-        this.TempoExecucao = tempoExecucao;
-        this.Situacao = situacao;
-    };
-}
