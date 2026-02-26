@@ -1,6 +1,6 @@
 import playwright from 'playwright';
 import { customContext } from './config/contex.config';
-import { Log, NumeroAtendimento, TratativaCarta, TuplaInformacoesFailedCarta, TuplaInformacoesNulasCarta, TuplaInformacoesParciaisCarta } from './lib/definitions';
+import { NumeroAtendimento, TratativaCarta, TuplaInformacoesFailedCarta, TuplaInformacoesNulasCarta, TuplaInformacoesParciaisCarta } from './lib/definitions';
 import { carregarAlteracoesBaseCartas, executarBackupBaseCartas, retornaReclamacoesDivergentes, retornaReclamacoesFalhas, retornaReclamacoesUltimos4Meses, salvarAlteracoesBaseCartas } from './utils/databaseCartas.quickAccessFunctions';
 import { createLogger } from './config/loggers.config';
 
