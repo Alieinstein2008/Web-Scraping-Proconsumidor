@@ -2,16 +2,21 @@ import playwright from 'playwright';
 import { customContext } from './config/contex.config';
 import { Log, NumeroAtendimento, TratativaCarta, TuplaInformacoesFailedCarta, TuplaInformacoesNulasCarta, TuplaInformacoesParciaisCarta } from './lib/definitions';
 import { carregarAlteracoesBaseCartas, executarBackupBaseCartas, retornaReclamacoesDivergentes, retornaReclamacoesFalhas, retornaReclamacoesUltimos4Meses, salvarAlteracoesBaseCartas } from './utils/databaseCartas.quickAccessFunctions';
+import { createLogger } from './config/loggers.config';
+
+const logger = createLogger({
+    filenameCombine: 'cartas-combine',
+    filenamePassed: 'cartas-passed',
+    filenameFailed: 'cartas-failed',
+    filenameBlank: 'cartas-blank',
+});
 
 const textoBusca = 'Carta';
 const regexBusca = new RegExp(`[0-9] - ${textoBusca}`, '');
 const regexSituacao = new RegExp(`(Finalizada|Cancelada|Aberta)`, 'i');
 
-let passed = [];
 let allTested: any[] = [];
-let failed = [];
 var cont = 0;
-const sessionLog: any = {};
 
 (async () => {
 
@@ -35,8 +40,6 @@ const sessionLog: any = {};
     for (const NA of listaBusca) {
 
         try {
-
-            const inicio = performance.now();
 
             if (cont % 1000 == 0) await page.goto('https://proconsumidor.mj.gov.br/#/inicio', { waitUntil: 'networkidle', timeout: 60000 });
 
@@ -65,9 +68,7 @@ const sessionLog: any = {};
                     const cartaBlank = new TratativaCarta('blank', numeroAtendimento.Formatacao(1), 'Ausência de Tratativa', ...argsBlank);
                     const estruturaBlank = cartaBlank.retornaEstrutura(1);
                     allTested.push(estruturaBlank);
-                    const fim = performance.now();
-                    const tempoTotalGasto = ((fim - inicio) / 1000).toFixed(2) + ' seg';
-                    sessionLog[cont] = new Log(numeroAtendimento.Formatacao(1), tempoTotalGasto, '✉️ 🔗');
+                    logger.log('blank', `${numeroAtendimento.Formatacao(1)} ✉️ 🔗`);
 
                 } else {
 
@@ -87,16 +88,11 @@ const sessionLog: any = {};
                             const fornecedorCNPJ = await fornecedor.locator('input').nth(3).inputValue();
                             const carta = new TratativaCarta('passed', numeroAtendimento.Formatacao(1), situacaoCarta, fornecedorCodigo, fornecedorCNPJ, ...args);
                             const estrutura = carta.retornaEstrutura(1);
-                            passed.push(estrutura);
                             allTested.push(estrutura);
+                            logger.log('passed', `${numeroAtendimento.Formatacao(1)} ✉️ ✅`);
 
                         }
                     }
-
-                    const fim = performance.now();
-                    const tempoTotalGasto = ((fim - inicio) / 1000).toFixed(2) + ' seg';
-                    sessionLog[cont] = new Log(numeroAtendimento.Formatacao(1), tempoTotalGasto, '✉️ ✅');
-
                 }
 
             } catch (error) {
@@ -104,27 +100,22 @@ const sessionLog: any = {};
                 const argsFailed = Array(7).fill('') as TuplaInformacoesFailedCarta;
                 const cartaFailed = new TratativaCarta('failed', numeroAtendimento.Formatacao(1), ...argsFailed,);
                 const estruturaFailed = cartaFailed.retornaEstrutura(1);
-                failed.push(estruturaFailed);
                 allTested.push(estruturaFailed);
-                const fim = performance.now();
-                const tempoTotalGasto = ((fim - inicio) / 1000).toFixed(2) + ' seg';
-                sessionLog[cont] = new Log(numeroAtendimento.Formatacao(1), tempoTotalGasto, '✉️ ❌');
+                logger.log('failed', `${numeroAtendimento.Formatacao(1)} ✉️ ❌`);
                 continue;
             }
 
-            console.table(sessionLog);
-
-            if (cont % 100 == 0) {
+            if (cont % 100 == 0 && cont > 0) {
 
                 carregarAlteracoesBaseCartas(allTested);
-                console.info(`${cont} alterações carregadas com sucesso 👌`);
+                logger.info(`${cont} alterações carregadas com sucesso 👌`);
 
             }
 
             cont++;
 
         } catch (error) {
-            console.error(error);
+            logger.error(error);
             break;
         }
     }
