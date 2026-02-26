@@ -1,17 +1,9 @@
 import winston from "winston";
 const { combine, timestamp, printf, colorize, uncolorize, align, ms } = winston.format;
 
-const failedFilter = winston.format((info, opts) => {
-  return info.level === 'failed' ? info : false;
-});
-
-const passedFilter = winston.format((info, opts) => {
-  return info.level === 'passed' ? info : false;
-});
-
-const blankFilter = winston.format((info, opts) => {
-  return info.level === 'blank' ? info : false;
-});
+const levelFilter = (level: string) => winston.format((info, opt) => {
+  return info.level === level ? info : false;
+})();
 
 const customFormat = printf(({ level, message, timestamp, ms, ...metadata }) => {
   const logObject = {
@@ -34,12 +26,12 @@ const customLogLevels = {
     blank: 5
   },
   colors: {
-    error: 'white bold redBG',
-    warn: 'black bold yellowBG',
-    info: 'black bold whiteBG',
+    error: 'bold white redBG',
+    warn: 'bold magenta',
+    info: 'bold white',
     passed: 'bold green',
     failed: 'bold red',
-    blank: 'bold white'
+    blank: 'bold yellow'
   }
 };
 
@@ -82,8 +74,8 @@ export function createLogger({ filenamePassed, filenameFailed, filenameBlank, fi
           filename: `logs/${filenamePassed}.log`,
           format:
             combine(
-              passedFilter(),
               uncolorize(),
+              levelFilter('passed'),
               align(),
               timestamp(),
               ms(),
@@ -95,8 +87,8 @@ export function createLogger({ filenamePassed, filenameFailed, filenameBlank, fi
           filename: `logs/${filenameFailed}.log`,
           format:
             combine(
-              failedFilter(),
               uncolorize(),
+              levelFilter('failed'),
               align(),
               timestamp(),
               ms(),
@@ -108,14 +100,14 @@ export function createLogger({ filenamePassed, filenameFailed, filenameBlank, fi
           filename: `logs/${filenameBlank}.log`,
           format:
             combine(
-              blankFilter(),
               uncolorize(),
+              levelFilter('blank'),
               align(),
               timestamp(),
               ms(),
               customFormat
             )
-        }),
+        })
     ],
 
   });
