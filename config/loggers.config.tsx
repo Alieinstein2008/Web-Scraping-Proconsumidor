@@ -37,7 +37,7 @@ const customLogLevels = {
 
 winston.addColors(customLogLevels.colors);
 
-export function createLogger({ filenamePassed, filenameFailed, filenameBlank, filenameCombine }: { filenamePassed: string, filenameFailed: string, filenameBlank: string, filenameCombine: string }): winston.Logger {
+export function createLogger({ filenamePassed, filenameFailed, filenameBlank, filenameCombine }: { filenameCombine: string, filenamePassed?: string, filenameFailed?: string, filenameBlank?: string }): winston.Logger {
 
   const logger = winston.createLogger({
 
