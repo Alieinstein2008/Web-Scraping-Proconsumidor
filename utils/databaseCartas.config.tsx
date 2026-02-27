@@ -8,8 +8,7 @@ import { BaseDados } from "../lib/definitions";
     });
 })();
 
-
 export const baseDadosCartas = {
     atual: new BaseDados(`${dirnameInput}/Cartas-Base-Web-Scraping.xlsx`),
-    comparativa: new BaseDados(`${dirnameInput}/Base-Bi-WebScraping-Cartas-NA(comparativa).xlsx`)
+    comparativa: new BaseDados(`${dirnameInput}/Cartas-Base-Bi-Comparativa.xlsx`)
 };
