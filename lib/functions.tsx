@@ -28,7 +28,7 @@ export function extrairColunaBase(this: { base: any[] }, coluna: string): any[] 
     return baseFiltrada;
 };
 
-export function extrairDadosBasePorValorColuna(this: { base: any[] }, { colunaFiltro, valorFiltro, colunaRetorno, tipoNumeroAtendimento }: { colunaFiltro: string; valorFiltro: string; colunaRetorno?: string, tipoNumeroAtendimento?: TipoNumeroAtendimento }) {
+export function extrairDadosBasePorValorColuna(this: { base: any[] }, { colunaFiltro, valorFiltro, colunaRetorno, tipoNumeroAtendimento }: { colunaFiltro: string; valorFiltro: string; colunaRetorno?: string, tipoNumeroAtendimento?: TipoNumeroAtendimento }): any[] {
 
     const relacaoTipoNumerico = {
         'Consulta': '1',
@@ -63,14 +63,14 @@ export function extrairDivergenciasColunaBaseComparativa(this: { basePrimaria: B
     return elementosDivergentes;
 };
 
-export function criarNovaBaseDados({ dadosJson, nomeArquivo, nomeAba }: { dadosJson: any[], nomeArquivo: string; nomeAba: string }) {
+export function criarNovaBaseDados({ dadosJson, nomeArquivo, nomeAba }: { dadosJson: any[], nomeArquivo: string; nomeAba: string }): void {
     const worksheet = xlsx.utils.json_to_sheet(dadosJson);
     const workbook = xlsx.utils.book_new();
     xlsx.utils.book_append_sheet(workbook, worksheet, `${nomeAba}`);
     xlsx.writeFile(workbook, `${dirnameOutput}/${nomeArquivo}.xlsx`);
 };
 
-export function realizarBackupBase(this: { dadosBackup: any[] }, { nomeArquivo, nomeAba }: { nomeArquivo: string, nomeAba: string }) {
+export function realizarBackupBase(this: { dadosBackup: any[] }, { nomeArquivo, nomeAba }: { nomeArquivo: string, nomeAba: string }): void {
     criarNovaBaseDados({
         dadosJson: this.dadosBackup,
         nomeArquivo: nomeArquivo,
