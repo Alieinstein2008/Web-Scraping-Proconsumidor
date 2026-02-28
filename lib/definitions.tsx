@@ -151,7 +151,7 @@ export class BaseDados {
     }
 
     //Carga
-    public carregarAlteracoes: (novosDados: any, nomeArquivo: string, nomeAba: string) => void;
+    public carregarAlteracoes: ({ novosDados, nomeArquivo, nomeAba }: { novosDados: any, nomeArquivo: string, nomeAba: string }) => void;
 
 }
 
