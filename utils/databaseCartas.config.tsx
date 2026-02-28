@@ -9,6 +9,6 @@ import { BaseDados } from "../lib/definitions";
 })();
 
 export const baseDadosCartas = {
-    atual: new BaseDados(`${dirnameInput}/Cartas-Base-Web-Scraping.xlsx`),
-    comparativa: new BaseDados(`${dirnameInput}/Cartas-Base-Bi-Comparativa.xlsx`)
+    atual: new BaseDados(`${dirnameInput}/Cartas/Cartas-Base-Web-Scraping.xlsx`),
+    comparativa: new BaseDados(`${dirnameInput}/Cartas/Cartas-Base-Bi-Comparativa.xlsx`)
 };
