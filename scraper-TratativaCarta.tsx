@@ -5,10 +5,10 @@ import { carregarAlteracoesBaseCartas, executarBackupBaseCartas, retornaReclamac
 import { createLogger } from './config/loggers.config';
 
 const logger = createLogger({
-    filenameCombine: 'cartas-combine',
-    filenamePassed: 'cartas-passed',
-    filenameFailed: 'cartas-failed',
-    filenameBlank: 'cartas-blank',
+    filenameCombine: 'cartas/cartas-combine',
+    filenamePassed: 'cartas/cartas-passed',
+    filenameFailed: 'cartas/cartas-failed',
+    filenameBlank: 'cartas/cartas-blank',
 });
 
 const textoBusca = 'Carta';
@@ -41,7 +41,7 @@ var cont = 0;
 
         try {
 
-            if (cont % 1000 == 0) await page.goto('https://proconsumidor.mj.gov.br/#/inicio', { waitUntil: 'networkidle', timeout: 60000 });
+            if (cont % 1000 === 0) await page.goto('https://proconsumidor.mj.gov.br/#/inicio', { waitUntil: 'networkidle', timeout: 60000 });
 
             const numeroAtendimento = new NumeroAtendimento(NA);
 
@@ -62,7 +62,7 @@ var cont = 0;
 
                 const conjuntoCorrespondencia = await page.getByText(regexBusca).all();
 
-                if (conjuntoCorrespondencia.length == 0) {
+                if (conjuntoCorrespondencia.length === 0) {
 
                     const argsBlank = Array(6).fill('') as TuplaInformacoesNulasCarta;
                     const cartaBlank = new TratativaCarta('blank', numeroAtendimento.Formatacao(1), 'Ausência de Tratativa', ...argsBlank);
@@ -105,7 +105,7 @@ var cont = 0;
                 continue;
             }
 
-            if (cont % 100 == 0 && cont > 0) {
+            if (cont % 100 === 0 && cont > 0) {
 
                 carregarAlteracoesBaseCartas(allTested);
                 logger.info(`${cont} alterações carregadas com sucesso 👌`);
