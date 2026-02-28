@@ -29,15 +29,17 @@ export function retornaReclamacoesUltimos4Meses() {
 
 export function executarBackupBaseCartas() {
     baseDadosCartas.atual.executarBackup({
-        nomeArquivo: 'Cartas-Base-Web-Scraping(Backup)',
+        nomeArquivo: 'Cartas/Cartas-Base-Web-Scraping(Backup)',
         nomeAba: 'Cartas(Backup)'
     });
 };
 
 export function carregarAlteracoesBaseCartas(data: any[]) {
-    baseDadosCartas.atual.carregarAlteracoes(
-        data, 'Cartas-Base-Web-Scraping', 'All'
-    )
+    baseDadosCartas.atual.carregarAlteracoes({
+        novosDados: data,
+        nomeArquivo: 'Cartas-Base-Web-Scraping',
+        nomeAba: 'All'
+    })
 };
 
 export function salvarAlteracoesBaseCartas(signal: string, dados: any[]) {
