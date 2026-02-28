@@ -2,7 +2,7 @@ import xlsx from 'xlsx';
 import { BaseDados, TipoNumeroAtendimento } from './definitions';
 import { dirnameInput, dirnameOutput } from '../config/directories.config';
 
-export function atualizarBase(this: { base: any[] }, novosDados: any[], nomeArquivo: string, nomeAba: string): void {
+export function atualizarBase(this: { base: any[] }, { novosDados, nomeArquivo, nomeAba }: { novosDados: any[], nomeArquivo: string, nomeAba: string }): void {
 
     for (const estrutura of novosDados) {
         this.base.push(estrutura);
