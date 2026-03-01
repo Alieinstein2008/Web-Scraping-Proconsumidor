@@ -1,6 +1,6 @@
 import { baseDadosCartas } from "./databaseCartas.config";
 
-export function retornaReclamacoesDivergentes() {
+export function retornaReclamacoesDivergentes(): any[] {
     const reclamacoesDivergentes = baseDadosCartas.atual.obterDadosDivergentes({
         colunaHomologa: "NumeroAtendimento",
         baseComparativa: baseDadosCartas.comparativa,
@@ -9,7 +9,7 @@ export function retornaReclamacoesDivergentes() {
     return reclamacoesDivergentes;
 };
 
-export function retornaReclamacoesFalhas() {
+export function retornaReclamacoesFalhas(): any[] {
     const reclamacoesFalhas = baseDadosCartas.atual.criarFiltroColunaBase({
         colunaFiltro: 'Scraping',
         valorFiltro: 'failed',
@@ -19,7 +19,7 @@ export function retornaReclamacoesFalhas() {
     return reclamacoesFalhas;
 };
 
-export function retornaReclamacoesUltimos4Meses() {
+export function retornaReclamacoesUltimos4Meses(): any[] {
     const reclamacoesUltimos4Meses = baseDadosCartas.atual.selecionar('NumeroAtendimento')
         .tipoNumeroAtendimento('Reclamacao')
         .obterRegistrosUltimosMeses({ quantidadeMeses: 4 })
@@ -27,14 +27,14 @@ export function retornaReclamacoesUltimos4Meses() {
     return reclamacoesUltimos4Meses;
 };
 
-export function executarBackupBaseCartas() {
+export function executarBackupBaseCartas(): void {
     baseDadosCartas.atual.executarBackup({
         nomeArquivo: 'Cartas/Cartas-Base-Web-Scraping(Backup)',
         nomeAba: 'Cartas(Backup)'
     });
 };
 
-export function carregarAlteracoesBaseCartas(data: any[]) {
+export function carregarAlteracoesBaseCartas(data: any[]): void {
     baseDadosCartas.atual.carregarAlteracoes({
         novosDados: data,
         nomeArquivo: 'Cartas-Base-Web-Scraping',
@@ -42,7 +42,7 @@ export function carregarAlteracoesBaseCartas(data: any[]) {
     })
 };
 
-export function salvarAlteracoesBaseCartas(signal: string, dados: any[]) {
+export function salvarAlteracoesBaseCartas(signal: string, dados: any[]): void {
     console.log(`\n${signal} recebido. Iniciando o carregamento de ${dados.length} novos itens ⏳`);
     carregarAlteracoesBaseCartas(dados);
     console.log('Finalizando processo.');
