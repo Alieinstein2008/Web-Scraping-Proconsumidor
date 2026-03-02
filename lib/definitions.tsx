@@ -132,9 +132,9 @@ export class BaseDados {
     public obterRegistrosUltimosMeses({ quantidadeMeses }: { quantidadeMeses: number }): this {
 
         const dataBusca = new Calendario().data().subtrairMeses(quantidadeMeses);
-        const diaMesAno: string[] = dataBusca.split('/');
-        const mesBusca = diaMesAno[1];
-        const anoBusca = diaMesAno[2].slice(2, 4);
+        const [dia, mes, ano] = dataBusca.split('/');
+        const anoBusca = ano.slice(2, 4);
+        const mesBusca = mes;
 
         this.baseModificada = this.baseModificada.filter(elemento => elemento.slice(0, 2) == anoBusca && elemento.slice(3, 5) == mesBusca);
 
@@ -162,6 +162,12 @@ export class Calendario {
     public data(): this {
         this.dataAtual = new Date();
         return this;
+    }
+
+    public prefixoArquivoDataAtual(){
+        const [dia, mes, ano] = this.dataAtual.split('/');
+        const prefixo = `${ano}-${mes}-${dia}_`;
+        return prefixo;
     }
 
     public subtrairMeses(meses: number) {
