@@ -41,15 +41,15 @@ var cont = 0;
 
         try {
 
-            if (cont % 1000 === 0) await page.goto('https://proconsumidor.mj.gov.br/#/inicio', { waitUntil: 'networkidle', timeout: 60000 });
+            if (cont % 1000 === 0) await page.goto('https://proconsumidor.mj.gov.br/#/inicio', { waitUntil: 'networkidle', timeout: 90000 });
 
             const numeroAtendimento = new NumeroAtendimento(NA);
 
             try {
 
                 await page.getByPlaceholder('Nº de Atendimento').fill(numeroAtendimento.Formatacao(1));
-                await page.getByTitle('Pesquisar').click({ timeout: 60000 });
-                await page.waitForURL(`https://proconsumidor.mj.gov.br/#/reclamacao/pesquisa/${numeroAtendimento.Formatacao(2)}`, { timeout: 60000 });
+                await page.getByTitle('Pesquisar').click({ timeout: 90000 });
+                await page.waitForURL(`https://proconsumidor.mj.gov.br/#/reclamacao/pesquisa/${numeroAtendimento.Formatacao(2)}`, { timeout: 90000 });
                 await page.waitForSelector('.loader-container', { state: 'hidden' });
 
                 const painelTratativa = page.locator('app-tratativa');
@@ -74,7 +74,7 @@ var cont = 0;
 
                     for (const correspondencia of conjuntoCorrespondencia) {
 
-                        await correspondencia.click({ timeout: 60000 });
+                        await correspondencia.click({ timeout: 90000 });
                         await page.waitForSelector('.loader-container', { state: 'hidden' });
                         const situacaoCarta = await page.locator('app-tratativa span').filter({ hasText: regexSituacao }).textContent() ?? '';
 
