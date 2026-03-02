@@ -39,7 +39,7 @@ export function executarBackupBaseCartas(): void {
 export function carregarAlteracoesBaseCartas(data: any[]): void {
     baseDadosCartas.atual.carregarAlteracoes({
         novosDados: data,
-        nomeArquivo: 'Cartas-Base-Web-Scraping',
+        nomeArquivo: 'Cartas/Cartas-Base-Web-Scraping',
         nomeAba: 'All'
     })
 };
