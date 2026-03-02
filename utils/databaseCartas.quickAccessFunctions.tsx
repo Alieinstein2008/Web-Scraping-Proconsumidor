@@ -1,3 +1,4 @@
+import { Calendario } from "../lib/definitions";
 import { baseDadosCartas } from "./databaseCartas.config";
 
 export function retornaReclamacoesDivergentes(): any[] {
@@ -28,9 +29,10 @@ export function retornaReclamacoesUltimos4Meses(): any[] {
 };
 
 export function executarBackupBaseCartas(): void {
+    const prefixoArquivo = new Calendario().prefixoArquivoDataAtual();
     baseDadosCartas.atual.executarBackup({
-        nomeArquivo: 'Cartas/Cartas-Base-Web-Scraping(Backup)',
-        nomeAba: 'Cartas(Backup)'
+        nomeArquivo: `Cartas/${prefixoArquivo}Cartas-Base-Web-Scraping(Backup)`,
+        nomeAba: `${prefixoArquivo}Cartas(Backup)`
     });
 };
 

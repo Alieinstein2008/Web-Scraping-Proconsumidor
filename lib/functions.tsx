@@ -1,5 +1,5 @@
 import xlsx from 'xlsx';
-import { BaseDados, Calendario, TipoNumeroAtendimento } from './definitions';
+import { BaseDados, TipoNumeroAtendimento } from './definitions';
 import { dirnameInput, dirnameOutput } from '../config/directories.config';
 
 export function atualizarBase(this: { base: any[] }, { novosDados, nomeArquivo, nomeAba }: { novosDados: any[], nomeArquivo: string, nomeAba: string }): void {
@@ -71,10 +71,9 @@ export function criarNovaBaseDados({ dadosJson, nomeArquivo, nomeAba }: { dadosJ
 };
 
 export function realizarBackupBase(this: { dadosBackup: any[] }, { nomeArquivo, nomeAba }: { nomeArquivo: string, nomeAba: string }): void {
-    const prefixoArquivo = new Calendario().prefixoArquivoDataAtual();
     criarNovaBaseDados({
         dadosJson: this.dadosBackup,
-        nomeArquivo: prefixoArquivo + nomeArquivo,
-        nomeAba: prefixoArquivo + nomeAba
+        nomeArquivo: nomeArquivo,
+        nomeAba: nomeAba
     });
 };
