@@ -226,6 +226,8 @@ export class Consumidor {
     private RacaCorEtnia: string;
     private NomeSocial: string;
     private CEP: string;
+    private Latitude: string;
+    private Longitude: string;
     private Logradouro: string;
     private ComplementoNumero: string;
     private Bairro: string;
@@ -235,7 +237,7 @@ export class Consumidor {
     private Scraping: string;
 
 
-    constructor(scraping: 'failed' | 'passed', numeroAtendimento: string, cpf: string, nome: string, nascimento: string, sexo: string, racaCorEtnia: string, nomeSocial: string, cep: string, logradouro: string, complementoNumero: string, bairro: string, cidade: string, uf: string, telefone: string) {
+    constructor(scraping: 'failed' | 'passed', latitude:string, longitude:string, numeroAtendimento: string, cpf: string, nome: string, nascimento: string, sexo: string, racaCorEtnia: string, nomeSocial: string, cep: string, logradouro: string, complementoNumero: string, bairro: string, cidade: string, uf: string, telefone: string) {
         this.CPF = cpf;
         this.Nome = nome;
         this.Nascimento = nascimento;
@@ -243,6 +245,8 @@ export class Consumidor {
         this.RacaCorEtnia = racaCorEtnia;
         this.NomeSocial = nomeSocial;
         this.CEP = cep;
+        this.Latitude = latitude;
+        this.Longitude = longitude;
         this.Logradouro = logradouro;
         this.ComplementoNumero = complementoNumero;
         this.Bairro = bairro;
@@ -265,6 +269,8 @@ export class Consumidor {
                     RacaCorEtnia: this.RacaCorEtnia,
                     Sexo: this.Sexo,
                     CEP: this.CEP,
+                    Latitude: this.Latitude,
+                    Longitude: this.Longitude,
                     UF: this.UF,
                     Cidade: this.Cidade,
                     Bairro: this.Bairro,
