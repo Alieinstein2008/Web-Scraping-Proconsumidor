@@ -2,6 +2,7 @@ import playwright from 'playwright';
 import { customContext } from './config/contex.config';
 import { createLogger } from './config/loggers.config';
 import { Consumidor, NumeroAtendimento, TuplaInformacoesFailedConsumidor, TuplaInformacoesParciaisConsumidor } from './lib/definitions';
+import { coordenadasCep } from './test';
 
 let allTested = [];
 let cont = 0;
@@ -16,6 +17,8 @@ const logger = createLogger({
 });
 
 (async () => {
+
+    console.time('Tempo-de-Execução-Total');
 
     const browser = await playwright.chromium.launch();
     const context = await customContext(browser)
@@ -64,7 +67,9 @@ const logger = createLogger({
                 const args = informacoesParciaisConsumidor as TuplaInformacoesParciaisConsumidor;
                 const telefones: string[] = await page.locator('app-telefone table tbody tr:nth-child(n) > td').allInnerTexts();
                 const telefone: string = telefones.join(' - ');
-                const consumidor = new Consumidor('passed', numeroAtendimento.Formatacao(1), ...args, telefone);
+                const cep = informacoesParciaisConsumidor[6];
+                const [latitude, longitude] = await coordenadasCep(cep);
+                const consumidor = new Consumidor('passed', latitude, longitude, numeroAtendimento.Formatacao(1), ...args, telefone);
                 const estruturaConsumidor = consumidor.retornaEstrutura(1);
                 allTested.push(estruturaConsumidor);
                 logger.log('passed', `${numeroAtendimento.Formatacao(1)} 👤 ✅`);
@@ -72,18 +77,15 @@ const logger = createLogger({
 
             catch (error) {
                 const argsFailed = Array(15).fill('') as TuplaInformacoesFailedConsumidor;
-                const consumidorFailed = new Consumidor('failed', ...argsFailed);
+                const consumidorFailed = new Consumidor('failed', '', '', ...argsFailed);
                 const estruturaConsumidorFailed = consumidorFailed.retornaEstrutura(1);
-                allTested.push(estruturaConsumidorFailed);
-                logger.log('failed', `${numeroAtendimento.Formatacao(1)} 👤 ❌`);
+                //allTested.push(estruturaConsumidorFailed);
+                //logger.log('failed', `${numeroAtendimento.Formatacao(1)} 👤 ❌`);
                 continue;
             }
 
             if (cont % 100 == 0 && cont > 0) {
-
-                carregarAlteracoesBaseCartas(allTested);
-                logger.info(`${cont} alterações carregadas com sucesso 👌`);
-
+                //logger.info(`${cont} alterações carregadas com sucesso 👌`);
             }
 
             cont++;
