@@ -164,7 +164,7 @@ export class Calendario {
         return this;
     }
 
-    public prefixoArquivoDataAtual(){
+    public prefixoArquivoDataAtual() {
         const [dia, mes, ano] = this.dataAtual.split('/');
         const prefixo = `${ano}-${mes}-${dia}_`;
         return prefixo;
@@ -203,6 +203,8 @@ export type EstruturaConsumidor = {
     RacaCorEtnia?: string;
     NomeSocial?: string;
     CEP?: string;
+    Latitude?: string;
+    Longitude?: string;
     Logradouro?: string;
     ComplementoNumero?: string;
     Bairro?: string;
@@ -237,7 +239,7 @@ export class Consumidor {
     private Scraping: string;
 
 
-    constructor(scraping: 'failed' | 'passed', latitude:string, longitude:string, numeroAtendimento: string, cpf: string, nome: string, nascimento: string, sexo: string, racaCorEtnia: string, nomeSocial: string, cep: string, logradouro: string, complementoNumero: string, bairro: string, cidade: string, uf: string, telefone: string) {
+    constructor(scraping: 'failed' | 'passed', latitude: string, longitude: string, numeroAtendimento: string, cpf: string, nome: string, nascimento: string, sexo: string, racaCorEtnia: string, nomeSocial: string, cep: string, logradouro: string, complementoNumero: string, bairro: string, cidade: string, uf: string, telefone: string) {
         this.CPF = cpf;
         this.Nome = nome;
         this.Nascimento = nascimento;
