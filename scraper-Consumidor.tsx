@@ -2,7 +2,8 @@ import playwright from 'playwright';
 import { customContext } from './config/contex.config';
 import { createLogger } from './config/loggers.config';
 import { Consumidor, NumeroAtendimento, TuplaInformacoesFailedConsumidor, TuplaInformacoesParciaisConsumidor } from './lib/definitions';
-import { coordenadasCep } from './test';
+import { coordenadasCep } from './config/fetchApi.config';
+
 
 let allTested = [];
 let cont = 0;
