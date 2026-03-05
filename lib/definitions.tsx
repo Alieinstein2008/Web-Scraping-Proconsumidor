@@ -192,6 +192,43 @@ export class Calendario {
         return new Date(data).toLocaleDateString();
     }
 
+    public intervaloFechadoMesesEntre({ dataInicial, dataFinal }: { dataInicial: string, dataFinal: string }): string[] {
+
+        const regexEspacadoresData = new RegExp('[-_ \/]');
+
+        const [diaInicial, mesInicial, anoInicial] = dataInicial.split(regexEspacadoresData);
+        const [diaFinal, mesFinal, anoFinal] = dataFinal.split(regexEspacadoresData);
+
+        const instanciaDataInicial = new Date(
+            Number(anoInicial),
+            (Number(mesInicial) - 1),
+            Number(diaInicial)
+        );
+
+        const instanciaDataFinal = new Date(
+            Number(anoFinal),
+            (Number(mesFinal) - 1),
+            Number(diaFinal)
+        );
+
+        instanciaDataInicial.setDate(1);
+        instanciaDataFinal.setDate(1);
+
+        const diferencaMeses = (Number(instanciaDataFinal) - Number(instanciaDataInicial)) / (1000 * 60 * 60 * 24 * 30);
+
+        const intervalo = [];
+
+        for (let incrementaMes = 0; incrementaMes <= Math.floor(diferencaMeses); incrementaMes++) {
+            const data = new Date(
+                instanciaDataInicial.getFullYear(),
+                instanciaDataInicial.getMonth() + incrementaMes,
+                1
+            );
+            intervalo.push(data.toLocaleDateString('pt-br', { month: '2-digit', year: '2-digit' }));
+        };
+
+        return intervalo;
+    }
 }
 
 export type EstruturaConsumidor = {
