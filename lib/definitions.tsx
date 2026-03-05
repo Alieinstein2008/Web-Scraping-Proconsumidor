@@ -192,7 +192,12 @@ export class Calendario {
         return new Date(data).toLocaleDateString();
     }
 
-    public intervaloFechadoMesesEntre({ dataInicial, dataFinal }: { dataInicial: string, dataFinal: string }): string[] {
+    public ordensCronologicasNumeroAtendimentoEntreDatas({ dataInicial, dataFinal }: { dataInicial: string, dataFinal: string }): string[] {
+
+        const formatacaoMesAnoDoisDigitos: Intl.DateTimeFormatOptions = {
+            month: '2-digit',
+            year: '2-digit'
+        };
 
         const regexEspacadoresData = new RegExp('[-_ \/]');
 
@@ -216,7 +221,7 @@ export class Calendario {
 
         const diferencaMeses = (Number(instanciaDataFinal) - Number(instanciaDataInicial)) / (1000 * 60 * 60 * 24 * 30);
 
-        const intervalo = [];
+        const ordensCronologicas = [];
 
         for (let incrementaMes = 0; incrementaMes <= Math.floor(diferencaMeses); incrementaMes++) {
             const data = new Date(
@@ -224,10 +229,12 @@ export class Calendario {
                 instanciaDataInicial.getMonth() + incrementaMes,
                 1
             );
-            intervalo.push(data.toLocaleDateString('pt-br', { month: '2-digit', year: '2-digit' }));
+            const [mes, ano] = data.toLocaleDateString('pt-br', formatacaoMesAnoDoisDigitos).split('/');
+            const ordemNumeroAtendimento : string = ano.concat(`.${mes}`);
+            ordensCronologicas.push(ordemNumeroAtendimento);
         };
 
-        return intervalo;
+        return ordensCronologicas;
     }
 }
 
