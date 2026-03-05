@@ -1,5 +1,5 @@
 import xlsx from 'xlsx';
-import { BaseDados, TipoNumeroAtendimento } from './definitions';
+import { BaseDados, Calendario, TipoNumeroAtendimento } from './definitions';
 import { dirnameInput, dirnameOutput } from '../config/directories.config';
 
 export function atualizarBase(this: { base: any[] }, { novosDados, nomeArquivo, nomeAba }: { novosDados: any[], nomeArquivo: string, nomeAba: string }): void {
@@ -19,6 +19,25 @@ export function extrairBaseCompleta(this: { caminho: string }): any[] {
     const worksheet = workbook.Sheets[sheetName];
     const baseCompleta = xlsx.utils.sheet_to_json(worksheet);
     return baseCompleta;
+};
+
+export function extrairDadosBasePorOrdenamentoCronologicoNumeroAtendimento(this: { base: any[] }, { dataInicial, dataFinal }: { dataInicial: string, dataFinal: string }): string[] {
+
+    const ordensCronologicas = new Calendario().ordensCronologicasNumeroAtendimentoEntreDatas({
+        dataInicial: dataInicial,
+        dataFinal: dataFinal
+    });
+
+    const dadosGeraisFiltrados = this.base.filter((colunas) => {
+        for (const ordemCronologica of ordensCronologicas) {
+            const anoMesNumeroAtendimento = colunas['NumeroAtendimento'].slice(0, 5);
+            if (anoMesNumeroAtendimento === ordemCronologica) {
+                return colunas;
+            }
+        }
+    });
+
+    return dadosGeraisFiltrados;
 };
 
 export function extrairColunaBase(this: { base: any[] }, coluna: string): any[] {
