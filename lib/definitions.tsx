@@ -1,4 +1,4 @@
-import { extrairBaseCompleta, extrairColunaBase, atualizarBase, extrairDivergenciasColunaBaseComparativa, extrairDadosBasePorValorColuna, realizarBackupBase } from "./functions";
+import { extrairBaseCompleta, extrairColunaBase, atualizarBase, extrairDivergenciasColunaBaseComparativa, extrairDadosBasePorValorColuna, realizarBackupBase, extrairDadosBasePorOrdenamentoCronologicoNumeroAtendimento } from "./functions";
 
 export type UserInformation = {
     credential: string,
@@ -94,6 +94,7 @@ export class BaseDados {
     constructor(caminho: string) {
         this.caminho = caminho;
         this.obterDadosGerais = extrairBaseCompleta.bind({ caminho: this.caminho });
+        this.obterDadosGeraisPorOrdenamentoCronologicoNumeroAtendimento = extrairDadosBasePorOrdenamentoCronologicoNumeroAtendimento.bind({ base: this.obterDadosGerais() })
         this.obterDadosColuna = extrairColunaBase.bind({ base: this.obterDadosGerais() });
         this.obterDadosDivergentes = extrairDivergenciasColunaBaseComparativa.bind({ basePrimaria: this });
         this.carregarAlteracoes = atualizarBase.bind({ base: this.obterDadosGerais() });
@@ -103,6 +104,7 @@ export class BaseDados {
 
     //Extração
     public obterDadosGerais: () => any[];
+    public obterDadosGeraisPorOrdenamentoCronologicoNumeroAtendimento: ({ }: { dataInicial: string, dataFinal: string }) => string[];
     public obterDadosColuna: (coluna: string) => any[];
     public obterDadosDivergentes: ({ }: { colunaHomologa: string, baseComparativa: BaseDados, tipoNumeroAtendimento?: TipoNumeroAtendimento }) => any[];
     public criarFiltroColunaBase: ({ }: { colunaFiltro: string, valorFiltro: string, colunaRetorno?: string, tipoNumeroAtendimento?: TipoNumeroAtendimento }) => any[];
@@ -230,7 +232,7 @@ export class Calendario {
                 1
             );
             const [mes, ano] = data.toLocaleDateString('pt-br', formatacaoMesAnoDoisDigitos).split('/');
-            const ordemNumeroAtendimento : string = ano.concat(`.${mes}`);
+            const ordemNumeroAtendimento: string = ano.concat(`.${mes}`);
             ordensCronologicas.push(ordemNumeroAtendimento);
         };
 
