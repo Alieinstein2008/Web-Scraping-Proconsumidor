@@ -131,6 +131,24 @@ export class BaseDados {
         return this;
     }
 
+    public obterRegistrosPorOrdenamentoCronologicoNumeroAtendimento({ dataInicial, dataFinal }: { dataInicial: string, dataFinal: string }) {
+
+        const ordensCronologicas = new Calendario().ordensCronologicasNumeroAtendimentoEntreDatas({
+            dataInicial: dataInicial,
+            dataFinal: dataFinal
+        });
+
+        this.baseModificada = this.baseModificada.filter((elemento) => {
+            for (const ordemCronologica of ordensCronologicas) {
+                if(elemento.slice(0,5) === ordemCronologica){
+                    return elemento;
+                }
+            }
+        })
+
+        return this;
+    }
+
     public obterRegistrosUltimosMeses({ quantidadeMeses }: { quantidadeMeses: number }): this {
 
         const dataBusca = new Calendario().data().subtrairMeses(quantidadeMeses);
