@@ -12,3 +12,6 @@ test.tsx
 **.log
 /logs/
 /log/
+**.png
+**.jpg
+**.jpeg
