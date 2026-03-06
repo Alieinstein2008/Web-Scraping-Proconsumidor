@@ -291,7 +291,7 @@ export type EstruturaConsumidor = {
     Cidade?: string;
     UF?: string;
     Telefone?: string;
-    Scraping: string;
+    Scraping?: string;
 
 }
 
@@ -341,6 +341,13 @@ export class Consumidor {
 
     public retornaEstrutura(tipo: number): EstruturaConsumidor {
         switch (tipo) {
+            case 1:
+                const estruturaNumeroAtendimentoBairro: EstruturaConsumidor = {
+                    NumeroAtendimento: this.NumeroAtendimento,
+                    Bairro: this.Bairro
+                };
+                return estruturaNumeroAtendimentoBairro;
+
             default:
                 const estrutura: EstruturaConsumidor = {
                     NumeroAtendimento: this.NumeroAtendimento,
