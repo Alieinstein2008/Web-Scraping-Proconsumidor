@@ -89,6 +89,7 @@ export class TratativaCarta {
 export class BaseDados {
 
     protected caminho: string;
+    private colunaSelecionada?: string;
     private baseModificada: any[] = [];
 
     constructor(caminho: string) {
@@ -104,15 +105,16 @@ export class BaseDados {
 
     //Extração
     public obterDadosGerais: () => any[];
-    public obterDadosGeraisPorOrdenamentoCronologicoNumeroAtendimento: ({ }: { dataInicial: string, dataFinal: string }) => string[];
+    public obterDadosGeraisPorOrdenamentoCronologicoNumeroAtendimento: ({ }: { dataInicial: string, dataFinal: string }) => any[];
     public obterDadosColuna: (coluna: string) => any[];
-    public obterDadosDivergentes: ({ }: { colunaHomologa: string, baseComparativa: BaseDados, tipoNumeroAtendimento?: TipoNumeroAtendimento }) => any[];
+    public obterDadosDivergentes: ({ }: { colunaHomologa: string, baseComparativa: BaseDados, tipoNumeroAtendimento?: TipoNumeroAtendimento, dataInicial?: string, dataFinal?: string }) => any[];
     public criarFiltroColunaBase: ({ }: { colunaFiltro: string, valorFiltro: string, colunaRetorno?: string, tipoNumeroAtendimento?: TipoNumeroAtendimento }) => any[];
     public executarBackup: ({ }: { nomeArquivo: string, nomeAba: string }) => void;
 
     //Transformação
     public selecionar(coluna: string): this {
         this.baseModificada = this.obterDadosColuna(coluna);
+        this.colunaSelecionada = coluna;
         return this;
     }
 
@@ -131,20 +133,34 @@ export class BaseDados {
         return this;
     }
 
-    public obterRegistrosPorOrdenamentoCronologicoNumeroAtendimento({ dataInicial, dataFinal }: { dataInicial: string, dataFinal: string }) {
+    public obterRegistrosPorOrdenamentoCronologicoNumeroAtendimento({ dataInicial, dataFinal, colunaHomologa }: { dataInicial?: string, dataFinal?: string, colunaHomologa?: string }) {
 
-        const ordensCronologicas = new Calendario().ordensCronologicasNumeroAtendimentoEntreDatas({
-            dataInicial: dataInicial,
-            dataFinal: dataFinal
-        });
+        if (dataInicial !== undefined && dataFinal !== undefined) {
 
-        this.baseModificada = this.baseModificada.filter((elemento) => {
-            for (const ordemCronologica of ordensCronologicas) {
-                if(elemento.slice(0,5) === ordemCronologica){
-                    return elemento;
-                }
+            const ordensCronologicas = new Calendario().ordensCronologicasNumeroAtendimentoEntreDatas({
+                dataInicial: dataInicial,
+                dataFinal: dataFinal
+            });
+
+            if (this.colunaSelecionada === 'NumeroAtendimento') {
+
+                this.baseModificada = this.baseModificada.filter((elemento) => {
+                    for (const ordemCronologica of ordensCronologicas) {
+                        if (elemento.slice(0, 5) === ordemCronologica) {
+                            return elemento;
+                        }
+                    }
+                });
+
+            } else {
+                const dadosGerais = this.obterDadosGeraisPorOrdenamentoCronologicoNumeroAtendimento({
+                    dataInicial: dataInicial,
+                    dataFinal: dataFinal
+                });
+
+                this.baseModificada = dadosGerais.filter(estrutura => estrutura[this.colunaSelecionada ?? '']);
             }
-        })
+        }
 
         return this;
     }
