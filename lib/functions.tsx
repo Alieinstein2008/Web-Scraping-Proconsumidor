@@ -27,7 +27,7 @@ export function extrairDadosBasePorOrdenamentoCronologicoNumeroAtendimento(this:
         dataInicial: dataInicial,
         dataFinal: dataFinal
     });
-
+    
     const dadosGeraisFiltrados = this.base.filter((colunas) => {
         for (const ordemCronologica of ordensCronologicas) {
             const anoMesNumeroAtendimento = colunas['NumeroAtendimento'].slice(0, 5);
@@ -67,10 +67,19 @@ export function extrairDadosBasePorValorColuna(this: { base: any[] }, { colunaFi
     return dadosGeraisFiltrados;
 };
 
-export function extrairDivergenciasColunaBaseComparativa(this: { basePrimaria: BaseDados }, { baseComparativa, colunaHomologa, tipoNumeroAtendimento }: { baseComparativa: BaseDados, colunaHomologa: string, tipoNumeroAtendimento?: TipoNumeroAtendimento }): any[] {
+export function extrairDivergenciasColunaBaseComparativa(this: { basePrimaria: BaseDados }, { baseComparativa, colunaHomologa, tipoNumeroAtendimento, dataInicial, dataFinal }: { baseComparativa: BaseDados, colunaHomologa: string, tipoNumeroAtendimento?: TipoNumeroAtendimento, dataInicial?: string, dataFinal?: string }): any[] {
 
-    const dadosBasePrimaria: string[] = this.basePrimaria.selecionar(colunaHomologa).tipoNumeroAtendimento(tipoNumeroAtendimento).removerDuplicatas();
-    const dadosBaseComparativa: string[] = baseComparativa.selecionar(colunaHomologa).tipoNumeroAtendimento(tipoNumeroAtendimento).removerDuplicatas();
+    const dadosBasePrimaria: string[] = this.basePrimaria
+        .selecionar(colunaHomologa)
+        .tipoNumeroAtendimento(tipoNumeroAtendimento)
+        .obterRegistrosPorOrdenamentoCronologicoNumeroAtendimento({ dataInicial: dataInicial, dataFinal: dataFinal })
+        .removerDuplicatas();
+
+    const dadosBaseComparativa: string[] = baseComparativa
+        .selecionar(colunaHomologa)
+        .tipoNumeroAtendimento(tipoNumeroAtendimento)
+        .obterRegistrosPorOrdenamentoCronologicoNumeroAtendimento({ dataInicial: dataInicial, dataFinal: dataFinal })
+        .removerDuplicatas();
 
     for (const elementoBasePrimaria of dadosBasePrimaria) {
         const indiceConvergencia: number = dadosBaseComparativa.findIndex(elementoBaseComparativa => elementoBaseComparativa == elementoBasePrimaria);
