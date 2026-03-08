@@ -1,7 +1,18 @@
 import { Calendario } from "../lib/definitions";
 import { baseDadosCartas } from "./databaseCartas.config";
 
-export function retornaReclamacoesDivergentes(): any[] {
+export function retornaReclamacoesDivergentesPeriodo({ dataInicial, dataFinal }: { dataInicial?: string, dataFinal?: string }): any[] {
+    const reclamacoesDivergentes = baseDadosCartas.atual.obterDadosDivergentes({
+        colunaHomologa: "NumeroAtendimento",
+        baseComparativa: baseDadosCartas.comparativa,
+        tipoNumeroAtendimento: 'Reclamacao',
+        dataInicial: dataInicial,
+        dataFinal: dataFinal
+    });
+    return reclamacoesDivergentes;
+};
+
+export function retornaTodasReclamacoesDivergentes(): any[] {
     const reclamacoesDivergentes = baseDadosCartas.atual.obterDadosDivergentes({
         colunaHomologa: "NumeroAtendimento",
         baseComparativa: baseDadosCartas.comparativa,
