@@ -1,6 +1,6 @@
 import xlsx from 'xlsx';
 import { BaseDados, Calendario, TipoNumeroAtendimento } from './definitions';
-import { dirnameInput, dirnameOutput } from '../config/directories.config';
+import { inputPath, outputPath } from '../utils/databaseCartas.config';
 
 export function atualizarBase(this: { base: any[] }, { novosDados, nomeArquivo, nomeAba }: { novosDados: any[], nomeArquivo: string, nomeAba: string }): void {
 
@@ -10,7 +10,7 @@ export function atualizarBase(this: { base: any[] }, { novosDados, nomeArquivo, 
     const worksheet = xlsx.utils.json_to_sheet(this.base);
     const workbook = xlsx.utils.book_new();
     xlsx.utils.book_append_sheet(workbook, worksheet, `${nomeAba}`);
-    xlsx.writeFile(workbook, `${dirnameInput}/${nomeArquivo}.xlsx`);
+    xlsx.writeFile(workbook, `${inputPath}/${nomeArquivo}.xlsx`);
 };
 
 export function extrairBaseCompleta(this: { caminho: string }): any[] {
@@ -27,7 +27,7 @@ export function extrairDadosBasePorOrdenamentoCronologicoNumeroAtendimento(this:
         dataInicial: dataInicial,
         dataFinal: dataFinal
     });
-    
+
     const dadosGeraisFiltrados = this.base.filter((colunas) => {
         for (const ordemCronologica of ordensCronologicas) {
             const anoMesNumeroAtendimento = colunas['NumeroAtendimento'].slice(0, 5);
@@ -95,7 +95,7 @@ export function criarNovaBaseDados({ dadosJson, nomeArquivo, nomeAba }: { dadosJ
     const worksheet = xlsx.utils.json_to_sheet(dadosJson);
     const workbook = xlsx.utils.book_new();
     xlsx.utils.book_append_sheet(workbook, worksheet, `${nomeAba}`);
-    xlsx.writeFile(workbook, `${dirnameOutput}/${nomeArquivo}.xlsx`);
+    xlsx.writeFile(workbook, `${outputPath}/${nomeArquivo}.xlsx`);
 };
 
 export function realizarBackupBase(this: { dadosBackup: any[] }, { nomeArquivo, nomeAba }: { nomeArquivo: string, nomeAba: string }): void {
