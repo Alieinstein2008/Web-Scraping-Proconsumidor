@@ -1,6 +1,6 @@
 import { Calendario } from "../lib/definitions";
 import { baseDadosCartas } from "./databaseCartas.config";
-import { inputPathCartas, outputPathCartas } from "./test";
+import { inputPathCartas, outputPathCartas } from "./databaseCartas.config";
 
 export function retornaReclamacoesDivergentesPeriodo({ dataInicial, dataFinal }: { dataInicial?: string, dataFinal?: string }): any[] {
     const reclamacoesDivergentes = baseDadosCartas.atual.obterDadosDivergentes({
