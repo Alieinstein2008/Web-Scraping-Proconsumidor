@@ -299,6 +299,8 @@ export type TuplaInformacoesParciaisConsumidor = [string, string, string, string
 
 export type TuplaInformacoesFailedConsumidor = [string, string, string, string, string, string, string, string, string, string, string, string, string, string];
 
+export type TuplaInfomacoesNulasConsumidor = [string, string, string, string, string, string, string, string, string, string, string, string, string, string];
+
 export class Consumidor {
     private NumeroAtendimento: string;
     private CPF: string;
@@ -319,7 +321,7 @@ export class Consumidor {
     private Scraping: string;
 
 
-    constructor(scraping: 'failed' | 'passed', latitude: string, longitude: string, numeroAtendimento: string, cpf: string, nome: string, nascimento: string, sexo: string, racaCorEtnia: string, nomeSocial: string, cep: string, logradouro: string, complementoNumero: string, bairro: string, cidade: string, uf: string, telefone: string) {
+    constructor(scraping: 'failed' | 'passed' | 'blank', numeroAtendimento: string, nome: string, cpf: string, nascimento: string, sexo: string, racaCorEtnia: string, nomeSocial: string, cep: string, logradouro: string, complementoNumero: string, bairro: string, cidade: string, uf: string, telefone: string, latitude: string, longitude: string) {
         this.CPF = cpf;
         this.Nome = nome;
         this.Nascimento = nascimento;
