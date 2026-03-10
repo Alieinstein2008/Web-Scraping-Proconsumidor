@@ -1,5 +1,6 @@
 import { Calendario } from "../lib/definitions";
 import { baseDadosCartas } from "./databaseCartas.config";
+import { inputPathCartas, outputPathCartas } from "./test";
 
 export function retornaReclamacoesDivergentesPeriodo({ dataInicial, dataFinal }: { dataInicial?: string, dataFinal?: string }): any[] {
     const reclamacoesDivergentes = baseDadosCartas.atual.obterDadosDivergentes({
@@ -42,16 +43,18 @@ export function retornaReclamacoesUltimos4Meses(): any[] {
 export function executarBackupBaseCartas(): void {
     const prefixoArquivo = new Calendario().prefixoArquivoDataAtual();
     baseDadosCartas.atual.executarBackup({
-        nomeArquivo: `Cartas/${prefixoArquivo}Cartas-Base-Web-Scraping(Backup)`,
-        nomeAba: `${prefixoArquivo}Cartas(Backup)`
+        nomeArquivo: `${prefixoArquivo}Cartas-Base-Web-Scraping(Backup)`,
+        nomeAba: `${prefixoArquivo}Cartas(Backup)`,
+        outputPath: outputPathCartas
     });
 };
 
 export function carregarAlteracoesBaseCartas(data: any[]): void {
     baseDadosCartas.atual.carregarAlteracoes({
         novosDados: data,
-        nomeArquivo: 'Cartas/Cartas-Base-Web-Scraping',
-        nomeAba: 'All'
+        nomeArquivo: 'Cartas-Base-Web-Scraping',
+        nomeAba: 'All',
+        inputPath: inputPathCartas
     })
 };
 
