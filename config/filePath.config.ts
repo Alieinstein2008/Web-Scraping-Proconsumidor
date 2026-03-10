@@ -27,40 +27,57 @@ export function createDirectories({ directoriesRelativePath }: { directoriesRela
 
 };
 
-export function setDefaultFilesPath(
-    { directoryInputRelativePath, directoryOutputRelativePath, filenamesInput }: { directoryInputRelativePath: string, directoryOutputRelativePath: string, filenamesInput: string[] }): string[] {
+export function setDefaultFilesPath({
+    directoryInputRelativePath,
+    directoryOutputRelativePath,
+    inputFilenames
+}: {
+    directoryInputRelativePath: string,
+    directoryOutputRelativePath: string,
+    inputFilenames: string[]
+}): { sucess: true; directoryInputPath: string; directoryOutputPath: string; filesPath: string[] } | { sucess: false; error: CreateError } {
 
     const callPath = callerPath();
 
-    const inputPath = callPath !== undefined ? path.join(path.dirname(callPath), directoryInputRelativePath) : path.join(__dirname, directoryInputRelativePath);
-    const outputPath = callPath !== undefined ? path.join(path.dirname(callPath), directoryOutputRelativePath) : path.join(__dirname, directoryOutputRelativePath);
+    const inputFilesPath: string[] = [];
 
-    const response = createDirectories({ directoriesRelativePath: [inputPath, outputPath] });
+    const directoryInputPath = callPath !== undefined ? path.join(path.dirname(callPath), directoryInputRelativePath) : path.join(__dirname, directoryInputRelativePath);
+    const directoryOutputPath = callPath !== undefined ? path.join(path.dirname(callPath), directoryOutputRelativePath) : path.join(__dirname, directoryOutputRelativePath);
 
-    if (response.sucess) {
+    const responseCreateDirectories = createDirectories({ directoriesRelativePath: [directoryInputPath, directoryOutputPath] });
 
-        for (const filenameInput of filenamesInput) {
+    if (responseCreateDirectories.sucess) {
 
-            const fileInputPath = path.resolve(inputPath, filenameInput);
+        for (const inputFilename of inputFilenames) {
 
-            if (!fs.existsSync(fileInputPath)) {
+            const inputFilePath = path.resolve(directoryInputPath, inputFilename);
 
+            if (!fs.existsSync(inputFilePath)) {
+
+                inputFilesPath.push(inputFilePath);
                 const dadosNulosJson = [{}];
                 const worksheet = xlsx.utils.json_to_sheet(dadosNulosJson);
                 const workbook = xlsx.utils.book_new();
                 xlsx.utils.book_append_sheet(workbook, worksheet);
-                xlsx.writeFile(workbook, fileInputPath);
-                console.log(`${fileInputPath} gerado com sucesso📄✅`);
+                xlsx.writeFile(workbook, inputFilePath);
 
-            } else {
-                console.log(`${filenameInput} já existente📄✅`);
             };
         };
 
-        return [inputPath, outputPath];
+        return {
+            sucess: true,
+            directoryInputPath: directoryInputPath,
+            directoryOutputPath: directoryOutputPath,
+            filesPath: inputFilesPath
+        };
 
     } else {
-        console.log(response.error.message);
-        return ['', '']
+        return {
+            sucess: false,
+            error: {
+                type: 'createFileError',
+                message: responseCreateDirectories.error.message
+            }
+        }
     }
 };
