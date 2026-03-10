@@ -1,8 +1,7 @@
 import xlsx from 'xlsx';
 import { BaseDados, Calendario, TipoNumeroAtendimento } from './definitions';
-import { inputPath, outputPath } from '../utils/databaseCartas.config';
 
-export function atualizarBase(this: { base: any[] }, { novosDados, nomeArquivo, nomeAba }: { novosDados: any[], nomeArquivo: string, nomeAba: string }): void {
+export function atualizarBase(this: { base: any[] }, { novosDados, nomeArquivo, nomeAba, inputPath }: { novosDados: any[], nomeArquivo: string, nomeAba: string, inputPath: string }): void {
 
     for (const estrutura of novosDados) {
         this.base.push(estrutura);
@@ -91,17 +90,18 @@ export function extrairDivergenciasColunaBaseComparativa(this: { basePrimaria: B
     return elementosDivergentes;
 };
 
-export function criarNovaBaseDados({ dadosJson, nomeArquivo, nomeAba }: { dadosJson: any[], nomeArquivo: string; nomeAba: string }): void {
+export function criarNovaBaseDados({ dadosJson, nomeArquivo, nomeAba, outputPath }: { dadosJson: any[], nomeArquivo: string; nomeAba: string; outputPath: string }): void {
     const worksheet = xlsx.utils.json_to_sheet(dadosJson);
     const workbook = xlsx.utils.book_new();
     xlsx.utils.book_append_sheet(workbook, worksheet, `${nomeAba}`);
     xlsx.writeFile(workbook, `${outputPath}/${nomeArquivo}.xlsx`);
 };
 
-export function realizarBackupBase(this: { dadosBackup: any[] }, { nomeArquivo, nomeAba }: { nomeArquivo: string, nomeAba: string }): void {
+export function realizarBackupBase(this: { dadosBackup: any[] }, { nomeArquivo, nomeAba, outputPath }: { nomeArquivo: string, nomeAba: string, outputPath: string }): void {
     criarNovaBaseDados({
         dadosJson: this.dadosBackup,
         nomeArquivo: nomeArquivo,
-        nomeAba: nomeAba
+        nomeAba: nomeAba,
+        outputPath: outputPath
     });
 };
