@@ -109,7 +109,7 @@ export class BaseDados {
     public obterDadosColuna: (coluna: string) => any[];
     public obterDadosDivergentes: ({ }: { colunaHomologa: string, baseComparativa: BaseDados, tipoNumeroAtendimento?: TipoNumeroAtendimento, dataInicial?: string, dataFinal?: string }) => any[];
     public criarFiltroColunaBase: ({ }: { colunaFiltro: string, valorFiltro: string, colunaRetorno?: string, tipoNumeroAtendimento?: TipoNumeroAtendimento }) => any[];
-    public executarBackup: ({ }: { nomeArquivo: string, nomeAba: string }) => void;
+    public executarBackup: ({ }: { nomeArquivo: string, nomeAba: string, outputPath: string }) => void;
 
     //Transformação
     public selecionar(coluna: string): this {
@@ -187,7 +187,7 @@ export class BaseDados {
     }
 
     //Carga
-    public carregarAlteracoes: ({ novosDados, nomeArquivo, nomeAba }: { novosDados: any, nomeArquivo: string, nomeAba: string }) => void;
+    public carregarAlteracoes: ({ novosDados, nomeArquivo, nomeAba, inputPath }: { novosDados: any, nomeArquivo: string, nomeAba: string, inputPath: string }) => void;
 
 }
 
