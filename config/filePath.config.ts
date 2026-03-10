@@ -50,11 +50,11 @@ export function setDefaultFilesPath({
 
         for (const inputFilename of inputFilenames) {
 
-            const inputFilePath = path.resolve(directoryInputPath, inputFilename);
+            const inputFilePath = path.join(directoryInputPath, inputFilename);
+            inputFilesPath.push(inputFilePath);
 
             if (!fs.existsSync(inputFilePath)) {
-
-                inputFilesPath.push(inputFilePath);
+                
                 const dadosNulosJson = [{}];
                 const worksheet = xlsx.utils.json_to_sheet(dadosNulosJson);
                 const workbook = xlsx.utils.book_new();
