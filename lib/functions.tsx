@@ -2,14 +2,14 @@ import xlsx from 'xlsx';
 import { BaseDados, Calendario, TipoNumeroAtendimento } from './definitions';
 
 export function atualizarBase(this: { base: any[] }, { novosDados, nomeArquivo, nomeAba, inputPath }: { novosDados: any[], nomeArquivo: string, nomeAba: string, inputPath: string }): void {
-
-    for (const estrutura of novosDados) {
-        this.base.push(estrutura);
-    };
+    
+    const novaEstrutura = novosDados[novosDados.length - 1];
+    this.base.push(novaEstrutura);
     const worksheet = xlsx.utils.json_to_sheet(this.base);
     const workbook = xlsx.utils.book_new();
     xlsx.utils.book_append_sheet(workbook, worksheet, `${nomeAba}`);
     xlsx.writeFile(workbook, `${inputPath}/${nomeArquivo}.xlsx`);
+    
 };
 
 export function extrairBaseCompleta(this: { caminho: string }): any[] {
