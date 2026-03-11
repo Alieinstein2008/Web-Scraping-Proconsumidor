@@ -35,13 +35,12 @@ const logger = createLogger({
             if (cont % 1000 == 0) await page.goto('https://proconsumidor.mj.gov.br/#/inicio', { waitUntil: 'networkidle', timeout: 90000 });
 
             const numeroAtendimento = new NumeroAtendimento(NA);
+            const regexUrlTiposAtendimento = new RegExp(`https:\/\/proconsumidor.mj.gov.br\/#\/(denuncia|consulta|reclamacao)\/pesquisa\/${numeroAtendimento.Formatacao(2)}`)
 
             try {
 
                 await page.getByPlaceholder('Nº de Atendimento').fill(numeroAtendimento.Formatacao(1));
                 await page.getByTitle('Pesquisar').first().click({ timeout: 30000 });
-                const regexUrlTiposAtendimento = new RegExp(`https:\/\/proconsumidor.mj.gov.br\/#\/(denuncia|consulta|reclamacao)\/pesquisa\/${numeroAtendimento.Formatacao(2)}`)
-
                 await page.waitForURL(regexUrlTiposAtendimento, { timeout: 60000 });
                 await page.waitForSelector('.loader-container', { state: 'hidden' });
 
@@ -60,9 +59,12 @@ const logger = createLogger({
 
                 if (!await painelExpansivel().isVisible()) {
                     await page.locator('div').filter({ hasText: regexTextPainelExtensivel }).nth(1).click();
-                }
+                    await page.waitForSelector('.loader-container', { state: 'hidden' });
 
+                }
+                await page.waitForSelector('.loader-container', { state: 'hidden' });
                 const dropdownMenu = painelExpansivel().getByRole('button').first();
+                await page.waitForSelector('.loader-container', { state: 'hidden' });
 
                 if (!await dropdownMenu.isVisible()) {
 
@@ -72,12 +74,13 @@ const logger = createLogger({
                     allTested.push(estruturaConsumidorBlank);
                     logger.log('blank', `${numeroAtendimento.Formatacao(1)} 👤 ❔`);
 
-                }else{
-                    
+                } else {
+
                     await dropdownMenu.click();
                     const botaoDetalhar = page.getByText('Detalhar').first();
                     await botaoDetalhar.click();
                     await page.waitForResponse(regexWaitForResponseLastUrlRequest);
+                    await page.waitForSelector('.loader-container', { state: 'hidden' });
                     const informacoesParciaisConsumidor = await Promise.all((await page.locator('.modal-body label + input').all()).map(async informacao => await informacao.inputValue()));
                     const args = informacoesParciaisConsumidor as TuplaInformacoesParciaisConsumidor;
                     const telefones: string[] = await page.locator('app-telefone table tbody tr:nth-child(n) > td').allInnerTexts();
