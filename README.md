@@ -50,6 +50,26 @@ Além disso, o projeto serve como **exemplo prático de automação web moderna 
 
 ---
 
+## 🧠 Decisões Técnicas
+
+### Por que Playwright?
+
+O Playwright foi escolhido porque:
+
+- suporta múltiplos navegadores
+- lida bem com páginas renderizadas com JavaScript
+- possui API moderna e robusta para automação
+
+### Por que TypeScript?
+
+TypeScript foi utilizado para:
+
+- maior segurança de tipos
+- melhor manutenção do código
+- melhor experiência de desenvolvimento
+
+---
+
 # 🛠️ Tecnologias Utilizadas
 
 | Tecnologia | Função |
