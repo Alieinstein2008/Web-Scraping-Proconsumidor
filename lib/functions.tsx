@@ -2,8 +2,7 @@ import xlsx from 'xlsx';
 import { BaseDados, Calendario, TipoNumeroAtendimento } from './definitions';
 
 export function atualizarBase(this: { base: any[] }, { novosDados, nomeArquivo, nomeAba, inputPath }: { novosDados: any[], nomeArquivo: string, nomeAba: string, inputPath: string }): void {
-    
-    const novaEstrutura = novosDados[novosDados.length - 1];
+    const novaEstrutura = novosDados.pop();
     this.base.push(novaEstrutura);
     const worksheet = xlsx.utils.json_to_sheet(this.base);
     const workbook = xlsx.utils.book_new();
