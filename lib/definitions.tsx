@@ -351,6 +351,7 @@ export class Consumidor {
     public retornaEstrutura(tipo: number): EstruturaConsumidor {
         switch (tipo) {
             case 1:
+                this.Bairro = this.Bairro === '' ? this.Cidade : this.Bairro;
                 const estruturaNumeroAtendimentoBairro: EstruturaConsumidor = {
                     NumeroAtendimento: this.NumeroAtendimento,
                     Bairro: this.Bairro
