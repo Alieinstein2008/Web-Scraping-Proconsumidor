@@ -58,15 +58,13 @@ const logger = createLogger({
                 };
 
                 if (!await painelExpansivel().isVisible()) {
-                    await page.locator('div').filter({ hasText: regexTextPainelExtensivel }).nth(1).click();
+                    await page.locator('div').filter({ hasText: regexTextPainelExtensivel }).nth(1).click({ timeout: 3000 });
                 }
-                
-                await page.waitForSelector('.loader-container', { state: 'hidden' });
+
+                await painelExpansivel().locator('div.sub-titulo', { hasText: 'Consumidor' }).waitFor({ state: 'visible' })
                 const dropdownMenu = painelExpansivel().getByRole('button').first();
-                await page.waitForSelector('.loader-container', { state: 'hidden' });
 
                 if (!await dropdownMenu.isVisible()) {
-
                     const argsBlank = Array(14).fill('') as TuplaInfomacoesNulasConsumidor;
                     const consumidorBlank = new Consumidor('blank', numeroAtendimento.Formatacao(1), 'Anônimo', ...argsBlank);
                     const estruturaConsumidorBlank = consumidorBlank.retornaEstrutura(1);
@@ -79,7 +77,7 @@ const logger = createLogger({
                     const botaoDetalhar = page.getByText('Detalhar').first();
                     await botaoDetalhar.click();
                     await page.waitForResponse(regexWaitForResponseLastUrlRequest);
-                    await page.waitForSelector('.loader-container', { state: 'hidden' });                    
+                    await page.waitForSelector('.loader-container', { state: 'hidden' });
                     const informacoesParciaisConsumidor = await Promise.all((await page.locator('app-detalhe-consumidor .modal-body label + input').all()).map(async informacao => await informacao.inputValue()));
                     const args = informacoesParciaisConsumidor as TuplaInformacoesParciaisConsumidor;
                     const telefones: string[] = await page.locator('app-telefone table tbody tr:nth-child(n) > td').allInnerTexts();
@@ -89,15 +87,15 @@ const logger = createLogger({
                     const consumidor = new Consumidor('passed', numeroAtendimento.Formatacao(1), ...args, telefone, latitude, longitude);
                     const estruturaConsumidor = consumidor.retornaEstrutura(1);
                     allTested.push(estruturaConsumidor);
+                    await page.getByRole('button', { name: 'Close' }).first().click({ timeout: 3000 });
                     logger.log('passed', `${numeroAtendimento.Formatacao(1)} 👤 ✅`);
-                    await page.getByRole('button', { name: 'Close' }).click({ timeout: 3000 });
-                    
+
                 }
             }
 
             catch (error) {
-
-                const argsFailed = Array(15).fill('') as TuplaInformacoesFailedConsumidor;
+                console.log(error)
+                const argsFailed = Array(14).fill('') as TuplaInformacoesFailedConsumidor;
                 const consumidorFailed = new Consumidor('failed', '', '', ...argsFailed);
                 const estruturaConsumidorFailed = consumidorFailed.retornaEstrutura(1);
                 allTested.push(estruturaConsumidorFailed);
@@ -105,8 +103,10 @@ const logger = createLogger({
                 continue;
             }
 
-            if (cont % 100 === 0 && cont > 0) {
+            if (cont % 1 === 0 && cont >= 0) {
+
                 carregarAlteracoesBaseConsumidorBairrosRegionais(allTested);
+                allTested.length = 0;
                 logger.info(`${cont} alterações carregadas com sucesso 👌`);
 
             }
