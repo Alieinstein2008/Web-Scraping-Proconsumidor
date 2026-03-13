@@ -126,9 +126,16 @@ export class BaseDados {
         };
 
         if (tipo !== undefined) {
+            try {
 
-            this.baseModificada = this.baseModificada.filter(elemento => elemento.slice(21, 22) == relacaoTipoNumerico[tipo]);
-            this.baseModificada = this.baseModificada.map(elemento => elemento.slice(0, 22));
+                this.baseModificada = this.baseModificada.filter(elemento => elemento.slice(21, 22) === relacaoTipoNumerico[tipo]);
+                this.baseModificada = this.baseModificada.map(elemento => elemento.slice(0, 22));
+
+            } catch (error) {
+
+                console.log(`Coluna '${this.colunaSelecionada}' não existe na base de dados ou não possui Números de Atendimento válidos`);
+            
+            }
         }
         return this;
     }
