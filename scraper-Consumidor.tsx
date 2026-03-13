@@ -59,9 +59,8 @@ const logger = createLogger({
 
                 if (!await painelExpansivel().isVisible()) {
                     await page.locator('div').filter({ hasText: regexTextPainelExtensivel }).nth(1).click();
-                    await page.waitForSelector('.loader-container', { state: 'hidden' });
-
                 }
+                
                 await page.waitForSelector('.loader-container', { state: 'hidden' });
                 const dropdownMenu = painelExpansivel().getByRole('button').first();
                 await page.waitForSelector('.loader-container', { state: 'hidden' });
@@ -80,8 +79,8 @@ const logger = createLogger({
                     const botaoDetalhar = page.getByText('Detalhar').first();
                     await botaoDetalhar.click();
                     await page.waitForResponse(regexWaitForResponseLastUrlRequest);
-                    await page.waitForSelector('.loader-container', { state: 'hidden' });
-                    const informacoesParciaisConsumidor = await Promise.all((await page.locator('.modal-body label + input').all()).map(async informacao => await informacao.inputValue()));
+                    await page.waitForSelector('.loader-container', { state: 'hidden' });                    
+                    const informacoesParciaisConsumidor = await Promise.all((await page.locator('app-detalhe-consumidor .modal-body label + input').all()).map(async informacao => await informacao.inputValue()));
                     const args = informacoesParciaisConsumidor as TuplaInformacoesParciaisConsumidor;
                     const telefones: string[] = await page.locator('app-telefone table tbody tr:nth-child(n) > td').allInnerTexts();
                     const telefone: string = telefones.join(' - ');
@@ -91,7 +90,8 @@ const logger = createLogger({
                     const estruturaConsumidor = consumidor.retornaEstrutura(1);
                     allTested.push(estruturaConsumidor);
                     logger.log('passed', `${numeroAtendimento.Formatacao(1)} 👤 ✅`);
-                    await page.locator('button.close').click({ timeout: 3000 });
+                    await page.getByRole('button', { name: 'Close' }).click({ timeout: 3000 });
+                    
                 }
             }
 
@@ -106,7 +106,6 @@ const logger = createLogger({
             }
 
             if (cont % 100 === 0 && cont > 0) {
-
                 carregarAlteracoesBaseConsumidorBairrosRegionais(allTested);
                 logger.info(`${cont} alterações carregadas com sucesso 👌`);
 
