@@ -1,10 +1,28 @@
 import { baseDadosConsumidor, inputPathConsumidor } from "./databaseConsumidor.config";
 
-const reclamacoes = baseDadosConsumidor.regionaisComparativa.selecionar('Número de Atendimento').tipoNumeroAtendimento('Reclamacao').removerDuplicatas();
-const denuncias = baseDadosConsumidor.regionaisComparativa.selecionar('Número de Atendimento').tipoNumeroAtendimento('Denuncia').removerDuplicatas();
-const consultas = baseDadosConsumidor.regionaisComparativa.selecionar('Número de Atendimento').tipoNumeroAtendimento('Consulta').removerDuplicatas();
+const reclamacoesBairrosRegionais = baseDadosConsumidor.regionais.obterDadosDivergentes({
+    colunaHomologa: 'NumeroAtendimento',
+    tipoNumeroAtendimento: 'Reclamacao',
+    baseComparativa: baseDadosConsumidor.regionaisComparativa
+});
 
-export const numerosAtendimentosBairrosRegionais = [...reclamacoes, ...consultas, ...denuncias];
+const consultasBairrosRegionais = baseDadosConsumidor.regionais.obterDadosDivergentes({
+    colunaHomologa: 'NumeroAtendimento',
+    tipoNumeroAtendimento: 'Consulta',
+    baseComparativa: baseDadosConsumidor.regionaisComparativa
+});
+
+const denunciasBairrosRegionais = baseDadosConsumidor.regionais.obterDadosDivergentes({
+    colunaHomologa: 'NumeroAtendimento',
+    tipoNumeroAtendimento: 'Denuncia',
+    baseComparativa: baseDadosConsumidor.regionaisComparativa
+});
+
+export const numerosAtendimentosBairrosRegionais = [
+    ...reclamacoesBairrosRegionais,
+    ...consultasBairrosRegionais,
+    ...denunciasBairrosRegionais
+];
 
 export function carregarAlteracoesBaseConsumidorBairrosRegionais(data: any[]): void {
     baseDadosConsumidor.regionais.carregarAlteracoes({
