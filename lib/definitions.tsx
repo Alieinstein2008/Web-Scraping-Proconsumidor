@@ -134,7 +134,7 @@ export class BaseDados {
             } catch (error) {
 
                 console.log(`Coluna '${this.colunaSelecionada}' não existe na base de dados ou não possui Números de Atendimento válidos`);
-            
+
             }
         }
         return this;
@@ -328,7 +328,7 @@ export class Consumidor {
     private Scraping: string;
 
 
-    constructor(scraping: 'failed' | 'passed' | 'blank', numeroAtendimento: string, nome: string, cpf: string, nascimento: string, sexo: string, racaCorEtnia: string, nomeSocial: string, cep: string, logradouro: string, complementoNumero: string, bairro: string, cidade: string, uf: string, telefone: string, latitude: string, longitude: string) {
+    constructor(scraping: 'failed' | 'passed' | 'blank', numeroAtendimento: string, cpf: string, nome: string, nascimento: string, sexo: string, racaCorEtnia: string, nomeSocial: string, cep: string, logradouro: string, complementoNumero: string, bairro: string, cidade: string, uf: string, telefone: string, latitude: string, longitude: string) {
         this.CPF = cpf;
         this.Nome = nome;
         this.Nascimento = nascimento;
