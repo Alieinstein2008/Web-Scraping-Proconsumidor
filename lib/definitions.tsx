@@ -304,7 +304,9 @@ export type EstruturaConsumidor = {
     
 }
 
-export type TuplaInformacoesParciaisConsumidor = [string, string, string, string, string, string, string, string, string, string, string, string];
+export type TuplaInformacoesParciaisConsumidorPessoaFisica = [string, string, string, string, string, string, string, string, string, string, string, string];
+
+export type TuplaInformacoesParciaisConsumidorPessoaJuridica = [string, string, string, string, string, string, string, string];
 
 export type TuplaInformacoesFailedConsumidor = [string, string, string, string, string, string, string, string, string, string, string, string, string, string];
 
