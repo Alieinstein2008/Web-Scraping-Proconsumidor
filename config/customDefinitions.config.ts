@@ -20,5 +20,16 @@ export const customOptimizationBrowserArgsLaunch = [
     '--ignore-certificate-errors'
 ];
 
+export async function customOptimizationPageRoute(page: playwright.Page) {
+    page.route("**/*", (route) => {
+        const type = route.request().resourceType()
+
+        if (["image", "font", "media"].includes(type)) {
+            route.abort()
+        } else {
+            route.continue()
+        }
+    });
+}
 
 
