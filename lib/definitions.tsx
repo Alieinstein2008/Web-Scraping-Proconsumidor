@@ -298,8 +298,10 @@ export type EstruturaConsumidor = {
     Cidade?: string;
     UF?: string;
     Telefone?: string;
+    CNPJ?:string;
+    RazaoSocial?:string;
     Scraping?: string;
-
+    
 }
 
 export type TuplaInformacoesParciaisConsumidor = [string, string, string, string, string, string, string, string, string, string, string, string];
@@ -308,7 +310,7 @@ export type TuplaInformacoesFailedConsumidor = [string, string, string, string, 
 
 export type TuplaInfomacoesNulasConsumidor = [string, string, string, string, string, string, string, string, string, string, string, string, string, string];
 
-export class Consumidor {
+export class ConsumidorPessoaFisica {
     private NumeroAtendimento: string;
     private CPF: string;
     private Nome: string;
@@ -381,4 +383,70 @@ export class Consumidor {
                 return estrutura;
         }
     }
+}
+
+export class ConsumidorPessoaJuridica {
+    private NumeroAtendimento: string;
+    private CNPJ: string;
+    private RazaoSocial: string;
+    private CEP: string;
+    private Logradouro: string;
+    private ComplementoNumero: string;
+    private Bairro: string;
+    private Cidade: string;
+    private UF: string;
+    private Telefone:string;
+    private Latitude:string;
+    private Longitude:string;
+    private Scraping:string;
+
+    constructor(scraping: 'failed' | 'passed' | 'blank', numeroAtendimento: string, cnpj:string, razaoSocial:string, cep:string, logradouro:string, complementoNumero:string, bairro:string, cidade:string, uf:string, telefone:string, latitude:string, longitude:string){
+        this.NumeroAtendimento = numeroAtendimento;
+        this.CNPJ = cnpj;
+        this.RazaoSocial = razaoSocial;
+        this.CEP = cep;
+        this.Logradouro = logradouro;
+        this.ComplementoNumero = complementoNumero;
+        this.Bairro = bairro;
+        this.Cidade = cidade;
+        this.UF = uf;
+        this.Telefone = telefone;
+        this.Latitude = latitude;
+        this.Longitude = longitude;
+        this.Scraping = scraping;
+    };
+
+    public retornaEstrutura(tipo: number): EstruturaConsumidor {
+        switch (tipo) {
+            case 1:
+                this.Bairro = this.Bairro === '' ? this.Cidade : this.Bairro;
+                const estruturaNumeroAtendimentoBairro: EstruturaConsumidor = {
+                    NumeroAtendimento: this.NumeroAtendimento,
+                    Bairro: this.Bairro
+                };
+                return estruturaNumeroAtendimentoBairro;
+
+            default:
+                const estrutura: EstruturaConsumidor = {
+                    NumeroAtendimento: this.NumeroAtendimento,
+                    CNPJ: this.CNPJ,
+                    RazaoSocial: this.RazaoSocial,
+                    CEP: this.CEP,
+                    Latitude: this.Latitude,
+                    Longitude: this.Longitude,
+                    UF: this.UF,
+                    Cidade: this.Cidade,
+                    Bairro: this.Bairro,
+                    Logradouro: this.Logradouro,
+                    ComplementoNumero: this.ComplementoNumero,
+                    Telefone: this.Telefone,
+                    Scraping: this.Scraping
+                };
+                return estrutura;
+        }
+    }
+
+
+
+
 }
