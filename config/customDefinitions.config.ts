@@ -1,6 +1,6 @@
 import playwright from 'playwright';
 
-export async function customContext(browser: playwright.Browser) {
+export async function customContext(browser: playwright.Browser): Promise<playwright.BrowserContext> {
     const context = await browser.newContext({
         storageState: 'playwright/.auth/user.json',
         timezoneId: 'America/Sao_Paulo',
@@ -20,7 +20,7 @@ export const customOptimizationBrowserArgsLaunch = [
     '--ignore-certificate-errors'
 ];
 
-export async function customOptimizationPageRoute(page: playwright.Page) {
+export async function customOptimizationPageRoute(page: playwright.Page): Promise<void> {
     page.route("**/*", (route) => {
         const type = route.request().resourceType()
 
@@ -32,7 +32,7 @@ export async function customOptimizationPageRoute(page: playwright.Page) {
     });
 };
 
-export async function customRefreshPage(context: playwright.BrowserContext, page: playwright.Page) {
+export async function customRefreshPage(context: playwright.BrowserContext, page: playwright.Page): Promise<playwright.Page> {
     page.close();
     return context.newPage();
 };
