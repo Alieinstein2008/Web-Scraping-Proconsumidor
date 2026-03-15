@@ -30,6 +30,11 @@ export async function customOptimizationPageRoute(page: playwright.Page) {
             route.continue()
         }
     });
-}
+};
+
+export async function customRefreshPage(context: playwright.BrowserContext, page: playwright.Page) {
+    page.close();
+    return context.newPage();
+};
 
 
