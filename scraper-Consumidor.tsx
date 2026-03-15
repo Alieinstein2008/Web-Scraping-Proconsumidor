@@ -1,13 +1,13 @@
 import playwright from 'playwright';
-import { customContext } from './config/contex.config';
+import { customContext, customOptimizationBrowserArgsLaunch, customOptimizationPageRoute, customRefreshPage } from './config/customDefinitions.config';
 import { createLogger } from './config/loggers.config';
-import { Consumidor, NumeroAtendimento, TuplaInfomacoesNulasConsumidor, TuplaInformacoesFailedConsumidor, TuplaInformacoesParciaisConsumidor } from './lib/definitions';
+import { ConsumidorPessoaFisica, ConsumidorPessoaJuridica, NumeroAtendimento, TuplaInfomacoesNulasConsumidor, TuplaInformacoesFailedConsumidor, TuplaInformacoesParciaisConsumidorPessoaJuridica, TuplaInformacoesParciaisConsumidorPessoaFisica } from './lib/definitions';
 import { coordenadasCep } from './config/fetchApi.config';
 import { carregarAlteracoesBaseConsumidorBairrosRegionais, numerosAtendimentosBairrosRegionais } from './utils/databaseConsumidor.quickAcessFunctions';
 
-
 let allTested = [];
-let cont = 0;
+let limiteComparativo = 100;
+let contadorOcorrencia = 0;
 const regexWaitForResponseLastUrlRequest = new RegExp('cep\/consultar(\/[a-zA-Z0-9-._]+)*\/?$');
 const regexTextPainelExtensivel = new RegExp('^Dados da (Reclamação|Consulta|Denúncia)$');
 
@@ -22,17 +22,22 @@ const logger = createLogger({
 
     console.time('Tempo-de-Execução-Total');
 
-    const browser = await playwright.chromium.launch();
-    const context = await customContext(browser)
-    const page = await context.newPage();
+    const browser = await playwright.chromium.launch({ args: customOptimizationBrowserArgsLaunch });
+
+    const context = await customContext(browser);
+
+    let page = await context.newPage();
 
     const itensBusca = numerosAtendimentosBairrosRegionais;
 
     for (const NA of itensBusca) {
 
+        page = contadorOcorrencia % limiteComparativo === 0 ? await customRefreshPage(context, page) : page;
+        await customOptimizationPageRoute(page);
+
         try {
 
-            if (cont % 1000 == 0) await page.goto('https://proconsumidor.mj.gov.br/#/inicio', { waitUntil: 'networkidle', timeout: 90000 });
+            if (contadorOcorrencia % limiteComparativo === 0) await page.goto('https://proconsumidor.mj.gov.br/#/inicio', { waitUntil: 'networkidle', timeout: 90000 });
 
             const numeroAtendimento = new NumeroAtendimento(NA);
             const regexUrlTiposAtendimento = new RegExp(`https:\/\/proconsumidor.mj.gov.br\/#\/(denuncia|consulta|reclamacao)\/pesquisa\/${numeroAtendimento.Formatacao(2)}`)
@@ -58,15 +63,17 @@ const logger = createLogger({
                 };
 
                 if (!await painelExpansivel().isVisible()) {
-                    await page.locator('div').filter({ hasText: regexTextPainelExtensivel }).nth(1).click({ timeout: 3000 });
+                    await page.locator('div').filter({ hasText: regexTextPainelExtensivel }).nth(1).click({ timeout: 30000 });
                 }
 
                 await painelExpansivel().locator('div.sub-titulo', { hasText: 'Consumidor' }).waitFor({ state: 'visible' })
                 const dropdownMenu = painelExpansivel().getByRole('button').first();
 
-                if (!await dropdownMenu.isVisible()) {
+                const tipoIdentidadeConsumidor: 'Anônimo' | string = await painelExpansivel().getByRole('textbox', { name: 'Nome do Consumidor' }).inputValue();
+
+                if (tipoIdentidadeConsumidor === 'Anônimo') {
                     const argsBlank = Array(14).fill('') as TuplaInfomacoesNulasConsumidor;
-                    const consumidorBlank = new Consumidor('blank', numeroAtendimento.Formatacao(1), 'Anônimo', ...argsBlank);
+                    const consumidorBlank = new ConsumidorPessoaFisica('blank', numeroAtendimento.Formatacao(1), 'Anônimo', ...argsBlank);
                     const estruturaConsumidorBlank = consumidorBlank.retornaEstrutura(1);
                     allTested.push(estruturaConsumidorBlank);
                     logger.log('blank', `${numeroAtendimento.Formatacao(1)} 👤 ❔`);
@@ -78,13 +85,31 @@ const logger = createLogger({
                     await botaoDetalhar.click();
                     await page.waitForResponse(regexWaitForResponseLastUrlRequest);
                     await page.waitForSelector('.loader-container', { state: 'hidden' });
-                    const informacoesParciaisConsumidor = await Promise.all((await page.locator('app-detalhe-consumidor .modal-body label + input').all()).map(async informacao => await informacao.inputValue()));
-                    const args = informacoesParciaisConsumidor as TuplaInformacoesParciaisConsumidor;
+
+                    let naturezaConsumidor: 'Fisica' | 'Juridica' = 'Fisica';
+
+                    if (await page.locator('app-detalhe-consumidor .modal-body label', { hasText: 'CNPJ' }).isVisible()) {
+                        naturezaConsumidor = 'Juridica';
+                        await page.waitForResponse(regexWaitForResponseLastUrlRequest, { timeout: 60000 });
+                        await page.waitForSelector('.loader-container', { state: 'hidden' });
+                    };
+
+                    const informacoesParciaisConsumidor = async () => {
+                        return await Promise.all((await page.locator('app-detalhe-consumidor .modal-body label + input').all()).map(async informacao => await informacao.inputValue()));
+                    };
+
+                    const argsConsumidor = async () => {
+                        return naturezaConsumidor === 'Fisica' ? await informacoesParciaisConsumidor() as TuplaInformacoesParciaisConsumidorPessoaFisica : await informacoesParciaisConsumidor() as TuplaInformacoesParciaisConsumidorPessoaJuridica;
+                    };
+
+                    const info = await informacoesParciaisConsumidor();
+                    const args = await argsConsumidor();
+
                     const telefones: string[] = await page.locator('app-telefone table tbody tr:nth-child(n) > td').allInnerTexts();
                     const telefone: string = telefones.join(' - ');
-                    const cep = informacoesParciaisConsumidor[6];
+                    const cep = naturezaConsumidor === 'Fisica' ? info[6] : info[2];
                     const [latitude, longitude] = await coordenadasCep(cep);
-                    const consumidor = new Consumidor('passed', numeroAtendimento.Formatacao(1), ...args, telefone, latitude, longitude);
+                    const consumidor = args.length === 12 ? new ConsumidorPessoaFisica('passed', numeroAtendimento.Formatacao(1), ...args, telefone, latitude, longitude) : new ConsumidorPessoaJuridica('passed', numeroAtendimento.Formatacao(1), ...args, telefone, latitude, longitude);
                     const estruturaConsumidor = consumidor.retornaEstrutura(1);
                     allTested.push(estruturaConsumidor);
                     await page.getByRole('button', { name: 'Close' }).first().click({ timeout: 3000 });
@@ -94,24 +119,19 @@ const logger = createLogger({
             }
 
             catch (error) {
-                console.log(error)
                 const argsFailed = Array(14).fill('') as TuplaInformacoesFailedConsumidor;
-                const consumidorFailed = new Consumidor('failed', '', '', ...argsFailed);
+                const consumidorFailed = new ConsumidorPessoaFisica('failed', '', '', ...argsFailed);
                 const estruturaConsumidorFailed = consumidorFailed.retornaEstrutura(1);
                 allTested.push(estruturaConsumidorFailed);
+                logger.error(error)
                 logger.log('failed', `${numeroAtendimento.Formatacao(1)} 👤 ❌`);
                 continue;
             }
 
-            if (cont % 1 === 0 && cont >= 0) {
-
-                carregarAlteracoesBaseConsumidorBairrosRegionais(allTested);
-                allTested.length = 0;
-                logger.info(`${cont} alterações carregadas com sucesso 👌`);
-
-            }
-
-            cont++;
+            carregarAlteracoesBaseConsumidorBairrosRegionais(allTested);
+            allTested.length = 0;
+            if (contadorOcorrencia % limiteComparativo === 0) logger.info(`${contadorOcorrencia} alterações carregadas de ${itensBusca.length} com sucesso 👌`);
+            contadorOcorrencia++;
 
         } catch (error) {
             logger.error(error);
