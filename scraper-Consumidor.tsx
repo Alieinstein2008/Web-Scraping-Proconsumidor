@@ -87,9 +87,11 @@ const logger = createLogger({
                     await page.waitForSelector('.loader-container', { state: 'hidden' });
 
                     let naturezaConsumidor: 'Fisica' | 'Juridica' = 'Fisica';
+                    let emojiNaturezaConsumidor: '👤 ✅' | '🏢 ✅' = '👤 ✅';
 
                     if (await page.locator('app-detalhe-consumidor .modal-body label', { hasText: 'CNPJ' }).isVisible()) {
                         naturezaConsumidor = 'Juridica';
+                        emojiNaturezaConsumidor = '🏢 ✅';
                         await page.waitForResponse(regexWaitForResponseLastUrlRequest, { timeout: 60000 });
                         await page.waitForSelector('.loader-container', { state: 'hidden' });
                     };
@@ -113,7 +115,7 @@ const logger = createLogger({
                     const estruturaConsumidor = consumidor.retornaEstrutura(1);
                     allTested.push(estruturaConsumidor);
                     await page.getByRole('button', { name: 'Close' }).first().click({ timeout: 3000 });
-                    logger.log('passed', `${numeroAtendimento.Formatacao(1)} 👤 ✅`);
+                    logger.log('passed', `${numeroAtendimento.Formatacao(1)} ${emojiNaturezaConsumidor}`);
 
                 }
             }
