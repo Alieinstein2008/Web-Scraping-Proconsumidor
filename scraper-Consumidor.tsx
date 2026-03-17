@@ -132,7 +132,7 @@ const logger = createLogger({
 
             carregarAlteracoesBaseConsumidorBairrosRegionais(allTested);
             allTested.length = 0;
-            if (contadorOcorrencia % limiteComparativo === 0) logger.info(`${contadorOcorrencia} alterações carregadas de ${itensBusca.length} com sucesso 👌`);
+            if (contadorOcorrencia % limiteComparativo === 0) logger.info(`${contadorOcorrencia}/${itensBusca.length} alterações carregadas com sucesso 👌`);
             contadorOcorrencia++;
 
         } catch (error) {
