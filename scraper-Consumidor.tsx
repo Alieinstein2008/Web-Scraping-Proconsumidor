@@ -1,8 +1,8 @@
 import playwright from 'playwright';
-import { customContext, customOptimizationBrowserArgsLaunch, customOptimizationPageRoute, customRefreshPage } from './config/customDefinitions.config';
 import { createLogger } from './config/loggers.config';
-import { ConsumidorPessoaFisica, ConsumidorPessoaJuridica, NumeroAtendimento, TuplaInfomacoesNulasConsumidor, TuplaInformacoesFailedConsumidor, TuplaInformacoesParciaisConsumidorPessoaJuridica, TuplaInformacoesParciaisConsumidorPessoaFisica } from './lib/definitions';
 import { coordenadasCep } from './config/fetchApi.config';
+import { ConsumidorPessoaFisica, ConsumidorPessoaJuridica, NumeroAtendimento, TuplaInfomacoesNulasConsumidor, TuplaInformacoesFailedConsumidor, TuplaInformacoesParciaisConsumidorPessoaJuridica, TuplaInformacoesParciaisConsumidorPessoaFisica } from './lib/definitions';
+import { customContext, customOptimizationBrowserArgsLaunch, customOptimizationPageRoute, customRefreshPage, customTimeout } from './config/customDefinitions.config';
 import { carregarAlteracoesBaseConsumidorBairrosRegionais, numerosAtendimentosBairrosRegionais } from './utils/databaseConsumidor.quickAcessFunctions';
 
 let allTested = [];
@@ -37,7 +37,7 @@ const logger = createLogger({
 
         try {
 
-            if (contadorOcorrencia % limiteComparativo === 0) await page.goto('https://proconsumidor.mj.gov.br/#/inicio', { waitUntil: 'networkidle', timeout: 90000 });
+            if (contadorOcorrencia % limiteComparativo === 0) await page.goto('https://proconsumidor.mj.gov.br/#/inicio', { waitUntil: 'networkidle', timeout: customTimeout.general });
 
             const numeroAtendimento = new NumeroAtendimento(NA);
             const regexUrlTiposAtendimento = new RegExp(`https:\/\/proconsumidor.mj.gov.br\/#\/(denuncia|consulta|reclamacao)\/pesquisa\/${numeroAtendimento.Formatacao(2)}`)
@@ -45,8 +45,8 @@ const logger = createLogger({
             try {
 
                 await page.getByPlaceholder('Nº de Atendimento').fill(numeroAtendimento.Formatacao(1));
-                await page.getByTitle('Pesquisar').first().click({ timeout: 30000 });
-                await page.waitForURL(regexUrlTiposAtendimento, { timeout: 60000 });
+                await page.getByTitle('Pesquisar').first().click({ timeout: customTimeout.click });
+                await page.waitForURL(regexUrlTiposAtendimento, { timeout: customTimeout.general });
                 await page.waitForSelector('.loader-container', { state: 'hidden' });
 
                 const painelExpansivel = () => {
@@ -63,7 +63,7 @@ const logger = createLogger({
                 };
 
                 if (!await painelExpansivel().isVisible()) {
-                    await page.locator('div').filter({ hasText: regexTextPainelExtensivel }).nth(1).click({ timeout: 30000 });
+                    await page.locator('div').filter({ hasText: regexTextPainelExtensivel }).nth(1).click({ timeout: customTimeout.click });
                 }
 
                 await painelExpansivel().locator('div.sub-titulo', { hasText: 'Consumidor' }).waitFor({ state: 'visible' })
@@ -92,7 +92,7 @@ const logger = createLogger({
                     if (await page.locator('app-detalhe-consumidor .modal-body label', { hasText: 'CNPJ' }).isVisible()) {
                         naturezaConsumidor = 'Juridica';
                         emojiNaturezaConsumidor = '🏢 ✅';
-                        await page.waitForResponse(regexWaitForResponseLastUrlRequest, { timeout: 60000 });
+                        await page.waitForResponse(regexWaitForResponseLastUrlRequest, { timeout: customTimeout.general });
                         await page.waitForSelector('.loader-container', { state: 'hidden' });
                     };
 
@@ -114,7 +114,7 @@ const logger = createLogger({
                     const consumidor = args.length === 12 ? new ConsumidorPessoaFisica('passed', numeroAtendimento.Formatacao(1), ...args, telefone, latitude, longitude) : new ConsumidorPessoaJuridica('passed', numeroAtendimento.Formatacao(1), ...args, telefone, latitude, longitude);
                     const estruturaConsumidor = consumidor.retornaEstrutura(1);
                     allTested.push(estruturaConsumidor);
-                    await page.getByRole('button', { name: 'Close' }).first().click({ timeout: 3000 });
+                    await page.getByRole('button', { name: 'Close' }).first().click({ timeout: customTimeout.general });
                     logger.log('passed', `${numeroAtendimento.Formatacao(1)} ${emojiNaturezaConsumidor}`);
 
                 }
