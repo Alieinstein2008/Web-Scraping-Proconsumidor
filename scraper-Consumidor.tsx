@@ -32,8 +32,8 @@ const logger = createLogger({
 
     for (const NA of itensBusca) {
 
-        page = contadorOcorrencia % limiteComparativo === 0 ? await customRefreshPage(context, page) : page;
         await customOptimizationPageRoute(page);
+        page = contadorOcorrencia % limiteComparativo === 0 ? await customRefreshPage(context, page) : page;
 
         try {
 
