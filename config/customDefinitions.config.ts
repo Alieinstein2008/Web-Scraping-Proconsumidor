@@ -1,4 +1,6 @@
 import playwright from 'playwright';
+import dotenv from 'dotenv';
+dotenv.config();
 
 export async function customContext(browser: playwright.Browser): Promise<playwright.BrowserContext> {
     const context = await browser.newContext({
@@ -36,5 +38,11 @@ export async function customRefreshPage(context: playwright.BrowserContext, page
     page.close();
     return context.newPage();
 };
+
+
+export const customTimeout = {
+    general: Number(process.env.LOCATOR_GENERAL_TIMEOUT_MS) | 30000,
+    click: Number(process.env.LOCATOR_CLICK_TIMEOUT_MS) | 30000
+}
 
 
