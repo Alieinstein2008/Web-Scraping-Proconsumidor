@@ -1,8 +1,8 @@
 import playwright from 'playwright';
-import { customContext } from './config/contex.config';
 import { NumeroAtendimento, TratativaCarta, TuplaInformacoesFailedCarta, TuplaInformacoesNulasCarta, TuplaInformacoesParciaisCarta } from './lib/definitions';
-import { carregarAlteracoesBaseCartas, executarBackupBaseCartas, retornaReclamacoesDivergentes, retornaReclamacoesFalhas, retornaReclamacoesUltimos4Meses, salvarAlteracoesBaseCartas } from './utils/databaseCartas.quickAccessFunctions';
+import { carregarAlteracoesBaseCartas, executarBackupBaseCartas, retornaReclamacoesDivergentesPeriodo, retornaReclamacoesFalhas, retornaReclamacoesUltimos4Meses, salvarAlteracoesBaseCartas } from './utils/databaseCartas.quickAccessFunctions';
 import { createLogger } from './config/loggers.config';
+import { customContext, customOptimizationBrowserArgsLaunch, customOptimizationPageRoute, customRefreshPage } from './config/customDefinitions.config';
 
 const logger = createLogger({
     filenameCombine: 'cartas/cartas-combine',
@@ -16,20 +16,26 @@ const regexBusca = new RegExp(`[0-9] - ${textoBusca}`, '');
 const regexSituacao = new RegExp(`(Finalizada|Cancelada|Aberta)`, 'i');
 
 let allTested: any[] = [];
-var cont = 0;
+let contadorOcorrencia = 0;
+let limiteComparativo = 100;
 
 (async () => {
 
     console.time("Tempo-de-Execução-Total");
 
-    const browser = await playwright.chromium.launch();
+    const browser = await playwright.chromium.launch({ args: customOptimizationBrowserArgsLaunch });
     const context = await customContext(browser);
-    const page = await context.newPage();
+    let page = await context.newPage();
 
-    const reclamacoesDivergentes = retornaReclamacoesDivergentes();
+    const reclamacoesDivergentesPeriodo = retornaReclamacoesDivergentesPeriodo({
+        dataInicial: '01/12/2022',
+        dataFinal: '01/12/2022'
+    })
+
+    //const reclamacoesDivergentes = retornaReclamacoesDivergentes();
     //const reclamacoesFalhas = retornaReclamacoesFalhas();
     //const reclamacoesUltimos4Meses = retornaReclamacoesUltimos4Meses();
-    const grupoBusca = [...reclamacoesDivergentes];
+    const grupoBusca = [...reclamacoesDivergentesPeriodo];
     const listaBusca = [...new Set(grupoBusca)];
 
     executarBackupBaseCartas();
@@ -39,9 +45,12 @@ var cont = 0;
 
     for (const NA of listaBusca) {
 
+        page = contadorOcorrencia % limiteComparativo === 0 ? await customRefreshPage(context, page) : page;
+        await customOptimizationPageRoute(page);
+
         try {
 
-            if (cont % 1000 === 0) await page.goto('https://proconsumidor.mj.gov.br/#/inicio', { waitUntil: 'networkidle', timeout: 90000 });
+            if (contadorOcorrencia % limiteComparativo === 0) await page.goto('https://proconsumidor.mj.gov.br/#/inicio', { waitUntil: 'networkidle', timeout: 90000 });
 
             const numeroAtendimento = new NumeroAtendimento(NA);
 
@@ -105,14 +114,10 @@ var cont = 0;
                 continue;
             }
 
-            if (cont % 100 === 0 && cont > 0) {
-
-                carregarAlteracoesBaseCartas(allTested);
-                logger.info(`${cont} alterações carregadas com sucesso 👌`);
-
-            }
-
-            cont++;
+            carregarAlteracoesBaseCartas(allTested);
+            allTested.length = 0;
+            if (contadorOcorrencia % limiteComparativo === 0) logger.info(`${contadorOcorrencia}/${listaBusca.length} alterações carregadas com sucesso 👌`);
+            contadorOcorrencia++;
 
         } catch (error) {
             logger.error(error);
