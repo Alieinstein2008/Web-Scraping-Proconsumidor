@@ -88,7 +88,7 @@ Web-Scraping-Proconsumidor
 │
 ├── config/
     ├── auth.setup.ts
-    ├── context.config.ts
+    ├── customDefinitions.config.ts
     ├── fecthApi.config.ts
     ├── filePath.config.ts
     ├── loggers.config.ts
