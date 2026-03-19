@@ -1,3 +1,7 @@
+import playwright from 'playwright';
+import {customContext, customOptimizationBrowserArgsLaunch, customOptimizationPageRoute, customRefreshPage, customTimeout} from "./config/customDefinitions.config";
+import { NumeroAtendimento } from "./lib/definitions";
+
 type EstruturaAudiencia = {
     Fornecedor?: string;
     Cnpj?: string;
@@ -46,4 +50,28 @@ class tratativaAudiencia {
     }
 
 }
+ (async () => {
+    
+       console.time('Tempo-de-Execução-Total');
+
+           const browser = await playwright.chromium.launch({ args: customOptimizationBrowserArgsLaunch });
+           const context = await customContext(browser);
+           let page = await context.newPage();
+    
+            const numeroAtendimento = new NumeroAtendimento('22.12.0532.001.00701-3');
+            try{
+                
+                await page.getByPlaceholder('Nº de Atendimento').fill(numeroAtendimento.Formatacao(1));
+                await page.getByTitle('Pesquisar').first().click({ timeout: 30000 });
+                await page.waitForURL(`https://proconsumidor.mj.gov.br/#/reclamacao/pesquisa/${numeroAtendimento.Formatacao(2)}`, { timeout: 90000 });
+                await page.waitForSelector('.loader-container', { state: 'hidden' });
+                const nx= await page.locator('span').filter({ hasText: '-3' }).allInnerTexts();
+
+                
+               
+            }
+            catch{}
+        
+})();
+
 
