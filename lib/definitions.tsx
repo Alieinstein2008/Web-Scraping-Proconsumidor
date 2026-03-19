@@ -388,61 +388,61 @@ export class ConsumidorPessoaFisica {
 }
 
 export class ConsumidorPessoaJuridica {
-    private NumeroAtendimento: string;
-    private CNPJ: string;
-    private RazaoSocial: string;
-    private CEP: string;
-    private Logradouro: string;
-    private ComplementoNumero: string;
-    private Bairro: string;
-    private Cidade: string;
-    private UF: string;
-    private Telefone: string;
-    private Latitude: string;
-    private Longitude: string;
-    private Scraping: string;
+    private numeroAtendimento: string;
+    private cnpj: string;
+    private razaoSocial: string;
+    private cep: string;
+    private logradouro: string;
+    private complementoNumero: string;
+    private bairro: string;
+    private cidade: string;
+    private uf: string;
+    private telefone: string;
+    private latitude: string;
+    private longitude: string;
+    private scraping: string;
 
     constructor(scraping: 'failed' | 'passed' | 'blank', numeroAtendimento: string, cnpj: string, razaoSocial: string, cep: string, logradouro: string, complementoNumero: string, bairro: string, cidade: string, uf: string, telefone: string, latitude: string, longitude: string) {
-        this.NumeroAtendimento = numeroAtendimento;
-        this.CNPJ = cnpj;
-        this.RazaoSocial = razaoSocial;
-        this.CEP = cep;
-        this.Logradouro = logradouro;
-        this.ComplementoNumero = complementoNumero;
-        this.Bairro = bairro;
-        this.Cidade = cidade;
-        this.UF = uf;
-        this.Telefone = telefone;
-        this.Latitude = latitude;
-        this.Longitude = longitude;
-        this.Scraping = scraping;
+        this.numeroAtendimento = numeroAtendimento;
+        this.cnpj = cnpj;
+        this.razaoSocial = razaoSocial;
+        this.cep = cep;
+        this.logradouro = logradouro;
+        this.complementoNumero = complementoNumero;
+        this.bairro = bairro;
+        this.cidade = cidade;
+        this.uf = uf;
+        this.telefone = telefone;
+        this.latitude = latitude;
+        this.longitude = longitude;
+        this.scraping = scraping;
     };
 
     public retornaEstrutura(tipo: number): EstruturaConsumidor {
         switch (tipo) {
             case 1:
-                this.Bairro = this.Bairro === '' ? this.Cidade : this.Bairro;
+                this.bairro = this.bairro === '' ? this.cidade : this.bairro;
                 const estruturaNumeroAtendimentoBairro: EstruturaConsumidor = {
-                    NumeroAtendimento: this.NumeroAtendimento,
-                    Bairro: this.Bairro
+                    NumeroAtendimento: this.numeroAtendimento,
+                    Bairro: this.bairro
                 };
                 return estruturaNumeroAtendimentoBairro;
 
             default:
                 const estrutura: EstruturaConsumidor = {
-                    NumeroAtendimento: this.NumeroAtendimento,
-                    CNPJ: this.CNPJ,
-                    RazaoSocial: this.RazaoSocial,
-                    CEP: this.CEP,
-                    Latitude: this.Latitude,
-                    Longitude: this.Longitude,
-                    UF: this.UF,
-                    Cidade: this.Cidade,
-                    Bairro: this.Bairro,
-                    Logradouro: this.Logradouro,
-                    ComplementoNumero: this.ComplementoNumero,
-                    Telefone: this.Telefone,
-                    Scraping: this.Scraping
+                    NumeroAtendimento: this.numeroAtendimento,
+                    CNPJ: this.cnpj,
+                    RazaoSocial: this.razaoSocial,
+                    CEP: this.cep,
+                    Latitude: this.latitude,
+                    Longitude: this.longitude,
+                    UF: this.uf,
+                    Cidade: this.cidade,
+                    Bairro: this.bairro,
+                    Logradouro: this.logradouro,
+                    ComplementoNumero: this.complementoNumero,
+                    Telefone: this.telefone,
+                    Scraping: this.scraping
                 };
                 return estrutura;
         }
