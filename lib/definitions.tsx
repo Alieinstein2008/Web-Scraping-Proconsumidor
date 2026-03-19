@@ -51,18 +51,18 @@ export class TratativaCarta {
     private resposta: string;
     private numeroAtendimento: string;
     private situacao: string;
-    private codFornecedor: string;
+    private codigoFornecedor: string;
     private cnpj: string;
     private scraping: string;
 
-    constructor(scraping: 'failed' | 'passed' | 'blank', numeroAtendimento: string, situacao: string, codFornecedor: string, cnpj: string, fornecedor: string, data: string, prazo: string, resposta: string) {
+    constructor(scraping: 'failed' | 'passed' | 'blank', numeroAtendimento: string, situacao: string, codigoFornecedor: string, cnpj: string, fornecedor: string, data: string, prazo: string, resposta: string) {
         this.fornecedor = fornecedor;
         this.data = data;
         this.prazo = prazo;
         this.resposta = resposta;
         this.numeroAtendimento = numeroAtendimento;
         this.situacao = situacao;
-        this.codFornecedor = codFornecedor;
+        this.codigoFornecedor = codigoFornecedor;
         this.cnpj = cnpj;
         this.scraping = scraping;
     }
@@ -72,7 +72,7 @@ export class TratativaCarta {
             default:
                 const estrutura: EstruturaCarta = {
                     NumeroAtendimento: this.numeroAtendimento,
-                    CodigoFornecedor: this.codFornecedor,
+                    CodigoFornecedor: this.codigoFornecedor,
                     Fornecedor: this.fornecedor,
                     CNPJ: this.cnpj,
                     Data: this.data,
