@@ -21,6 +21,7 @@ test("test", async ({ page }) => {
       await page.waitForSelector(".loader-container", { state: "hidden" });
 
       const data= await page.locator('app-tratativa h5').first().textContent();
+      const situacaoAudiencia = await page.locator('app-tratativa p').first().filter({ hasText: regexSituacao }).textContent() ?? '';
       
      
       
