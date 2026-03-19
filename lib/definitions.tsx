@@ -298,10 +298,10 @@ export type EstruturaConsumidor = {
     Cidade?: string;
     UF?: string;
     Telefone?: string;
-    CNPJ?:string;
-    RazaoSocial?:string;
+    CNPJ?: string;
+    RazaoSocial?: string;
     Scraping?: string;
-    
+
 }
 
 export type TuplaInformacoesParciaisConsumidorPessoaFisica = [string, string, string, string, string, string, string, string, string, string, string, string];
@@ -313,74 +313,74 @@ export type TuplaInformacoesFailedConsumidor = [string, string, string, string, 
 export type TuplaInfomacoesNulasConsumidor = [string, string, string, string, string, string, string, string, string, string, string, string, string, string];
 
 export class ConsumidorPessoaFisica {
-    private NumeroAtendimento: string;
-    private CPF: string;
-    private Nome: string;
-    private Nascimento: string;
-    private Sexo: string;
-    private RacaCorEtnia: string;
-    private NomeSocial: string;
-    private CEP: string;
-    private Latitude: string;
-    private Longitude: string;
-    private Logradouro: string;
-    private ComplementoNumero: string;
-    private Bairro: string;
-    private Cidade: string;
-    private UF: string;
-    private Telefone: string;
-    private Scraping: string;
+    private numeroAtendimento: string;
+    private cpf: string;
+    private nome: string;
+    private nascimento: string;
+    private sexo: string;
+    private racaCorEtnia: string;
+    private nomeSocial: string;
+    private cep: string;
+    private latitude: string;
+    private longitude: string;
+    private logradouro: string;
+    private complementoNumero: string;
+    private bairro: string;
+    private cidade: string;
+    private uf: string;
+    private telefone: string;
+    private scraping: string;
 
 
     constructor(scraping: 'failed' | 'passed' | 'blank', numeroAtendimento: string, cpf: string, nome: string, nascimento: string, sexo: string, racaCorEtnia: string, nomeSocial: string, cep: string, logradouro: string, complementoNumero: string, bairro: string, cidade: string, uf: string, telefone: string, latitude: string, longitude: string) {
-        this.CPF = cpf;
-        this.Nome = nome;
-        this.Nascimento = nascimento;
-        this.Sexo = sexo;
-        this.RacaCorEtnia = racaCorEtnia;
-        this.NomeSocial = nomeSocial;
-        this.CEP = cep;
-        this.Latitude = latitude;
-        this.Longitude = longitude;
-        this.Logradouro = logradouro;
-        this.ComplementoNumero = complementoNumero;
-        this.Bairro = bairro;
-        this.Cidade = cidade;
-        this.UF = uf;
-        this.Telefone = telefone;
-        this.Scraping = scraping;
-        this.NumeroAtendimento = numeroAtendimento;
+        this.cpf = cpf;
+        this.nome = nome;
+        this.nascimento = nascimento;
+        this.sexo = sexo;
+        this.racaCorEtnia = racaCorEtnia;
+        this.nomeSocial = nomeSocial;
+        this.cep = cep;
+        this.latitude = latitude;
+        this.longitude = longitude;
+        this.logradouro = logradouro;
+        this.complementoNumero = complementoNumero;
+        this.bairro = bairro;
+        this.cidade = cidade;
+        this.uf = uf;
+        this.telefone = telefone;
+        this.scraping = scraping;
+        this.numeroAtendimento = numeroAtendimento;
     };
 
     public retornaEstrutura(tipo: number): EstruturaConsumidor {
         switch (tipo) {
             case 1:
-                this.Bairro = this.Bairro === '' ? this.Cidade : this.Bairro;
+                this.bairro = this.bairro === '' ? this.cidade : this.bairro;
                 const estruturaNumeroAtendimentoBairro: EstruturaConsumidor = {
-                    NumeroAtendimento: this.NumeroAtendimento,
-                    Bairro: this.Bairro
+                    NumeroAtendimento: this.numeroAtendimento,
+                    Bairro: this.bairro
                 };
                 return estruturaNumeroAtendimentoBairro;
 
             default:
                 const estrutura: EstruturaConsumidor = {
-                    NumeroAtendimento: this.NumeroAtendimento,
-                    Nome: this.Nome,
-                    NomeSocial: this.NomeSocial,
-                    CPF: this.CPF,
-                    Nascimento: this.Nascimento,
-                    RacaCorEtnia: this.RacaCorEtnia,
-                    Sexo: this.Sexo,
-                    CEP: this.CEP,
-                    Latitude: this.Latitude,
-                    Longitude: this.Longitude,
-                    UF: this.UF,
-                    Cidade: this.Cidade,
-                    Bairro: this.Bairro,
-                    Logradouro: this.Logradouro,
-                    ComplementoNumero: this.ComplementoNumero,
-                    Telefone: this.Telefone,
-                    Scraping: this.Scraping
+                    NumeroAtendimento: this.numeroAtendimento,
+                    Nome: this.nome,
+                    NomeSocial: this.nomeSocial,
+                    CPF: this.cpf,
+                    Nascimento: this.nascimento,
+                    RacaCorEtnia: this.racaCorEtnia,
+                    Sexo: this.sexo,
+                    CEP: this.cep,
+                    Latitude: this.latitude,
+                    Longitude: this.longitude,
+                    UF: this.uf,
+                    Cidade: this.cidade,
+                    Bairro: this.bairro,
+                    Logradouro: this.logradouro,
+                    ComplementoNumero: this.complementoNumero,
+                    Telefone: this.telefone,
+                    Scraping: this.scraping
                 };
                 return estrutura;
         }
@@ -397,12 +397,12 @@ export class ConsumidorPessoaJuridica {
     private Bairro: string;
     private Cidade: string;
     private UF: string;
-    private Telefone:string;
-    private Latitude:string;
-    private Longitude:string;
-    private Scraping:string;
+    private Telefone: string;
+    private Latitude: string;
+    private Longitude: string;
+    private Scraping: string;
 
-    constructor(scraping: 'failed' | 'passed' | 'blank', numeroAtendimento: string, cnpj:string, razaoSocial:string, cep:string, logradouro:string, complementoNumero:string, bairro:string, cidade:string, uf:string, telefone:string, latitude:string, longitude:string){
+    constructor(scraping: 'failed' | 'passed' | 'blank', numeroAtendimento: string, cnpj: string, razaoSocial: string, cep: string, logradouro: string, complementoNumero: string, bairro: string, cidade: string, uf: string, telefone: string, latitude: string, longitude: string) {
         this.NumeroAtendimento = numeroAtendimento;
         this.CNPJ = cnpj;
         this.RazaoSocial = razaoSocial;
