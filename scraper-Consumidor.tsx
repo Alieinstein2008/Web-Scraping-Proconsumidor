@@ -1,9 +1,10 @@
 import playwright from 'playwright';
 import { createLogger } from './config/loggers.config';
 import { coordenadasCep } from './config/fetchApi.config';
-import { ConsumidorPessoaFisica, ConsumidorPessoaJuridica, NumeroAtendimento, TuplaInfomacoesNulasConsumidor, TuplaInformacoesFailedConsumidor, TuplaInformacoesParciaisConsumidorPessoaJuridica, TuplaInformacoesParciaisConsumidorPessoaFisica } from './lib/definitions';
+import { TuplaInfomacoesNulasConsumidor, TuplaInformacoesFailedConsumidor, TuplaInformacoesParciaisConsumidorPessoaJuridica, TuplaInformacoesParciaisConsumidorPessoaFisica } from './types/index';
 import { customContext, customOptimizationBrowserArgsLaunch, customOptimizationPageRoute, customRefreshPage, customTimeout } from './config/customDefinitions.config';
 import { carregarAlteracoesBaseConsumidorBairrosRegionais, numerosAtendimentosBairrosRegionais } from './utils/databaseConsumidor.quickAcessFunctions';
+import { ConsumidorPessoaFisica, ConsumidorPessoaJuridica, NumeroAtendimento } from './lib/definitions';
 
 let allTested = [];
 let limiteComparativo = 100;
