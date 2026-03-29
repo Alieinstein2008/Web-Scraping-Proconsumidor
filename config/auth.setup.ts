@@ -1,5 +1,5 @@
 import { test as setup } from '@playwright/test';
-import { UserInformation } from '../lib/definitions';
+import { UserInformation } from '../types/user.config.types';
 import dotenv from 'dotenv';
 dotenv.config();
 
