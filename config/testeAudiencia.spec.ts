@@ -12,14 +12,20 @@ const logger = createLogger({
 });
 
 test("test", async ({ page }) => {
-  console.time("Tempo-de-Execução-Total");
-
-  const browser = await playwright.chromium.launch({args: customOptimizationBrowserArgsLaunch,});
-
-  const context = await customContext(browser);
   const textoBusca = 'Audiência';
   const regexBusca = new RegExp(`[0-9] - ${textoBusca}`, '');
   const regexSituacao = new RegExp(`(Finalizada|Cancelada|Aberta)`, 'i');
+  
+  let allTested: any[] = [];
+  let contadorOcorrencia = 0;
+  let limiteComparativo = 100;
+  
+  console.time("Tempo-de-Execução-Total");
+
+  const browser = await playwright.chromium.launch({args: customOptimizationBrowserArgsLaunch,});
+  const context = await customContext(browser);
+  //let page = await context.newPage();
+ 
   await page.goto("https://proconsumidor.mj.gov.br/#/inicio", {waitUntil: "networkidle", timeout: customTimeout.general});
 
   //const itensBusca = "22.12.0532.001.00701-3";
