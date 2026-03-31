@@ -3,8 +3,7 @@ import { BaseDados, Calendario } from './definitions';
 import { TipoNumeroAtendimento } from '../types/index';
 
 export function atualizarBase(this: { base: any[] }, { novosDados, nomeArquivo, nomeAba, inputPath }: { novosDados: any[], nomeArquivo: string, nomeAba: string, inputPath: string }): void {
-    const novaEstrutura = novosDados.pop();
-    this.base.push(novaEstrutura);
+    this.base.push(novosDados);
     const worksheet = xlsx.utils.json_to_sheet(this.base);
     const workbook = xlsx.utils.book_new();
     xlsx.utils.book_append_sheet(workbook, worksheet, `${nomeAba}`);
