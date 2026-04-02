@@ -98,6 +98,12 @@ Web-Scraping-Proconsumidor
 ├── lib/
     ├── definitions.tsx
     ├── functions.tsx
+├── types/
+    ├── carta.types.ts
+    ├── consumidor.types.ts
+    ├── index.ts
+    ├── numeroAtendimento.types.ts
+    ├── user.config.types.ts
 ├── logs/
     ├── ***-passed.log
     ├── ***failed.log
@@ -111,6 +117,7 @@ Web-Scraping-Proconsumidor
 │
 ├── scraper-TratativaCarta.tsx
 ├── scraper-Consumidor.tsx
+├── scraper-AssuntosProblemas.tsx
 ├── package.json
 ├── tsconfig.json
 └── README.md
