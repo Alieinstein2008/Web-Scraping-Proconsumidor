@@ -114,6 +114,7 @@ Web-Scraping-Proconsumidor
     ├── databaseCartas.quickAcessFunctions.tsx
     ├── databaseConsumidor.config.tsx
     ├── databaseConsumidor.quickAcessFunctions.tsx
+    ├── databaseAssuntosProblemas.config.tsx
 │
 ├── scraper-TratativaCarta.tsx
 ├── scraper-Consumidor.tsx
