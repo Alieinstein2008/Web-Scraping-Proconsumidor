@@ -1,18 +1,18 @@
 import playwright from 'playwright';
-import xlsx from "xlsx";
-
+import { customContext, customOptimizationBrowserArgsLaunch, customOptimizationPageRoute } from './config/customDefinitions.config';
+import { Calendario } from './lib/definitions';
+import { criarNovaBaseDados } from './lib/functions';
+import { outputPathAssuntosProblemas } from './utils/databaseAssuntosPoblemas.config';
 
 (async () => {
 
-    const browser = await playwright.chromium.launch();
-    const context = await browser.newContext({
-        storageState: 'playwright/.auth/user.json',
-        timezoneId: 'America/Sao_Paulo',
-        locale: 'pt-BR'
-    });
-    const page = await context.newPage();
-
     const json = [];
+    console.time('Tempo-de-Execução-Total');
+
+    const browser = await playwright.chromium.launch({ args: customOptimizationBrowserArgsLaunch });
+    const context = await customContext(browser);
+    let page = await context.newPage();
+    await customOptimizationPageRoute(page);
 
     await page.goto('https://proconsumidor.mj.gov.br/#/atendimento', { waitUntil: 'networkidle' });
     const selectAssunto = page.locator(`label:has-text("Assunto") + select`);
@@ -48,14 +48,15 @@ import xlsx from "xlsx";
         }
     }
 
-    const currentDate = new Date();
-    const formatedDate = currentDate.toLocaleDateString('pt-br').replace(/\//g, '_');
-    const worksheet = xlsx.utils.json_to_sheet(json);
-    const workbook = xlsx.utils.book_new();
-    xlsx.utils.book_append_sheet(workbook, worksheet, `${formatedDate}`);
-    xlsx.writeFile(workbook, `Assuntos_Problemas_${formatedDate}.xlsx`);
-    console.log("Arquivo criado com sucesso")
+    const prefixFileName = new Calendario().prefixoArquivoDataAtual();
+    criarNovaBaseDados({
+        dadosJson: json,
+        nomeArquivo: `${prefixFileName}AssuntosProblemas-Web-Scraping.xlsx`,
+        nomeAba: 'Assuntos e Problemas',
+        outputPath:outputPathAssuntosProblemas
+    });
 
+    console.timeEnd("Tempo-de-Execução-Total");
     await browser.close();
 
 })();
