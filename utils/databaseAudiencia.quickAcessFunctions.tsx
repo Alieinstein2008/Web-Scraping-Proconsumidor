@@ -2,6 +2,12 @@ import { baseDadosAudiencia} from  "./databaseAudiencia.config";
 import { inputPathAudiencia, outputPathAudiencia } from "./databaseAudiencia.config";
 import { Calendario } from "../lib/definitions";
 
+export const NA = baseDadosAudiencia.atual.obterDadosDivergentes({
+    colunaHomologa: 'NumeroAtendimento',
+    tipoNumeroAtendimento: 'Reclamacao',
+    baseComparativa: baseDadosAudiencia.comparativa
+});
+
 export function retornaReclamacoesDivergentesPeriodo({ dataInicial, dataFinal }: { dataInicial?: string, dataFinal?: string }): any[] {
     const reclamacoesDivergentes = baseDadosAudiencia.atual.obterDadosDivergentes({
         colunaHomologa: "NumeroAtendimento",
