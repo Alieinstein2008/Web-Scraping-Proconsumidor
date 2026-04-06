@@ -48,3 +48,10 @@ export function carregarAlteracoesBaseAudiencia(data: any[]): void {
         inputPath: inputPathAudiencia
     })
 };
+
+export function salvarAlteracoesBaseAudiencia(signal: string, dados: any[]): void {
+    console.log(`\n${signal} recebido. Iniciando o carregamento de ${dados.length} novos itens ⏳`);
+    carregarAlteracoesBaseAudiencia(dados);
+    console.log('Finalizando processo.');
+    process.exit(0);
+};
