@@ -1,4 +1,4 @@
-export type EstruturaConsumidor = {
+export interface EstruturaConsumidor {
     NumeroAtendimento: string;
     CPF?: string;
     Nome?: string;
