@@ -1,8 +1,14 @@
 import playwright from 'playwright';
 import {customContext, customOptimizationBrowserArgsLaunch, customOptimizationPageRoute, customRefreshPage, customTimeout} from "./config/customDefinitions.config";
 import { NumeroAtendimento } from "./lib/definitions";
+import { createLogger } from './config/loggers.config';
 
-
+const logger = createLogger({
+  filenameCombine: 'audiencia/audiencia-combine',
+  filenamePassed: 'audiencia/audiencia-passed',
+  filenameFailed: 'audiencia/audiencia-failed',
+  filenameBlank: 'audiencia/audiencia-blank',
+});
 export type TuplaInformacoesParciaisAudienciaFinalizada = [string, string, string, string];
 export type TuplaInformacoesParciaisAudienciaCancelada = [string, string, string];
 export type TuplaInformacoesNulasAudiencia = [string, string, string, string, string, string, string];
