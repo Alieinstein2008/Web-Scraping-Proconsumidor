@@ -22,6 +22,16 @@ export function retornaTodasReclamacoesDivergentes(): any[] {
     return reclamacoesDivergentes;
 };
 
+export function retornaReclamacoesFalhas(): any[] {
+    const reclamacoesFalhas = baseDadosAudiencia.atual.criarFiltroColunaBase({
+        colunaFiltro: 'Scraping',
+        valorFiltro: 'failed',
+        colunaRetorno: 'NumeroAtendimento',
+        tipoNumeroAtendimento: 'Reclamacao'
+    });
+    return reclamacoesFalhas;
+};
+
 export function executarBackupBaseAudiencia(): void {
     const prefixoArquivo = new Calendario().prefixoArquivoDataAtual();
     baseDadosAudiencia.atual.executarBackup({
