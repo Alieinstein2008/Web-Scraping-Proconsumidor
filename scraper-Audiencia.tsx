@@ -2,47 +2,88 @@ import playwright from 'playwright';
 import {customContext, customOptimizationBrowserArgsLaunch, customOptimizationPageRoute, customRefreshPage, customTimeout} from "./config/customDefinitions.config";
 import { NumeroAtendimento } from "./lib/definitions";
 
+
+export type TuplaInformacoesParciaisAudienciaFinalizada = [string, string, string, string];
+export type TuplaInformacoesParciaisAudienciaCancelada = [string, string, string];
+export type TuplaInformacoesNulasAudiencia = [string, string, string, string, string, string, string];
+export type TuplaInformacoesFailedAudiencia = [string, string, string, string, string, string, string, string];
 type EstruturaAudiencia = {
+    NumeroAtendimento?: string;
+    CodigoFornecedor?: string;
+    DataAbertura?: string;
     Fornecedor?: string;
     Cnpj?: string;
-    Data?: string;
+    DataAudiencia?: string;
     Situacao?: string;
-    NumeroAtendimento?: string;
     Redesignacao?:string;
     Resultado?: string;
     Scraping?: string;
 }
-class tratativaAudiencia {
+export class tratativaAudiencia {
+    private numeroAtendimento: string;
+    private codigoFornecedor: string;
+    private dataAbertura: string;
     private fornecedor:string;
     private cnpj:string;
-    private data:string;
-    private situacao: string;
-    private numeroAtendimento: string;
+    private dataAudiencia:string;
+    private situacaoAudiencia: string;
     private redesignacao: string;
-    private resultado: string;
+    private resultadoAudiencia: string;
     private scraping: string;
 
-    constructor(scraping: 'failed' | 'passed' | 'blank', resultado: string, numeroAtendimento: string, situacao: string, data: string, fornecedor: string, redesignacao: string, cnpj:string){
-       this.fornecedor = fornecedor;
-       this.cnpj = cnpj;
-       this.data = data;
-       this.situacao = situacao;
-       this.numeroAtendimento = numeroAtendimento;
-       this.redesignacao = redesignacao;
-       this.resultado = resultado;
-       this.scraping = scraping;
+    constructor(scraping: 'failed' | 'passed' | 'blank', numeroAtendimento: string, codigoFornecedor: string, dataAbertura: string, fornecedor: string, cnpj:string, dataAudiencia: string, situacaoAudiencia: string, redesignacao: string, resultadoAudiencia: string)     {
+        this.numeroAtendimento = numeroAtendimento;
+        this.codigoFornecedor = codigoFornecedor;
+        this.dataAbertura = dataAbertura;
+        this.fornecedor = fornecedor;
+        this.cnpj = cnpj;
+        this.dataAudiencia = dataAudiencia;
+        this.situacaoAudiencia = situacaoAudiencia;
+        this.redesignacao = redesignacao;
+        this.resultadoAudiencia = resultadoAudiencia;
+        this.scraping = scraping;
+
     }
     public retornaEstrutura(tipo: number): EstruturaAudiencia {
             switch (tipo) {
+                case 1:
+                     const estrutura1: EstruturaAudiencia = {
+                        NumeroAtendimento: this.numeroAtendimento,
+                        CodigoFornecedor: this.codigoFornecedor,
+                        DataAbertura: this.dataAbertura,
+                        Fornecedor: this.fornecedor,
+                        Cnpj: this.cnpj,
+                        DataAudiencia: this.dataAudiencia,
+                        Situacao: this.situacaoAudiencia,
+                        Redesignacao: this.redesignacao,
+                        Resultado: this.resultadoAudiencia,
+                        Scraping: this.scraping
+                    }
+                    return estrutura1;
+                case 2:
+                    const estrutura2: EstruturaAudiencia = {
+                        NumeroAtendimento: this.numeroAtendimento,
+                        CodigoFornecedor: this.codigoFornecedor,
+                        DataAbertura: this.dataAbertura,
+                        Fornecedor: this.fornecedor,
+                        Cnpj: this.cnpj,
+                        Situacao: this.situacaoAudiencia,
+                        Redesignacao: this.redesignacao,
+                        Resultado: this.resultadoAudiencia,
+                        Scraping: this.scraping
+                    }
+                    return estrutura2;
                 default:
                     const estrutura: EstruturaAudiencia = {
                         NumeroAtendimento: this.numeroAtendimento,
+                        CodigoFornecedor: this.codigoFornecedor,
+                        DataAbertura: this.dataAbertura,
                         Fornecedor: this.fornecedor,
                         Cnpj: this.cnpj,
-                        Data: this.data,
-                        Resultado: this.resultado,
+                        DataAudiencia: this.dataAudiencia,
+                        Resultado: this.resultadoAudiencia,
                         Redesignacao: this.redesignacao,
-                        Situacao: this.situacao,
+                        Situacao: this.situacaoAudiencia,
                         Scraping: this.scraping
                     }
                     return estrutura;
