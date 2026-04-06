@@ -13,6 +13,15 @@ export function retornaReclamacoesDivergentesPeriodo({ dataInicial, dataFinal }:
     return reclamacoesDivergentes;
 };
 
+export function retornaTodasReclamacoesDivergentes(): any[] {
+    const reclamacoesDivergentes = baseDadosAudiencia.atual.obterDadosDivergentes({
+        colunaHomologa: "NumeroAtendimento",
+        baseComparativa: baseDadosAudiencia.comparativa,
+        tipoNumeroAtendimento: 'Reclamacao'
+    });
+    return reclamacoesDivergentes;
+};
+
 export function executarBackupBaseAudiencia(): void {
     const prefixoArquivo = new Calendario().prefixoArquivoDataAtual();
     baseDadosAudiencia.atual.executarBackup({
