@@ -113,7 +113,7 @@ export class tratativaAudiencia {
            const context = await customContext(browser);
            let page = await context.newPage();
     
-            const numeroAtendimento = new NumeroAtendimento('22.12.0532.001.00701-3');
+            const numeroAtendimento = new NumeroAtendimento('');
             try{
                 
                 await page.getByPlaceholder('Nº de Atendimento').fill(numeroAtendimento.Formatacao(1));
