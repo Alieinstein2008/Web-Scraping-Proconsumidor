@@ -9,6 +9,13 @@ const logger = createLogger({
   filenameFailed: 'audiencia/audiencia-failed',
   filenameBlank: 'audiencia/audiencia-blank',
 });
+
+const textoBusca = 'Audiência';
+const regexBusca = new RegExp(`[0-9] - ${textoBusca}`, '');
+const regexSituacao = new RegExp(`(Finalizada|Cancelada|Aberta)`, 'i');
+const regexDataAudiencia = new RegExp(` Dia \\d{2} de [A-Za-z]+ de \\d{4}`, 'i');
+const regexDataAbertura = new RegExp('\\d{2}\\/\\d{2}\\/\\d{4}', 'i');
+
 export type TuplaInformacoesParciaisAudienciaFinalizada = [string, string, string, string];
 export type TuplaInformacoesParciaisAudienciaCancelada = [string, string, string];
 export type TuplaInformacoesNulasAudiencia = [string, string, string, string, string, string, string];
@@ -73,6 +80,7 @@ export class tratativaAudiencia {
                         DataAbertura: this.dataAbertura,
                         Fornecedor: this.fornecedor,
                         Cnpj: this.cnpj,
+                        DataAudiencia: this.dataAudiencia,
                         Situacao: this.situacaoAudiencia,
                         Redesignacao: this.redesignacao,
                         Resultado: this.resultadoAudiencia,
