@@ -40,3 +40,11 @@ export function executarBackupBaseAudiencia(): void {
         outputPath: outputPathAudiencia
     });
 };
+export function carregarAlteracoesBaseAudiencia(data: any[]): void {
+    baseDadosAudiencia.atual.carregarAlteracoes({
+        novosDados: data,
+        nomeArquivo: 'Audiencias-Base-Web-Scraping',
+        nomeAba: 'All',
+        inputPath: inputPathAudiencia
+    })
+};
