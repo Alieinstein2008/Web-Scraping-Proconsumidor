@@ -49,9 +49,9 @@ test("test", async ({ page }) => {
       
       const painelTratativa = page.locator('app-tratativa');
 
-      if (!await painelTratativa.isVisible()) {
-        await page.getByTitle('Clique para Expandir/Recolher').filter({ hasText: "Tratativas" }).click();
-      };
+    if (!await painelTratativa.isVisible()) {
+      await page.getByTitle('Clique para Expandir/Recolher').filter({ hasText: "Tratativas" }).click();
+    };
 
       const conjuntoCorrespondencia = await page.getByText(regexBusca).all();
 
