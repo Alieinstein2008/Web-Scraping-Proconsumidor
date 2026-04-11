@@ -192,6 +192,7 @@ Possíveis evoluções do projeto:
 - Automação de coleta periódica
 - Sistema de logs e monitoramento
 - Dashboard para visualização dos dados
+- Interface gráfica do projeto 
 
 ---
 
