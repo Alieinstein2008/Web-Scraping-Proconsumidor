@@ -180,7 +180,7 @@ Os dados coletados podem ser utilizados para:
 - 📊 Criação de dashboards de monitoramento
 - 🔎 Estudos sobre relações de consumo
 - 🧠 Projetos de ciência de dados
-
+- 🧭 Otimização de tarefas repetitivas 
 ---
 
 # 🔮 Melhorias Futuras
