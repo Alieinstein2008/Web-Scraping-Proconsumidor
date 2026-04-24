@@ -180,7 +180,7 @@ Os dados coletados podem ser utilizados para:
 - 📊 Criação de dashboards de monitoramento
 - 🔎 Estudos sobre relações de consumo
 - 🧠 Projetos de ciência de dados
-
+- 🧭 Otimização de tarefas repetitivas 
 ---
 
 # 🔮 Melhorias Futuras
@@ -192,6 +192,7 @@ Possíveis evoluções do projeto:
 - Automação de coleta periódica
 - Sistema de logs e monitoramento
 - Dashboard para visualização dos dados
+- Interface gráfica do projeto 
 
 ---
 

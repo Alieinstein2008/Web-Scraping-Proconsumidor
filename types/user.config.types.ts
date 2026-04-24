@@ -1,4 +1,4 @@
-export type UserInformation = {
+export interface UserInformation {
     credential: string,
     password: string
 }

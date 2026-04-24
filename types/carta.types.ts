@@ -1,4 +1,4 @@
-export type EstruturaCarta = {
+export interface EstruturaCarta {
     Fornecedor?: string;
     Data?: string;
     Prazo?: string;
