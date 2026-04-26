@@ -2,6 +2,7 @@ import playwright from 'playwright';
 import {customContext, customOptimizationBrowserArgsLaunch, customOptimizationPageRoute, customRefreshPage, customTimeout} from "./config/customDefinitions.config";
 import { NumeroAtendimento } from "./lib/definitions";
 import { createLogger } from './config/loggers.config';
+import { carregarAlteracoesBaseAudiencia, executarBackupBaseAudiencia, NA,  salvarAlteracoesBaseAudiencia } from './utils/databaseAudiencia.quickAcessFunctions';
 
 const logger = createLogger({
   filenameCombine: 'audiencia/audiencia-combine',
@@ -121,7 +122,15 @@ export class tratativaAudiencia {
             const regexSituacao = new RegExp(`(Finalizada|Cancelada|Aberta)`, 'i');
             const regexDataAudiencia = new RegExp(` Dia \\d{2} de [A-Za-z]+ de \\d{4}`, 'i');
             const regexDataAbertura = new RegExp('\\d{2}\\/\\d{2}\\/\\d{4}', 'i');
-  
+
+            executarBackupBaseAudiencia();
+              
+              process.on('SIGINT', () => salvarAlteracoesBaseAudiencia('SIGINT', allTested));
+              process.on('SIGTERM', () => salvarAlteracoesBaseAudiencia('SIGTERM', allTested));
+            
+            await page.goto("https://proconsumidor.mj.gov.br/#/inicio", { waitUntil: "networkidle", timeout: customTimeout.general });
+            let allTested: any[] = [];
+
             const numeroAtendimento = new NumeroAtendimento('');
             try{
                 
@@ -130,6 +139,7 @@ export class tratativaAudiencia {
                 await page.waitForURL(`https://proconsumidor.mj.gov.br/#/reclamacao/pesquisa/${numeroAtendimento.Formatacao(2)}`, { timeout: 90000 });
                 await page.waitForSelector('.loader-container', { state: 'hidden' });
                 const nx= await page.locator('span').filter({ hasText: '-3' }).allInnerTexts();
+
 
                 
                
