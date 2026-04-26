@@ -18,8 +18,8 @@ const regexDataAbertura = new RegExp('\\d{2}\\/\\d{2}\\/\\d{4}', 'i');
 
 export type TuplaInformacoesParciaisAudienciaFinalizada = [string, string, string, string];
 export type TuplaInformacoesParciaisAudienciaCancelada = [string, string, string];
-export type TuplaInformacoesNulasAudiencia = [string, string, string, string, string, string, string];
-export type TuplaInformacoesFailedAudiencia = [string, string, string, string, string, string, string, string];
+export type TuplaInformacoesNulasAudiencia = [string, string, string, string, string, string, string, string, string, string];
+export type TuplaInformacoesFailedAudiencia = [string, string, string, string, string, string, string, string, string, string, string];
 type EstruturaAudiencia = {
     NumeroAtendimento?: string;
     CodigoFornecedor?: string;
