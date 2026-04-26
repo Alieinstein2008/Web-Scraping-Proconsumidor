@@ -107,14 +107,21 @@ export class tratativaAudiencia {
     }
 
 }
+
  (async () => {
     
        console.time('Tempo-de-Execução-Total');
 
-           const browser = await playwright.chromium.launch({ args: customOptimizationBrowserArgsLaunch });
-           const context = await customContext(browser);
-           let page = await context.newPage();
-    
+            const browser = await playwright.chromium.launch({ args: customOptimizationBrowserArgsLaunch });
+            const context = await customContext(browser);
+            let page = await context.newPage();
+        
+            const textoBusca = 'Audiência';
+            const regexBusca = new RegExp(`[0-9] - ${textoBusca}`, '');
+            const regexSituacao = new RegExp(`(Finalizada|Cancelada|Aberta)`, 'i');
+            const regexDataAudiencia = new RegExp(` Dia \\d{2} de [A-Za-z]+ de \\d{4}`, 'i');
+            const regexDataAbertura = new RegExp('\\d{2}\\/\\d{2}\\/\\d{4}', 'i');
+  
             const numeroAtendimento = new NumeroAtendimento('');
             try{
                 
