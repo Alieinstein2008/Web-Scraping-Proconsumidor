@@ -67,11 +67,11 @@ const logger = createLogger({
                     await page.locator('div').filter({ hasText: regexTextPainelExtensivel }).nth(1).click({ timeout: customTimeout.click });
                 }
 
-                if (await painelExpansivel().getByRole('img').first().isVisible()) {
-                    console.info(`${numeroAtendimento.Formatacao(1)} RECLAMACAO DE OFICIO`)
-                    allTested.push({ NumeroAtendimento: numeroAtendimento.Formatacao(1), Bairro: 'Reclamacao de Oficio' })
+                if (await painelExpansivel().getByLabel('Origem do Atendimento').locator('option:checked').isVisible() && await painelExpansivel().getByLabel('Origem do Atendimento').locator('option:checked').textContent()  == 'Ofício ') {
+                    logger.log('blank', `${numeroAtendimento.Formatacao(1)} 📄 🖋️`);
+                    allTested.push({ NumeroAtendimento: numeroAtendimento.Formatacao(1), Bairro: 'Reclamacao de Oficio' });
                 }
-                 
+
                 else {
                     await painelExpansivel().locator('div.sub-titulo', { hasText: 'Consumidor' }).waitFor({ state: 'visible' })
 
@@ -127,7 +127,6 @@ const logger = createLogger({
 
                     }
                 }
-
             }
 
             catch (error) {
@@ -135,9 +134,8 @@ const logger = createLogger({
                 const consumidorFailed = new ConsumidorPessoaFisica('failed', numeroAtendimento.Formatacao(1), '', ...argsFailed);
                 const estruturaConsumidorFailed = consumidorFailed.retornaEstrutura(1);
                 allTested.push(estruturaConsumidorFailed);
-                logger.error(error)
-                console.log(allTested)
                 logger.log('failed', `${numeroAtendimento.Formatacao(1)} 👤 ❌`);
+                logger.error(error)
                 continue;
             }
 
