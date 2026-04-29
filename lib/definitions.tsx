@@ -148,18 +148,6 @@ export class BaseDados {
         return this;
     }
 
-    public obterRegistrosUltimosMeses({ quantidadeMeses }: { quantidadeMeses: number }): this {
-
-        const dataBusca = new Calendario().data().subtrairMeses(quantidadeMeses);
-        const [dia, mes, ano] = dataBusca.split('/');
-        const anoBusca = ano.slice(2, 4);
-        const mesBusca = mes;
-
-        this.baseModificada = this.baseModificada.filter(elemento => elemento.slice(0, 2) == anoBusca && elemento.slice(3, 5) == mesBusca);
-
-        return this;
-    }
-
     public removerDuplicatas(): string[] {
         this.baseModificada = [...new Set(this.baseModificada)];
         return this.baseModificada;
