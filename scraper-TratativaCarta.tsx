@@ -1,5 +1,6 @@
 import playwright from 'playwright';
-import { NumeroAtendimento, TratativaCarta, TuplaInformacoesFailedCarta, TuplaInformacoesNulasCarta, TuplaInformacoesParciaisCarta } from './lib/definitions';
+import { TuplaInformacoesFailedCarta, TuplaInformacoesNulasCarta, TuplaInformacoesParciaisCarta } from './types/index';
+import { NumeroAtendimento, TratativaCarta } from './lib/definitions';
 import { carregarAlteracoesBaseCartas, executarBackupBaseCartas, retornaReclamacoesDivergentesPeriodo, retornaReclamacoesFalhas, retornaReclamacoesUltimos4Meses, salvarAlteracoesBaseCartas } from './utils/databaseCartas.quickAccessFunctions';
 import { createLogger } from './config/loggers.config';
 import { customContext, customOptimizationBrowserArgsLaunch, customOptimizationPageRoute, customRefreshPage } from './config/customDefinitions.config';

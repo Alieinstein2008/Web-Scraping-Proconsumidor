@@ -1,11 +1,5 @@
 import { extrairBaseCompleta, extrairColunaBase, atualizarBase, extrairDivergenciasColunaBaseComparativa, extrairDadosBasePorValorColuna, realizarBackupBase, extrairDadosBasePorOrdenamentoCronologicoNumeroAtendimento } from "./functions";
-
-export type UserInformation = {
-    credential: string,
-    password: string
-}
-
-export type TipoNumeroAtendimento = ('Reclamacao' | 'Denuncia' | 'Consulta');
+import { EstruturaCarta, EstruturaConsumidor, TipoNumeroAtendimento } from "../types/index";
 
 export class NumeroAtendimento {
     protected numeroAtendimento: string;
@@ -25,24 +19,6 @@ export class NumeroAtendimento {
         }
     }
 }
-
-export type EstruturaCarta = {
-    Fornecedor?: string;
-    Data?: string;
-    Prazo?: string;
-    Resposta?: string;
-    Situacao?: string;
-    NumeroAtendimento?: string;
-    CodigoFornecedor?: string;
-    CNPJ?: string;
-    Scraping?: string;
-}
-
-export type TuplaInformacoesFailedCarta = [string, string, string, string, string, string, string]
-
-export type TuplaInformacoesNulasCarta = [string, string, string, string, string, string]
-
-export type TuplaInformacoesParciaisCarta = [string, string, string, string]
 
 export class TratativaCarta {
     private fornecedor: string;
@@ -172,18 +148,6 @@ export class BaseDados {
         return this;
     }
 
-    public obterRegistrosUltimosMeses({ quantidadeMeses }: { quantidadeMeses: number }): this {
-
-        const dataBusca = new Calendario().data().subtrairMeses(quantidadeMeses);
-        const [dia, mes, ano] = dataBusca.split('/');
-        const anoBusca = ano.slice(2, 4);
-        const mesBusca = mes;
-
-        this.baseModificada = this.baseModificada.filter(elemento => elemento.slice(0, 2) == anoBusca && elemento.slice(3, 5) == mesBusca);
-
-        return this;
-    }
-
     public removerDuplicatas(): string[] {
         this.baseModificada = [...new Set(this.baseModificada)];
         return this.baseModificada;
@@ -211,28 +175,6 @@ export class Calendario {
         const [dia, mes, ano] = this.dataAtual.split('/');
         const prefixo = `${ano}-${mes}-${dia}_`;
         return prefixo;
-    }
-
-    public subtrairMeses(meses: number) {
-
-        const data = this.dataAtual;
-        const dia = data.getDate();
-
-        data.setDate(1);
-
-        const mes = new Date(data).getMonth();
-
-        data.setMonth(mes - meses);
-
-        const ultimoDia = new Date(
-            data.getFullYear(),
-            data.getMonth() + 1,
-            0
-        ).getDate();
-
-        data.setDate(Math.min(dia, ultimoDia));
-
-        return new Date(data).toLocaleDateString();
     }
 
     public ordensCronologicasNumeroAtendimentoEntreDatas({ dataInicial, dataFinal }: { dataInicial: string, dataFinal: string }): string[] {
@@ -280,37 +222,6 @@ export class Calendario {
         return ordensCronologicas;
     }
 }
-
-export type EstruturaConsumidor = {
-    NumeroAtendimento: string;
-    CPF?: string;
-    Nome?: string;
-    Nascimento?: string;
-    Sexo?: string;
-    RacaCorEtnia?: string;
-    NomeSocial?: string;
-    CEP?: string;
-    Latitude?: string;
-    Longitude?: string;
-    Logradouro?: string;
-    ComplementoNumero?: string;
-    Bairro?: string;
-    Cidade?: string;
-    UF?: string;
-    Telefone?: string;
-    CNPJ?: string;
-    RazaoSocial?: string;
-    Scraping?: string;
-
-}
-
-export type TuplaInformacoesParciaisConsumidorPessoaFisica = [string, string, string, string, string, string, string, string, string, string, string, string];
-
-export type TuplaInformacoesParciaisConsumidorPessoaJuridica = [string, string, string, string, string, string, string, string];
-
-export type TuplaInformacoesFailedConsumidor = [string, string, string, string, string, string, string, string, string, string, string, string, string, string];
-
-export type TuplaInfomacoesNulasConsumidor = [string, string, string, string, string, string, string, string, string, string, string, string, string, string];
 
 export class ConsumidorPessoaFisica {
     private numeroAtendimento: string;

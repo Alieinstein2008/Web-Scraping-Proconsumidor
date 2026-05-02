@@ -98,6 +98,12 @@ Web-Scraping-Proconsumidor
 ├── lib/
     ├── definitions.tsx
     ├── functions.tsx
+├── types/
+    ├── carta.types.ts
+    ├── consumidor.types.ts
+    ├── index.ts
+    ├── numeroAtendimento.types.ts
+    ├── user.config.types.ts
 ├── logs/
     ├── ***-passed.log
     ├── ***failed.log
@@ -108,9 +114,11 @@ Web-Scraping-Proconsumidor
     ├── databaseCartas.quickAcessFunctions.tsx
     ├── databaseConsumidor.config.tsx
     ├── databaseConsumidor.quickAcessFunctions.tsx
+    ├── databaseAssuntosProblemas.config.tsx
 │
 ├── scraper-TratativaCarta.tsx
 ├── scraper-Consumidor.tsx
+├── scraper-AssuntosProblemas.tsx
 ├── package.json
 ├── tsconfig.json
 └── README.md
@@ -172,7 +180,7 @@ Os dados coletados podem ser utilizados para:
 - 📊 Criação de dashboards de monitoramento
 - 🔎 Estudos sobre relações de consumo
 - 🧠 Projetos de ciência de dados
-
+- 🧭 Otimização de tarefas repetitivas 
 ---
 
 # 🔮 Melhorias Futuras
@@ -184,6 +192,7 @@ Possíveis evoluções do projeto:
 - Automação de coleta periódica
 - Sistema de logs e monitoramento
 - Dashboard para visualização dos dados
+- Interface gráfica do projeto 
 
 ---
 
