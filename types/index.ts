@@ -1,3 +1,4 @@
+import { EstruturaAudiencia } from "./audiencia.types";
 import { EstruturaCarta, TuplaInformacoesFailedCarta, TuplaInformacoesNulasCarta, TuplaInformacoesParciaisCarta } from "./carta.types";
 import { EstruturaConsumidor, TuplaInfomacoesNulasConsumidor, TuplaInformacoesFailedConsumidor, TuplaInformacoesParciaisConsumidorPessoaFisica, TuplaInformacoesParciaisConsumidorPessoaJuridica } from "./consumidor.types";
 import { TipoNumeroAtendimento } from "./numeroAtendimento.types";
@@ -8,6 +9,7 @@ export {
     EstruturaCarta,
     EstruturaConsumidor,
     TipoNumeroAtendimento,
+    EstruturaAudiencia,
     TuplaInformacoesFailedCarta,
     TuplaInformacoesNulasCarta,
     TuplaInformacoesParciaisCarta,
