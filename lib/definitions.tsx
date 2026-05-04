@@ -1,5 +1,5 @@
 import { extrairBaseCompleta, extrairColunaBase, atualizarBase, extrairDivergenciasColunaBaseComparativa, extrairDadosBasePorValorColuna, realizarBackupBase, extrairDadosBasePorOrdenamentoCronologicoNumeroAtendimento } from "./functions";
-import { EstruturaCarta, EstruturaConsumidor, TipoNumeroAtendimento } from "../types/index";
+import { EstruturaCarta, EstruturaConsumidor, EstruturaAudiencia, TipoNumeroAtendimento } from "../types/index";
 
 export class NumeroAtendimento {
     protected numeroAtendimento: string;
@@ -361,5 +361,78 @@ export class ConsumidorPessoaJuridica {
 
 
 
+
+}
+
+export class TratativaAudiencia {
+    private numeroAtendimento: string;
+    private codigoFornecedor: string;
+    private dataAbertura: string;
+    private fornecedor:string;
+    private cnpj:string;
+    private dataAudiencia:string;
+    private situacaoAudiencia: string;
+    private redesignacao: string;
+    private resultadoAudiencia: string;
+    private comparecimentoConsumidor: string;
+    private comparecimentoFornecedor: string;
+    private retornoFornecedor: string;
+    private scraping: string;
+
+    constructor(scraping: 'failed' | 'passed' | 'blank', numeroAtendimento: string, codigoFornecedor: string, dataAbertura: string, fornecedor: string, cnpj:string, dataAudiencia: string, situacaoAudiencia: string, redesignacao: string, resultadoAudiencia: string, comparecimentoConsumidor: string, comparecimentoFornecedor: string, retornoFornecedor: string) {    
+        this.numeroAtendimento = numeroAtendimento;
+        this.codigoFornecedor = codigoFornecedor;
+        this.dataAbertura = dataAbertura;
+        this.fornecedor = fornecedor;
+        this.cnpj = cnpj;
+        this.dataAudiencia = dataAudiencia;
+        this.situacaoAudiencia = situacaoAudiencia;
+        this.redesignacao = redesignacao;
+        this.resultadoAudiencia = resultadoAudiencia;
+        this.comparecimentoConsumidor = comparecimentoConsumidor;
+        this.comparecimentoFornecedor = comparecimentoFornecedor;
+        this.retornoFornecedor = retornoFornecedor;
+        this.scraping = scraping;
+
+    }
+    public retornaEstrutura(tipo: number): EstruturaAudiencia {
+            switch (tipo) {
+                case 1:
+                     const estrutura1: EstruturaAudiencia = {
+                        NumeroAtendimento: this.numeroAtendimento,
+                        CodigoFornecedor: this.codigoFornecedor,
+                        DataAbertura: this.dataAbertura,
+                        Fornecedor: this.fornecedor,
+                        Cnpj: this.cnpj,
+                        DataAudiencia: this.dataAudiencia,
+                        Situacao: this.situacaoAudiencia,
+                        Redesignacao: this.redesignacao,
+                        Resultado: this.resultadoAudiencia,
+                        ComparecimentoConsumidor: this.comparecimentoConsumidor,
+                        ComparecimentoFornecedor: this.comparecimentoFornecedor,
+                        RetornoFornecedor: this.retornoFornecedor,
+                        Scraping: this.scraping
+                        
+                    }
+                    return estrutura1;
+                default:
+                    const estrutura: EstruturaAudiencia = {
+                        NumeroAtendimento: this.numeroAtendimento,
+                        CodigoFornecedor: this.codigoFornecedor,
+                        DataAbertura: this.dataAbertura,
+                        Fornecedor: this.fornecedor,
+                        Cnpj: this.cnpj,
+                        DataAudiencia: this.dataAudiencia,
+                        Situacao: this.situacaoAudiencia,
+                        Redesignacao: this.redesignacao,
+                        Resultado: this.resultadoAudiencia,
+                        ComparecimentoConsumidor: this.comparecimentoConsumidor,
+                        ComparecimentoFornecedor: this.comparecimentoFornecedor,
+                        RetornoFornecedor: this.retornoFornecedor,
+                        Scraping: this.scraping
+                    }
+                    return estrutura;
+            }
+    }
 
 }
