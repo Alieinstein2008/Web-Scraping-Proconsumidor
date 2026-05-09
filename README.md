@@ -119,6 +119,7 @@ Web-Scraping-Proconsumidor
 ├── scraper-TratativaCarta.tsx
 ├── scraper-Consumidor.tsx
 ├── scraper-AssuntosProblemas.tsx
+|--- scraper-Audiencia.tsx
 ├── package.json
 ├── tsconfig.json
 └── README.md
