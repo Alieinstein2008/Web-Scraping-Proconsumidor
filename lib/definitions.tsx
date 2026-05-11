@@ -172,8 +172,10 @@ export class Calendario {
     }
 
     public prefixoArquivoDataAtual() {
-        const [dia, mes, ano] = this.dataAtual.split('/');
-        const prefixo = `${ano}-${mes}-${dia}_`;
+        const [dia, mes, ano] : [string, string, string] = this.dataAtual.split('/');
+        const [hora, minuto] : [number, number] = [new Date().getHours(), new Date().getMinutes()];
+        const minutoString = minuto < 10 ? `0${minuto}` : minuto;
+        const prefixo = `${ano}-${mes}-${dia}_${hora}${minutoString}_`;
         return prefixo;
     }
 
@@ -368,9 +370,9 @@ export class TratativaAudiencia {
     private numeroAtendimento: string;
     private codigoFornecedor: string;
     private dataAbertura: string;
-    private fornecedor:string;
-    private cnpj:string;
-    private dataAudiencia:string;
+    private fornecedor: string;
+    private cnpj: string;
+    private dataAudiencia: string;
     private situacaoAudiencia: string;
     private redesignacao: string;
     private resultadoAudiencia: string;
@@ -379,7 +381,7 @@ export class TratativaAudiencia {
     private retornoFornecedor: string;
     private scraping: string;
 
-    constructor(scraping: 'failed' | 'passed' | 'blank', numeroAtendimento: string, codigoFornecedor: string, dataAbertura: string, fornecedor: string, cnpj:string, dataAudiencia: string, situacaoAudiencia: string, redesignacao: string, resultadoAudiencia: string, comparecimentoConsumidor: string, comparecimentoFornecedor: string, retornoFornecedor: string) {    
+    constructor(scraping: 'failed' | 'passed' | 'blank', numeroAtendimento: string, codigoFornecedor: string, dataAbertura: string, fornecedor: string, cnpj: string, dataAudiencia: string, situacaoAudiencia: string, redesignacao: string, resultadoAudiencia: string, comparecimentoConsumidor: string, comparecimentoFornecedor: string, retornoFornecedor: string) {
         this.numeroAtendimento = numeroAtendimento;
         this.codigoFornecedor = codigoFornecedor;
         this.dataAbertura = dataAbertura;
@@ -396,43 +398,43 @@ export class TratativaAudiencia {
 
     }
     public retornaEstrutura(tipo: number): EstruturaAudiencia {
-            switch (tipo) {
-                case 1:
-                     const estrutura1: EstruturaAudiencia = {
-                        NumeroAtendimento: this.numeroAtendimento,
-                        CodigoFornecedor: this.codigoFornecedor,
-                        DataAbertura: this.dataAbertura,
-                        Fornecedor: this.fornecedor,
-                        Cnpj: this.cnpj,
-                        DataAudiencia: this.dataAudiencia,
-                        Situacao: this.situacaoAudiencia,
-                        Redesignacao: this.redesignacao,
-                        Resultado: this.resultadoAudiencia,
-                        ComparecimentoConsumidor: this.comparecimentoConsumidor,
-                        ComparecimentoFornecedor: this.comparecimentoFornecedor,
-                        RetornoFornecedor: this.retornoFornecedor,
-                        Scraping: this.scraping
-                        
-                    }
-                    return estrutura1;
-                default:
-                    const estrutura: EstruturaAudiencia = {
-                        NumeroAtendimento: this.numeroAtendimento,
-                        CodigoFornecedor: this.codigoFornecedor,
-                        DataAbertura: this.dataAbertura,
-                        Fornecedor: this.fornecedor,
-                        Cnpj: this.cnpj,
-                        DataAudiencia: this.dataAudiencia,
-                        Situacao: this.situacaoAudiencia,
-                        Redesignacao: this.redesignacao,
-                        Resultado: this.resultadoAudiencia,
-                        ComparecimentoConsumidor: this.comparecimentoConsumidor,
-                        ComparecimentoFornecedor: this.comparecimentoFornecedor,
-                        RetornoFornecedor: this.retornoFornecedor,
-                        Scraping: this.scraping
-                    }
-                    return estrutura;
-            }
+        switch (tipo) {
+            case 1:
+                const estrutura1: EstruturaAudiencia = {
+                    NumeroAtendimento: this.numeroAtendimento,
+                    CodigoFornecedor: this.codigoFornecedor,
+                    DataAbertura: this.dataAbertura,
+                    Fornecedor: this.fornecedor,
+                    Cnpj: this.cnpj,
+                    DataAudiencia: this.dataAudiencia,
+                    Situacao: this.situacaoAudiencia,
+                    Redesignacao: this.redesignacao,
+                    Resultado: this.resultadoAudiencia,
+                    ComparecimentoConsumidor: this.comparecimentoConsumidor,
+                    ComparecimentoFornecedor: this.comparecimentoFornecedor,
+                    RetornoFornecedor: this.retornoFornecedor,
+                    Scraping: this.scraping
+
+                }
+                return estrutura1;
+            default:
+                const estrutura: EstruturaAudiencia = {
+                    NumeroAtendimento: this.numeroAtendimento,
+                    CodigoFornecedor: this.codigoFornecedor,
+                    DataAbertura: this.dataAbertura,
+                    Fornecedor: this.fornecedor,
+                    Cnpj: this.cnpj,
+                    DataAudiencia: this.dataAudiencia,
+                    Situacao: this.situacaoAudiencia,
+                    Redesignacao: this.redesignacao,
+                    Resultado: this.resultadoAudiencia,
+                    ComparecimentoConsumidor: this.comparecimentoConsumidor,
+                    ComparecimentoFornecedor: this.comparecimentoFornecedor,
+                    RetornoFornecedor: this.retornoFornecedor,
+                    Scraping: this.scraping
+                }
+                return estrutura;
+        }
     }
 
 }
