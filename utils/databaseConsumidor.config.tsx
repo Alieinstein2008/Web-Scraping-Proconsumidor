@@ -10,7 +10,7 @@ const config = setDefaultFilesPath({
     directoryOutputRelativePath: '../data/out/Consumidor',
     inputFilenames: [
         'Consumidor-Web-Scraping.xlsx',
-        'Consumidor-Bairros-Comparativa.xlsx',
+        'Consumidor-Comparativa.xlsx',
         ]
 });
 
@@ -23,6 +23,6 @@ if (config.sucess) {
 export { inputPathConsumidor, outputPathConsumidor, filesPathConsumidor };
 
 export const baseDadosConsumidor = {
-    consumidor: new BaseDados(filesPathConsumidor[0]),
-    consumidorComparativa: new BaseDados(filesPathConsumidor[1]),
+    primaria: new BaseDados(filesPathConsumidor[0]),
+    comparativa: new BaseDados(filesPathConsumidor[1]),
     };
