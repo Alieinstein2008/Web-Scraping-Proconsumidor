@@ -1,16 +1,15 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WebScraping Proconsumidor</title>
-    <link rel="stylesheet" href="../public/style.css">
+    <link rel="stylesheet" href="/css/style.css">
 </head>
 
 <body>
     <header>
-        <img src="../public/imagens/logo procon.png" alt="Logo Procon">
+        <img src="/imagens/logo procon.png" alt="Logo Procon">
     </header>
 
     <main>
@@ -23,16 +22,16 @@
 
             </div>
             <div class="img-seta">
-                <img src="../public/imagens/seta.png" alt="Seta indicando o local de upload" widht="50px" height="50px">
+                <img src="/imagens/seta.png" alt="Seta indicando o local de upload" widht="50px" height="50px">
             </div>
-            <form id="upload-form">
-                <label action="../app.js" method="post" enctype="multipart/form-data" for="file-input" class="drop-zone" id="drop-zone" accept=".xlsx">
+            <form id="drop-zone" class="drop-zone" enctype="multipart/form-data" accept=".xlsx">
+                <label >
                     <span class="drop-zone__prompt">Arraste o arquivo ou clique aqui</span>
                     <input type="file" name="upload-file" id="file-input" class="drop-zone__input">
                 </label>
             </form>
             <div class="img-seta">
-                <img src="../public/imagens/seta.png" alt="Seta indicando o local de upload" widht="50px" height="50px">
+                <img src="/imagens/seta.png" alt="Seta indicando o local de upload" widht="50px" height="50px">
             </div>
             <div class="explicacao-texto-1">
                 <h2>Nome da Coluna para identificar Na's</h2>
@@ -40,7 +39,7 @@
                 <input type="text" id="column-name" placeholder="Ex: NumerodeAtendimento">
             </div>
             <div class="img-seta">
-                <img src="../public/imagens/seta.png" alt="Seta indicando o local de upload" widht="50px" height="50px">
+                <img src="/imagens/seta.png" alt="Seta indicando o local de upload" widht="50px" height="50px">
             </div>
             <div class="explicacao-texto-1">
                 <h2>Tipo do Arquivo</h2>
@@ -48,7 +47,7 @@
             </div>
             
             <div class="img-seta">
-                <img src="../public/imagens/seta.png" alt="Seta indicando o local de upload" widht="50px" height="50px">
+                <img src="/imagens/seta.png" alt="Seta indicando o local de upload" widht="50px" height="50px">
             </div>
             <select id="sheet-type">
                 <option value="audiencia">Audiência</option>
@@ -56,14 +55,14 @@
                 <option value="consumidor">Consumidor</option>
             </select>
             <div class="img-seta">
-                <img src="../public/imagens/seta.png" alt="Seta indicando o local de upload" widht="50px" height="50px">
+                <img src="/imagens/seta.png" alt="Seta indicando o local de upload" widht="50px" height="50px">
             </div>
             <button id="run-scraping">Processar Arquivo</button>
             <div id="download-result"></div>
 
         </section>
     </main>
-    <script src="../public/script/main.js"></script>
+    <script src="/main.js"></script>
 </body>
 
 </html>
