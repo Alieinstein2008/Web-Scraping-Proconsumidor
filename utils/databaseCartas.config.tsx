@@ -9,8 +9,8 @@ const config = setDefaultFilesPath({
     directoryInputRelativePath: '../data/in/Cartas',
     directoryOutputRelativePath: '../data/out/Cartas',
     inputFilenames: [
-        'Cartas-Base-Web-Scraping.xlsx',
-        'Cartas-Base-Bi-Comparativa.xlsx'
+        'Cartas-Web-Scraping.xlsx',
+        'Cartas-Comparativa.xlsx'
     ]
 });
 
@@ -23,6 +23,6 @@ if (config.sucess) {
 export { inputPathCartas, outputPathCartas, filesPathCartas };
 
 export const baseDadosCartas = {
-    atual: new BaseDados(filesPathCartas[0]),
+    primaria: new BaseDados(filesPathCartas[0]),
     comparativa: new BaseDados(filesPathCartas[1])
 };
