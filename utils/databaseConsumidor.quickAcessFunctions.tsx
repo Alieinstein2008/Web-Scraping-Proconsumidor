@@ -1,6 +1,6 @@
 import dotenv from 'dotenv';
 import { prefixoArquivo } from ".";
-import { baseDadosConsumidor, inputPathConsumidor } from "./databaseConsumidor.config";
+import { baseDadosConsumidor, inputPathConsumidor, outputPathConsumidor } from "./databaseConsumidor.config";
 
 dotenv.config();
 
@@ -8,10 +8,11 @@ const organizedMapping = {
     baseDadosPrimaria: baseDadosConsumidor.primaria,
     baseDadosComparativa: baseDadosConsumidor.comparativa,
     inputPath: inputPathConsumidor,
-    prefixoArquivo: prefixoArquivo,
+    outputPath: outputPathConsumidor,
     colunaHomologa: 'NumeroAtendimento',
     nomeArquivoEntrada: 'Consumidor-Web-Scraping',
-    nomeAba: `${prefixoArquivo}Bairros`
+    nomeArquivoBackup: `${prefixoArquivo}Consumidor-Base-Web-Scraping(Backup)`,
+    nomeAba: `${prefixoArquivo}Consumidor`
 }
 
 const reclamacoes = organizedMapping.baseDadosPrimaria.obterDadosDivergentes({
@@ -54,3 +55,13 @@ export function salvarAlteracoes(signal: string, data: any[]): void {
     console.log('Finalizando processo.');
     process.exit(0);
 };
+
+export function executarBackup() {
+    console.log('Iniciando processo de backup da base de dados primária ⏳');
+    organizedMapping.baseDadosPrimaria.executarBackup({
+        nomeArquivo: organizedMapping.nomeArquivoBackup,
+        nomeAba: organizedMapping.nomeAba,
+        outputPath: organizedMapping.outputPath
+    });
+    console.log('Backup concluído com sucesso. Finalizando processo.');
+}
