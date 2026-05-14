@@ -1,66 +1,67 @@
-import { Calendario } from "../lib/definitions";
-import { baseDadosCartas } from "./databaseCartas.config";
-import { inputPathCartas, outputPathCartas } from "./databaseCartas.config";
+import dotenv from 'dotenv';
+import { baseDadosCartas, inputPathCartas, outputPathCartas } from "./databaseCartas.config";
+import { prefixoArquivo } from ".";
 
-export function retornaReclamacoesDivergentesPeriodo({ dataInicial, dataFinal }: { dataInicial?: string, dataFinal?: string }): any[] {
-    const reclamacoesDivergentes = baseDadosCartas.atual.obterDadosDivergentes({
-        colunaHomologa: "NumeroAtendimento",
-        baseComparativa: baseDadosCartas.comparativa,
-        tipoNumeroAtendimento: 'Reclamacao',
-        dataInicial: dataInicial,
-        dataFinal: dataFinal
-    });
-    return reclamacoesDivergentes;
-};
+dotenv.config();
 
-export function retornaTodasReclamacoesDivergentes(): any[] {
-    const reclamacoesDivergentes = baseDadosCartas.atual.obterDadosDivergentes({
-        colunaHomologa: "NumeroAtendimento",
-        baseComparativa: baseDadosCartas.comparativa,
-        tipoNumeroAtendimento: 'Reclamacao'
-    });
-    return reclamacoesDivergentes;
-};
+const organizedMapping = {
+    baseDadosPrimaria: baseDadosCartas.primaria,
+    baseDadosComparativa: baseDadosCartas.comparativa,
+    inputPath: inputPathCartas,
+    outputPath: outputPathCartas,
+    colunaHomologa: 'NumeroAtendimento',
+    nomeArquivoEntrada: 'Cartas-Web-Scraping',
+    nomeArquivoBackup: `${prefixoArquivo}Cartas-Web-Scraping(Backup)`,
+    nomeAba: `${prefixoArquivo}Cartas`
+}
 
-export function retornaReclamacoesFalhas(): any[] {
-    const reclamacoesFalhas = baseDadosCartas.atual.criarFiltroColunaBase({
-        colunaFiltro: 'Scraping',
-        valorFiltro: 'failed',
-        colunaRetorno: 'NumeroAtendimento',
-        tipoNumeroAtendimento: 'Reclamacao'
-    });
-    return reclamacoesFalhas;
-};
+const reclamacoes = organizedMapping.baseDadosPrimaria.obterDadosDivergentes({
+    colunaHomologa: organizedMapping.colunaHomologa,
+    tipoNumeroAtendimento: 'Reclamacao',
+    baseComparativa: organizedMapping.baseDadosComparativa
+});     
 
-export function retornaReclamacoesUltimos4Meses(): any[] {
-    const reclamacoesUltimos4Meses = baseDadosCartas.atual.selecionar('NumeroAtendimento')
-        .tipoNumeroAtendimento('Reclamacao')
-        .obterRegistrosUltimosMeses({ quantidadeMeses: 4 })
-        .removerDuplicatas();
-    return reclamacoesUltimos4Meses;
-};
+const consultas = organizedMapping.baseDadosPrimaria.obterDadosDivergentes({
+    colunaHomologa: organizedMapping.colunaHomologa,
+    tipoNumeroAtendimento: 'Consulta',
+    baseComparativa: organizedMapping.baseDadosComparativa
+});
 
-export function executarBackupBaseCartas(): void {
-    const prefixoArquivo = new Calendario().prefixoArquivoDataAtual();
-    baseDadosCartas.atual.executarBackup({
-        nomeArquivo: `${prefixoArquivo}Cartas-Base-Web-Scraping(Backup)`,
-        nomeAba: `${prefixoArquivo}Cartas(Backup)`,
-        outputPath: outputPathCartas
-    });
-};
+const denuncias = organizedMapping.baseDadosPrimaria.obterDadosDivergentes({
+    colunaHomologa: organizedMapping.colunaHomologa,
+    tipoNumeroAtendimento: 'Denuncia',
+    baseComparativa: organizedMapping.baseDadosComparativa
+});
 
-export function carregarAlteracoesBaseCartas(data: any[]): void {
-    baseDadosCartas.atual.carregarAlteracoes({
+
+export const numerosAtendimentos = [
+    ...reclamacoes,
+    ...consultas,
+    ...denuncias
+];
+
+export function carregarAlteracoes(data: any[]): void {
+    organizedMapping.baseDadosPrimaria.carregarAlteracoes({
         novosDados: data,
-        nomeArquivo: 'Cartas-Base-Web-Scraping',
-        nomeAba: 'All',
-        inputPath: inputPathCartas
+        nomeArquivo: organizedMapping.nomeArquivoEntrada,
+        nomeAba: organizedMapping.nomeAba,
+        inputPath: organizedMapping.inputPath
     })
 };
 
-export function salvarAlteracoesBaseCartas(signal: string, dados: any[]): void {
-    console.log(`\n${signal} recebido. Iniciando o carregamento de ${dados.length} novos itens ⏳`);
-    carregarAlteracoesBaseCartas(dados);
+export function salvarAlteracoes(signal: string, data: any[]): void {
+    console.log(`\n${signal} recebido. Iniciando o carregamento de ${data.length} novos itens ⏳`);
+    carregarAlteracoes(data);
     console.log('Finalizando processo.');
     process.exit(0);
 };
+
+export function executarBackup() {
+    console.log('Iniciando processo de backup da base de dados primária ⏳');
+    organizedMapping.baseDadosPrimaria.executarBackup({
+        nomeArquivo: organizedMapping.nomeArquivoBackup,
+        nomeAba: organizedMapping.nomeAba,
+        outputPath: organizedMapping.outputPath
+    });
+    console.log('Backup concluído com sucesso. Finalizando processo.');
+}
