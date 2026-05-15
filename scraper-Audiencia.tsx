@@ -3,7 +3,7 @@ import { NumeroAtendimento, TratativaAudiencia } from "./lib/definitions";
 import { TuplaInformacoesFailedAudiencia, TuplaInformacoesNulasAudiencia, TuplaInformacoesParciaisAudienciaCancelada, TuplaInformacoesParciaisAudienciaFinalizada } from "./types/audiencia.types";
 import { customContext, customOptimizationBrowserArgsLaunch, customOptimizationPageRoute, customRefreshPage, customTimeout } from "./config/customDefinitions.config";
 import { createLogger } from './config/loggers.config';
-import { carregarAlteracoesBaseAudiencia, executarBackupBaseAudiencia, NA, salvarAlteracoesBaseAudiencia } from './utils/databaseAudiencia.quickAcessFunctions';
+import { carregarAlteracoes, salvarAlteracoes, executarBackup, numerosAtendimentos } from './utils/databaseAudiencia.quickAcessFunctions';
 
 const logger = createLogger({
     filenameCombine: 'audiencia/audiencia-combine',
@@ -32,11 +32,14 @@ const regexDataAbertura = new RegExp('\\d{2}\\/\\d{2}\\/\\d{4}', 'i');
     const regexDataAudiencia = new RegExp(` Dia \\d{2} de [A-Za-z]+ de \\d{4}`, 'i');
     const regexDataAbertura = new RegExp('\\d{2}\\/\\d{2}\\/\\d{4}', 'i');
 
-    const listaBusca = NA;
-
+    const listaBusca = numerosAtendimentos;
 
     await page.goto("https://proconsumidor.mj.gov.br/#/inicio", { waitUntil: "networkidle", timeout: customTimeout.general });
     let allTested: any[] = [];
+
+    executarBackup();
+    process.on('SIGINT', () => salvarAlteracoes('SIGINT', allTested));
+    process.on('SIGTERM', () => salvarAlteracoes('SIGTERM', allTested));
 
     for (const NA of listaBusca) {
 
@@ -87,16 +90,14 @@ const regexDataAbertura = new RegExp('\\d{2}\\/\\d{2}\\/\\d{4}', 'i');
                             const fornecedorCNPJ = await painelFornecedor.locator('input').nth(3).inputValue();
                             const resultadoAudiencia = (await page.locator('app-visualizar-audiencia #resultadoAudiencia option:checked').textContent()) ?? '';
 
-
                             const audiencia = new TratativaAudiencia('passed', numeroAtendimento.Formatacao(1), fornecedorCodigo, dataAbertura, args[0], fornecedorCNPJ, dataAudiencia, situacaoAudiencia, '', resultadoAudiencia, '', '', '');
                             const estrutura = audiencia.retornaEstrutura(0);
 
                             allTested.push(estrutura);
                             logger.log('passed', `${numeroAtendimento.Formatacao(1)} ⚖️ ✅`);
 
-
-
                         }
+
                         if (situacaoAudiencia.trim() === 'Cancelada') {
                             const dataAudiencia = (await page.locator('app-tratativa-audiencia').first().filter({ hasText: regexDataAudiencia }).textContent() ?? '').match(regexDataAudiencia)?.[0] ?? '';
                             const conteudoLinha: string[] = (await linha.locator('> td').allInnerTexts()).slice(0, 1);
@@ -116,9 +117,10 @@ const regexDataAbertura = new RegExp('\\d{2}\\/\\d{2}\\/\\d{4}', 'i');
                     }
                 }
             }
-            console.log(allTested);
-            carregarAlteracoesBaseAudiencia(allTested);
+
+            carregarAlteracoes(allTested);
             allTested.length = 0;
+            
         } catch (error) {
 
             const argsFailed = Array(11).fill('') as TuplaInformacoesFailedAudiencia;
@@ -129,9 +131,7 @@ const regexDataAbertura = new RegExp('\\d{2}\\/\\d{2}\\/\\d{4}', 'i');
 
         }
     }
-    executarBackupBaseAudiencia();
-    process.on('SIGINT', () => salvarAlteracoesBaseAudiencia('SIGINT', allTested));
-    process.on('SIGTERM', () => salvarAlteracoesBaseAudiencia('SIGTERM', allTested));
+
     console.timeEnd("Tempo-de-Execução-Total");
     await browser.close();
 
