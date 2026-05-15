@@ -9,8 +9,8 @@ const config = setDefaultFilesPath({
     directoryInputRelativePath: '../data/in/Audiencia',
     directoryOutputRelativePath: '../data/out/Audiencia',
     inputFilenames: [
-        'Audiencias-Base-Web-Scraping.xlsx',
-        'Audiencias-Base-Bi-Comparativa.xlsx'
+        'Audiencias-Web-Scraping.xlsx',
+        'Audiencias-Comparativa.xlsx'
     ]
 });
 
@@ -23,6 +23,6 @@ if (config.sucess) {
 export { inputPathAudiencia, outputPathAudiencia, filesPathAudiencia };
 
 export const baseDadosAudiencia = {
-    atual: new BaseDados(filesPathAudiencia[0]),
+    primaria: new BaseDados(filesPathAudiencia[0]),
     comparativa: new BaseDados(filesPathAudiencia[1])
 };
