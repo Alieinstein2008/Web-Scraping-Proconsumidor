@@ -56,8 +56,11 @@ h1 {
     border: 2px dashed #7a004b;
     border-radius: 10px;
     background-color: #f9f9f9;
+    
 }
-
+form{
+    user-select: none;
+}
 .drop-zone--over {
     border-style: solid;
     background-color: #e1f5fe;
