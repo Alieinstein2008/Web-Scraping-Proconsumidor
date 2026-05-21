@@ -1,63 +1,67 @@
-import { baseDadosAudiencia} from  "./databaseAudiencia.config";
-import { inputPathAudiencia, outputPathAudiencia } from "./databaseAudiencia.config";
-import { Calendario } from "../lib/definitions";
+import dotenv from 'dotenv';
+import { baseDadosAudiencia, inputPathAudiencia, outputPathAudiencia } from "./databaseAudiencia.config";
+import { Calendario } from '../lib/definitions';
 
-export const NA = baseDadosAudiencia.atual.obterDadosDivergentes({
+dotenv.config();
+const prefixoArquivo = new Calendario().prefixoArquivoDataAtual();
+const organizedMapping = {
+    baseDadosPrimaria: baseDadosAudiencia.primaria,
+    baseDadosComparativa: baseDadosAudiencia.comparativa,
+    inputPath: inputPathAudiencia,
+    outputPath: outputPathAudiencia,
     colunaHomologa: 'NumeroAtendimento',
+    nomeArquivoEntrada: 'Audiencias-Web-Scraping',
+    nomeArquivoBackup: `${prefixoArquivo}Audiencias-Web-Scraping(Backup)`,
+    nomeAba: `${prefixoArquivo}Audiencias`
+}
+
+const reclamacoes = organizedMapping.baseDadosPrimaria.obterDadosDivergentes({
+    colunaHomologa: organizedMapping.colunaHomologa,
     tipoNumeroAtendimento: 'Reclamacao',
-    baseComparativa: baseDadosAudiencia.comparativa
+    baseComparativa: organizedMapping.baseDadosComparativa
 });
 
-export function retornaReclamacoesDivergentesPeriodo({ dataInicial, dataFinal }: { dataInicial?: string, dataFinal?: string }): any[] {
-    const reclamacoesDivergentes = baseDadosAudiencia.atual.obterDadosDivergentes({
-        colunaHomologa: "NumeroAtendimento",
-        baseComparativa: baseDadosAudiencia.comparativa,
-        tipoNumeroAtendimento: 'Reclamacao',
-        dataInicial: dataInicial,
-        dataFinal: dataFinal
-    });
-    return reclamacoesDivergentes;
-};
+const consultas = organizedMapping.baseDadosPrimaria.obterDadosDivergentes({
+    colunaHomologa: organizedMapping.colunaHomologa,
+    tipoNumeroAtendimento: 'Consulta',
+    baseComparativa: organizedMapping.baseDadosComparativa
+});
 
-export function retornaTodasReclamacoesDivergentes(): any[] {
-    const reclamacoesDivergentes = baseDadosAudiencia.atual.obterDadosDivergentes({
-        colunaHomologa: "NumeroAtendimento",
-        baseComparativa: baseDadosAudiencia.comparativa,
-        tipoNumeroAtendimento: 'Reclamacao'
-    });
-    return reclamacoesDivergentes;
-};
+const denuncias = organizedMapping.baseDadosPrimaria.obterDadosDivergentes({
+    colunaHomologa: organizedMapping.colunaHomologa,
+    tipoNumeroAtendimento: 'Denuncia',
+    baseComparativa: organizedMapping.baseDadosComparativa
+});
 
-export function retornaReclamacoesFalhas(): any[] {
-    const reclamacoesFalhas = baseDadosAudiencia.atual.criarFiltroColunaBase({
-        colunaFiltro: 'Scraping',
-        valorFiltro: 'failed',
-        colunaRetorno: 'NumeroAtendimento',
-        tipoNumeroAtendimento: 'Reclamacao'
-    });
-    return reclamacoesFalhas;
-};
 
-export function executarBackupBaseAudiencia(): void {
-    const prefixoArquivo = new Calendario().prefixoArquivoDataAtual();
-    baseDadosAudiencia.atual.executarBackup({
-        nomeArquivo: `${prefixoArquivo}Audiencias-Base-Web-Scraping(Backup)`,
-        nomeAba: `${prefixoArquivo}Audiencias(Backup)`,
-        outputPath: outputPathAudiencia
-    });
-};
-export function carregarAlteracoesBaseAudiencia(data: any[]): void {
-    baseDadosAudiencia.atual.carregarAlteracoes({
+export const numerosAtendimentos = [
+    ...reclamacoes,
+    ...consultas,
+    ...denuncias
+];
+
+export function carregarAlteracoes(data: any[]): void {
+    organizedMapping.baseDadosPrimaria.carregarAlteracoes({
         novosDados: data,
-        nomeArquivo: 'Audiencias-Base-Web-Scraping',
-        nomeAba: 'All',
-        inputPath: inputPathAudiencia
+        nomeArquivo: organizedMapping.nomeArquivoEntrada,
+        nomeAba: organizedMapping.nomeAba,
+        inputPath: organizedMapping.inputPath
     })
 };
 
-export function salvarAlteracoesBaseAudiencia(signal: string, dados: any[]): void {
-    console.log(`\n${signal} recebido. Iniciando o carregamento de ${dados.length} novos itens ⏳`);
-    carregarAlteracoesBaseAudiencia(dados);
+export function salvarAlteracoes(signal: string, data: any[]): void {
+    console.log(`\n${signal} recebido. Iniciando o carregamento de ${data.length} novos itens ⏳`);
+    carregarAlteracoes(data);
     console.log('Finalizando processo.');
     process.exit(0);
 };
+
+export function executarBackup() {
+    console.log('Iniciando processo de backup da base de dados primária ⏳');
+    organizedMapping.baseDadosPrimaria.executarBackup({
+        nomeArquivo: organizedMapping.nomeArquivoBackup,
+        nomeAba: organizedMapping.nomeAba,
+        outputPath: organizedMapping.outputPath
+    });
+    console.log('Backup concluído com sucesso. Finalizando processo.');
+}
