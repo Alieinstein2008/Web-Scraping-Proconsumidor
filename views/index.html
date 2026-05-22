@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -25,18 +26,26 @@
                 <img src="/imagens/seta.png" alt="Seta indicando o local de upload" widht="50px" height="50px">
             </div>
             <form id="drop-zone" class="drop-zone" enctype="multipart/form-data" accept=".xlsx">
-                <label >
+                <select id="sheet-type">
+                    <option value="audiencia">Audiência</option>
+                    <option value="carta">Carta</option>
+                    <option value="consumidor">Consumidor</option>
+                </select>
+                <p>Digite o nome da coluna onde os valores de NA estão localizados:</p>
+                <input type="text" id="column-name" placeholder="Ex: NumerodeAtendimento">
+                <label>
                     <span class="drop-zone__prompt">Arraste o arquivo ou clique aqui</span>
                     <input type="file" name="upload-file" id="file-input" class="drop-zone__input">
                 </label>
+                <button id="run-scraping">Processar Arquivo</button>
+                <div id="download-result"></div>
             </form>
             <div class="img-seta">
                 <img src="/imagens/seta.png" alt="Seta indicando o local de upload" widht="50px" height="50px">
             </div>
             <div class="explicacao-texto-1">
                 <h2>Nome da Coluna para identificar Na's</h2>
-                <p>Digite o nome da coluna onde os valores de NA estão localizados:</p>
-                <input type="text" id="column-name" placeholder="Ex: NumerodeAtendimento">
+
             </div>
             <div class="img-seta">
                 <img src="/imagens/seta.png" alt="Seta indicando o local de upload" widht="50px" height="50px">
@@ -45,20 +54,15 @@
                 <h2>Tipo do Arquivo</h2>
                 <p>Selecione o tipo de arquivo que será analisado</p>
             </div>
-            
+
             <div class="img-seta">
                 <img src="/imagens/seta.png" alt="Seta indicando o local de upload" widht="50px" height="50px">
             </div>
-            <select id="sheet-type">
-                <option value="audiencia">Audiência</option>
-                <option value="carta">Carta</option>
-                <option value="consumidor">Consumidor</option>
-            </select>
+
             <div class="img-seta">
                 <img src="/imagens/seta.png" alt="Seta indicando o local de upload" widht="50px" height="50px">
             </div>
-            <button id="run-scraping">Processar Arquivo</button>
-            <div id="download-result"></div>
+
 
         </section>
     </main>
