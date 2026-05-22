@@ -20,8 +20,12 @@ app.use(express.urlencoded({ limit: '50mb', extended: true }));
 // Configuração do Multer
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    const folder = path.join(__dirname, 'data', 'in');
-    fs.mkdirSync(folder, { recursive: true });
+    const tipo = file.tipo || 'geral';
+    console.log(file);
+    const folder = path.join(__dirname, 'data', 'in', `${tipo}`);
+    if(!fs.existsSync(folder)) {
+      fs.mkdirSync(folder, { recursive: true });
+    }
     cb(null, folder);
   },
   filename: (req, file, cb) => {
@@ -29,7 +33,7 @@ const storage = multer.diskStorage({
   }
 });
 
- const upload = multer({ storage });
+ const upload = multer({ storage:storage });
 
 // Rota GET para servir HTML
 app.get('/', (req, res) => {
@@ -49,7 +53,6 @@ app.post('/upload', upload.single('file'), (req, res) => {
     const tipo = req.body.tipo;
     const columnName = req.body.columnName;
     const htmlContent = req.body.html;
-
     // Validações
     if (!tipo) {
       return res.status(400).json({
@@ -100,7 +103,7 @@ app.post('/upload', upload.single('file'), (req, res) => {
     };
 
     fs.writeFileSync(resultFile, JSON.stringify(processedData, null, 2));
-    if (req.file) {
+   /*  if (req.file) {
       authenticate().then(() => {
         console.log("Autenticação concluída, iniciando o scraper...");
         (async () => {
@@ -111,7 +114,7 @@ app.post('/upload', upload.single('file'), (req, res) => {
         console.error("Erro durante a autenticação:", error);
       });
     };
-    
+     */
     console.log('✓ Arquivo processado e salvo com sucesso!');
     console.log(`📁 Resultado: ${resultFile}\n`);
 
@@ -143,4 +146,3 @@ app.listen(PORT, () => {
   console.log(`📤 Pasta de saída: ./data/out/`);
   console.log('='.repeat(60) + '\n');
 });
-
