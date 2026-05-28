@@ -3,7 +3,7 @@ import { NumeroAtendimento, TratativaAudiencia } from "./lib/definitions";
 import { TuplaInformacoesFailedAudiencia, TuplaInformacoesNulasAudiencia, TuplaInformacoesParciaisAudienciaCancelada, TuplaInformacoesParciaisAudienciaFinalizada } from "./types/audiencia.types";
 import { customContext, customOptimizationBrowserArgsLaunch, customOptimizationPageRoute, customRefreshPage, customTimeout } from "./config/customDefinitions.config";
 import { createLogger } from './config/loggers.config';
-import { carregarAlteracoesBaseAudiencia, executarBackupBaseAudiencia, NA, salvarAlteracoesBaseAudiencia } from './utils/databaseAudiencia.quickAcessFunctions';
+import {  carregarAlteracoes, salvarAlteracoes, executarBackup, numerosAtendimentos} from './utils/databaseAudiencia.quickAcessFunctions';
 
 const logger = createLogger({
     filenameCombine: 'audiencia/audiencia-combine',
@@ -32,11 +32,12 @@ export async function scraperAudiencia() {
     const regexDataAudiencia = new RegExp(` Dia \\d{2} de [A-Za-z]+ de \\d{4}`, 'i');
     const regexDataAbertura = new RegExp('\\d{2}\\/\\d{2}\\/\\d{4}', 'i');
 
-    const listaBusca = NA;
-
+    const listaBusca = numerosAtendimentos;
 
     await page.goto("https://proconsumidor.mj.gov.br/#/inicio", { waitUntil: "networkidle", timeout: customTimeout.general });
     let allTested: any[] = [];
+
+    
 
     for (const NA of listaBusca) {
 
@@ -117,7 +118,7 @@ export async function scraperAudiencia() {
                 }
             }
             console.log(allTested);
-            carregarAlteracoesBaseAudiencia(allTested);
+            carregarAlteracoes(allTested);
             allTested.length = 0;
         } catch (error) {
 
@@ -129,12 +130,11 @@ export async function scraperAudiencia() {
 
         }
     }
-    executarBackupBaseAudiencia();
-    process.on('SIGINT', () => salvarAlteracoesBaseAudiencia('SIGINT', allTested));
-    process.on('SIGTERM', () => salvarAlteracoesBaseAudiencia('SIGTERM', allTested));
     console.timeEnd("Tempo-de-Execução-Total");
     await browser.close();
-
+    executarBackup();
+    process.on('SIGINT', () => salvarAlteracoes('SIGINT', allTested));
+    process.on('SIGTERM', () => salvarAlteracoes('SIGTERM', allTested));
 };
 
 
