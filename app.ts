@@ -20,8 +20,7 @@ app.use(express.urlencoded({ limit: '50mb', extended: true }));
 // Configuração do Multer
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    const tipo = file.tipo || 'geral';
-    console.log(file);
+    const tipo = file.tipo || 'temp';
     const folder = path.join(__dirname, 'data', 'in', `${tipo}`);
     if(!fs.existsSync(folder)) {
       fs.mkdirSync(folder, { recursive: true });
@@ -41,7 +40,7 @@ app.get('/', (req, res) => {
 });
 
 // Rota POST para upload e processamento
-app.post('/upload', upload.single('file'), (req, res) => {
+app.post('/upload', upload.single('file'), async (req, res) => {
   try {
     if (!req.file) {
       return res.status(400).json({
@@ -49,7 +48,7 @@ app.post('/upload', upload.single('file'), (req, res) => {
         error: 'Nenhum arquivo foi enviado.'
       });
     }
-
+    
     const tipo = req.body.tipo;
     const columnName = req.body.columnName;
     const htmlContent = req.body.html;
@@ -81,29 +80,24 @@ app.post('/upload', upload.single('file'), (req, res) => {
     console.log('='.repeat(60) + '\n');
 
     // Processar os dados
+    const arquivo = req.file;  
+    const caminhoArquivoScraper = path.join(__dirname, 'data', 'in' , `${tipo}`);
+    fs.mkdirSync(caminhoArquivoScraper, { recursive: true });
+   
+    const novoCaminho = path.join(caminhoArquivoScraper, `${tipo}s-Comparativa.xlsx`);
+    console.log(`📂 Movendo arquivo para: ${novoCaminho}`);
+    // Move o arquivo
+    fs.rename(arquivo.path, novoCaminho, (err) => {
+      if (err) throw err;
+     });  
     
-    console.log(`✓ Criando pasta para tipo: ${tipo}`);
-    const inputFolder = path.join(__dirname, 'data', 'in', tipo);
-    fs.mkdirSync(inputFolder, { recursive: true });
     const outputFolder = path.join(__dirname, 'data', 'out', tipo);
     fs.mkdirSync(outputFolder, { recursive: true });
 
     const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
     const resultFile = path.join(outputFolder, `resultado-${timestamp}.json`);
 
-    const processedData = {
-      tipo,
-      columnName,
-      arquivo: req.file.filename,
-      caminhoOrigem: req.file.path,
-      tamanhoKB: (req.file.size / 1024).toFixed(2),
-      htmlLengthKB: htmlContent ? (htmlContent.length / 1024).toFixed(2) : 0,
-      processadoEm: new Date().toISOString(),
-      status: 'Processado com sucesso'
-    };
-
-    fs.writeFileSync(resultFile, JSON.stringify(processedData, null, 2));
-   /*  if (req.file) {
+     if (req.file) {
       authenticate().then(() => {
         console.log("Autenticação concluída, iniciando o scraper...");
         (async () => {
@@ -114,9 +108,8 @@ app.post('/upload', upload.single('file'), (req, res) => {
         console.error("Erro durante a autenticação:", error);
       });
     };
-     */
+     
     console.log('✓ Arquivo processado e salvo com sucesso!');
-    console.log(`📁 Resultado: ${resultFile}\n`);
 
     res.json({
       success: true,
