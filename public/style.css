@@ -1,0 +1,71 @@
+*, body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+}
+header{
+    text-align: center;
+    margin-top: 20px;
+}
+h1{
+    text-align: center;
+    margin: 20px 0 20px 0;
+    color:#7a004b;
+}
+h2{
+    text-align: center;
+    color:#7a004b;
+}
+
+.Arquivo{
+    display: grid;
+    width: 90%;
+    margin: 0 auto;
+    grid-template-columns: repeat(6, 1fr);
+    place-items: center;
+    justify-content: center;
+    align-items: center;
+    
+}
+.Arquivo .explicacao-texto-1{
+    height: 150px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+form{
+    height: 150px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    
+}
+select{
+    border: 2px dashed #7a004b;
+    border-radius: 10px;
+    padding: 10px;
+    background-color: transparent;  
+}
+select:hover{
+    transition: 0.5s;
+}
+#run-scraping{
+    background-color: #7a004b;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight:700;
+    width: 250px;
+    height: 50px;
+}
+#run-scraping:hover{
+    transition: 0.5s;
+    color: white;
+    background-color: #d5489f;
+    
+}

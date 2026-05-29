@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebScraping Proconsumidor</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+    <header>
+        <img src="/imagens/logo procon.png" alt="Logo Procon">
+    </header>
+
+    <main>
+        <h1>WebScraping Proconsumidor</h1>
+        <section class="Arquivo">
+            <div class="explicacao-texto-1">
+                <h2>Upload do Arquivo</h2>
+                <p>O arquivo deve ser um arquivo XLSX e deve conter apenas dados de NA. Certifique-se de que o arquivo
+                    esteja formatado corretamente para garantir um upload bem-sucedido.</p>
+
+            </div>
+            <div class="img-seta">
+                <img src="/imagens/seta.png" alt="Seta indicando o local de upload" widht="50px" height="50px">
+            </div>
+            <form id="drop-zone" class="drop-zone" enctype="multipart/form-data" accept=".xlsx">
+                <select id="sheet-type">
+                    <option value="Audiencia">Audiência</option>
+                    <option value="Carta">Carta</option>
+                    <option value="Consumidor">Consumidor</option>
+                </select>
+                <p>Digite o nome da coluna onde os valores de NA estão localizados:</p>
+                <input type="text" id="column-name" placeholder="Ex: NumerodeAtendimento">
+                <label>
+                    <span class="drop-zone__prompt">Arraste o arquivo ou clique aqui</span>
+                    <input type="file" name="upload-file" id="file-input" class="drop-zone__input">
+                </label>
+                <button id="run-scraping">Processar Arquivo</button>
+                <div id="download-result"></div>
+            </form>
+            <div class="img-seta">
+                <img src="/imagens/seta.png" alt="Seta indicando o local de upload" widht="50px" height="50px">
+            </div>
+            <div class="explicacao-texto-1">
+                <h2>Nome da Coluna para identificar Na's</h2>
+
+            </div>
+            <div class="img-seta">
+                <img src="/imagens/seta.png" alt="Seta indicando o local de upload" widht="50px" height="50px">
+            </div>
+            <div class="explicacao-texto-1">
+                <h2>Tipo do Arquivo</h2>
+                <p>Selecione o tipo de arquivo que será analisado</p>
+            </div>
+
+            <div class="img-seta">
+                <img src="/imagens/seta.png" alt="Seta indicando o local de upload" widht="50px" height="50px">
+            </div>
+
+            <div class="img-seta">
+                <img src="/imagens/seta.png" alt="Seta indicando o local de upload" widht="50px" height="50px">
+            </div>
+
+
+        </section>
+    </main>
+    <script src="/main.js"></script>
+</body>
+
+</html>

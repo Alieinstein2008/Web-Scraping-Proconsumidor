@@ -10,7 +10,7 @@ const user: UserInformation = {
 }
 const authFile = 'playwright/.auth/user.json';
 
-(async () => {
+export async function authenticate() {
 
     const browser = await playwright.chromium.launch();
     const context = await browser.newContext();
@@ -45,4 +45,4 @@ const authFile = 'playwright/.auth/user.json';
         console.error('\n🛑 ERROR 🛑 : URL não existente ou indisponivel, verifique e tente novamente. 🛑 🛑\n');
     };
     await browser.close()
-})();
+};

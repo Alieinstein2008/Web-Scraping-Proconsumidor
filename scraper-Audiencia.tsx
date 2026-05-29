@@ -18,7 +18,7 @@ const regexSituacao = new RegExp(`(Finalizada|Cancelada|Aberta)`, 'i');
 const regexDataAudiencia = new RegExp(` Dia \\d{2} de [A-Za-z]+ de \\d{4}`, 'i');
 const regexDataAbertura = new RegExp('\\d{2}\\/\\d{2}\\/\\d{4}', 'i');
 
-(async () => {
+export async function scraperAudiencia() {
 
     console.time('Tempo-de-Execução-Total');
 
@@ -134,8 +134,10 @@ const regexDataAbertura = new RegExp('\\d{2}\\/\\d{2}\\/\\d{4}', 'i');
 
     console.timeEnd("Tempo-de-Execução-Total");
     await browser.close();
-
-})();
+    executarBackup();
+    process.on('SIGINT', () => salvarAlteracoes('SIGINT', allTested));
+    process.on('SIGTERM', () => salvarAlteracoes('SIGTERM', allTested));
+};
 
 
 
