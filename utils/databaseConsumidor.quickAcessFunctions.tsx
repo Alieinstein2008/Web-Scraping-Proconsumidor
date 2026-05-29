@@ -1,70 +1,67 @@
-import { baseDadosConsumidor, inputPathConsumidor } from "./databaseConsumidor.config";
-import { Calendario } from "../lib/definitions";
+import dotenv from 'dotenv';
+import { prefixoArquivo } from ".";
+import { baseDadosConsumidor, inputPathConsumidor, outputPathConsumidor } from "./databaseConsumidor.config";
 
-const prefixoData = new Calendario().prefixoArquivoDataAtual();
+dotenv.config();
 
-const reclamacoesBairrosSuperendividamento = baseDadosConsumidor.superendividamento.obterDadosDivergentes({
+const organizedMapping = {
+    baseDadosPrimaria: baseDadosConsumidor.primaria,
+    baseDadosComparativa: baseDadosConsumidor.comparativa,
+    inputPath: inputPathConsumidor,
+    outputPath: outputPathConsumidor,
     colunaHomologa: 'NumeroAtendimento',
+    nomeArquivoEntrada: 'Consumidor-Web-Scraping',
+    nomeArquivoBackup: `${prefixoArquivo}Consumidor-Base-Web-Scraping(Backup)`,
+    nomeAba: `${prefixoArquivo}Consumidor`
+}
+
+const reclamacoes = organizedMapping.baseDadosPrimaria.obterDadosDivergentes({
+    colunaHomologa: organizedMapping.colunaHomologa,
     tipoNumeroAtendimento: 'Reclamacao',
-    baseComparativa: baseDadosConsumidor.superendividamentoComparativa
+    baseComparativa: organizedMapping.baseDadosComparativa
 });
 
-const consultasBairrosSuperendividamento = baseDadosConsumidor.superendividamento.obterDadosDivergentes({
-    colunaHomologa: 'NumeroAtendimento',
+const consultas = organizedMapping.baseDadosPrimaria.obterDadosDivergentes({
+    colunaHomologa: organizedMapping.colunaHomologa,
     tipoNumeroAtendimento: 'Consulta',
-    baseComparativa: baseDadosConsumidor.superendividamentoComparativa
+    baseComparativa: organizedMapping.baseDadosComparativa
 });
 
-const denunciasBairrosSuperendividamento = baseDadosConsumidor.superendividamento.obterDadosDivergentes({
-    colunaHomologa: 'NumeroAtendimento',
+const denuncias = organizedMapping.baseDadosPrimaria.obterDadosDivergentes({
+    colunaHomologa: organizedMapping.colunaHomologa,
     tipoNumeroAtendimento: 'Denuncia',
-    baseComparativa: baseDadosConsumidor.superendividamentoComparativa
+    baseComparativa: organizedMapping.baseDadosComparativa
 });
 
-export const numerosAtendimentosBairrosSuperendividamento = [
-    ...reclamacoesBairrosSuperendividamento,
-    ...consultasBairrosSuperendividamento,
-    ...denunciasBairrosSuperendividamento
+
+export const numerosAtendimentos = [
+    ...reclamacoes,
+    ...consultas,
+    ...denuncias
 ];
 
-export function carregarAlteracoesBaseConsumidorBairrosSuperendividamento(data: any[]): void {
-    baseDadosConsumidor.superendividamento.carregarAlteracoes({
+export function carregarAlteracoes(data: any[]): void {
+    organizedMapping.baseDadosPrimaria.carregarAlteracoes({
         novosDados: data,
-        nomeArquivo: 'Consumidor-Bairros-Superendividamento-Web-Scraping',
-        nomeAba: `${prefixoData}Bairros`,
-        inputPath: inputPathConsumidor
+        nomeArquivo: organizedMapping.nomeArquivoEntrada,
+        nomeAba: organizedMapping.nomeAba,
+        inputPath: organizedMapping.inputPath
     })
 };
-/* 
-const reclamacoesBairrosRegionais = baseDadosConsumidor.regionais.obterDadosDivergentes({
-    colunaHomologa: 'NumeroAtendimento',
-    tipoNumeroAtendimento: 'Reclamacao',
-    baseComparativa: baseDadosConsumidor.regionaisComparativa
-});
 
-const consultasBairrosRegionais = baseDadosConsumidor.regionais.obterDadosDivergentes({
-    colunaHomologa: 'NumeroAtendimento',
-    tipoNumeroAtendimento: 'Consulta',
-    baseComparativa: baseDadosConsumidor.regionaisComparativa
-});
+export function salvarAlteracoes(signal: string, data: any[]): void {
+    console.log(`\n${signal} recebido. Iniciando o carregamento de ${data.length} novos itens ⏳`);
+    carregarAlteracoes(data);
+    console.log('Finalizando processo.');
+    process.exit(0);
+};
 
-const denunciasBairrosRegionais = baseDadosConsumidor.regionais.obterDadosDivergentes({
-    colunaHomologa: 'NumeroAtendimento',
-    tipoNumeroAtendimento: 'Denuncia',
-    baseComparativa: baseDadosConsumidor.regionaisComparativa
-});
-
-export const numerosAtendimentosBairrosRegionais = [
-    ...reclamacoesBairrosRegionais,
-    ...consultasBairrosRegionais,
-    ...denunciasBairrosRegionais
-];
-
-export function carregarAlteracoesBaseConsumidorBairrosRegionais(data: any[]): void {
-    baseDadosConsumidor.regionais.carregarAlteracoes({
-        novosDados: data,
-        nomeArquivo: 'Consumidor-Bairros-Regionais-Web-Scraping',
-        nomeAba: `${prefixoData}Bairros-Regionais`,
-        inputPath: inputPathConsumidor
-    })
-}; */
+export function executarBackup() {
+    console.log('Iniciando processo de backup da base de dados primária ⏳');
+    organizedMapping.baseDadosPrimaria.executarBackup({
+        nomeArquivo: organizedMapping.nomeArquivoBackup,
+        nomeAba: organizedMapping.nomeAba,
+        outputPath: organizedMapping.outputPath
+    });
+    console.log('Backup concluído com sucesso. Finalizando processo.');
+}

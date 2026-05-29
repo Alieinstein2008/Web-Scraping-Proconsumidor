@@ -105,20 +105,24 @@ Web-Scraping-Proconsumidor
     ├── numeroAtendimento.types.ts
     ├── user.config.types.ts
 ├── logs/
-    ├── ***-passed.log
-    ├── ***failed.log
-    ├── ***-blank.log
-    ├── ***combine.log
+    ├── NomeDoDiretorio/
+        ├── NomeDoArquivo-passed.log
+        ├── NomeDoArquivo-failed.log
+        ├── NomeDoArquivo-blank.log
+        ├── NomeDoArquivo-combine.log
 ├── utils/
     ├── databaseCartas.config.tsx
     ├── databaseCartas.quickAcessFunctions.tsx
     ├── databaseConsumidor.config.tsx
     ├── databaseConsumidor.quickAcessFunctions.tsx
     ├── databaseAssuntosProblemas.config.tsx
+    ├── databaseAudiencia.config.tsx
+    ├── databaseAudiencia.quickAcessFunctions.tsx
 │
 ├── scraper-TratativaCarta.tsx
 ├── scraper-Consumidor.tsx
 ├── scraper-AssuntosProblemas.tsx
+├── scraper-Audiencia.tsx
 ├── package.json
 ├── tsconfig.json
 └── README.md

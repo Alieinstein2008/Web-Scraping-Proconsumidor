@@ -1,9 +1,9 @@
 import dotenv from 'dotenv';
+import { prefixoArquivo } from ".";
 import { baseDadosAudiencia, inputPathAudiencia, outputPathAudiencia } from "./databaseAudiencia.config";
-import { Calendario } from '../lib/definitions';
 
 dotenv.config();
-const prefixoArquivo = new Calendario().prefixoArquivoDataAtual();
+
 const organizedMapping = {
     baseDadosPrimaria: baseDadosAudiencia.primaria,
     baseDadosComparativa: baseDadosAudiencia.comparativa,

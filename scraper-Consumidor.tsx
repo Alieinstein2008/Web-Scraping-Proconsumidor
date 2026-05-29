@@ -3,10 +3,10 @@ import { createLogger } from './config/loggers.config';
 import { coordenadasCep } from './config/fetchApi.config';
 import { TuplaInfomacoesNulasConsumidor, TuplaInformacoesFailedConsumidor, TuplaInformacoesParciaisConsumidorPessoaJuridica, TuplaInformacoesParciaisConsumidorPessoaFisica } from './types/index';
 import { customContext, customOptimizationBrowserArgsLaunch, customOptimizationPageRoute, customRefreshPage, customTimeout } from './config/customDefinitions.config';
-import { carregarAlteracoesBaseConsumidorBairrosSuperendividamento, numerosAtendimentosBairrosSuperendividamento } from './utils/databaseConsumidor.quickAcessFunctions';
+import { carregarAlteracoes, executarBackup, numerosAtendimentos, salvarAlteracoes } from './utils/databaseConsumidor.quickAcessFunctions';
 import { ConsumidorPessoaFisica, ConsumidorPessoaJuridica, NumeroAtendimento } from './lib/definitions';
 
-let allTested = [];
+let allTested: any[] = [];
 let limiteComparativo = 100;
 let contadorOcorrencia = 0;
 const regexWaitForResponseLastUrlRequest = new RegExp('cep\/consultar(\/[a-zA-Z0-9-._]+)*\/?$');
@@ -29,7 +29,12 @@ const logger = createLogger({
 
     let page = await context.newPage();
 
-    const itensBusca = numerosAtendimentosBairrosSuperendividamento;
+    const itensBusca = numerosAtendimentos;
+
+    executarBackup();
+
+    process.on('SIGINT', () => salvarAlteracoes('SIGINT', allTested));
+    process.on('SIGTERM', () => salvarAlteracoes('SIGTERM', allTested));
 
     for (const NA of itensBusca) {
 
@@ -67,7 +72,7 @@ const logger = createLogger({
                     await page.locator('div').filter({ hasText: regexTextPainelExtensivel }).nth(1).click({ timeout: customTimeout.click });
                 }
 
-                if (await painelExpansivel().getByLabel('Origem do Atendimento').locator('option:checked').isVisible() && await painelExpansivel().getByLabel('Origem do Atendimento').locator('option:checked').textContent()  == 'Ofício ') {
+                if (await painelExpansivel().getByLabel('Origem do Atendimento').locator('option:checked').isVisible() && await painelExpansivel().getByLabel('Origem do Atendimento').locator('option:checked').textContent() == 'Ofício ') {
                     logger.log('blank', `${numeroAtendimento.Formatacao(1)} 📄 🖋️`);
                     allTested.push({ NumeroAtendimento: numeroAtendimento.Formatacao(1), Bairro: 'Reclamacao de Oficio' });
                 }
@@ -139,7 +144,7 @@ const logger = createLogger({
                 continue;
             }
 
-            carregarAlteracoesBaseConsumidorBairrosSuperendividamento(allTested);
+            carregarAlteracoes(allTested);
             allTested.length = 0;
             if (contadorOcorrencia % limiteComparativo === 0) logger.info(`${contadorOcorrencia}/${itensBusca.length} alterações carregadas com sucesso 👌`);
             contadorOcorrencia++;

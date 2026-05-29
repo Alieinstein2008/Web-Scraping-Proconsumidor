@@ -1,7 +1,7 @@
 import playwright from 'playwright';
 import { TuplaInformacoesFailedCarta, TuplaInformacoesNulasCarta, TuplaInformacoesParciaisCarta } from './types/index';
 import { NumeroAtendimento, TratativaCarta } from './lib/definitions';
-import { carregarAlteracoesBaseCartas, executarBackupBaseCartas, retornaReclamacoesDivergentesPeriodo, retornaReclamacoesFalhas, retornaReclamacoesUltimos4Meses, salvarAlteracoesBaseCartas } from './utils/databaseCartas.quickAccessFunctions';
+import { carregarAlteracoes, executarBackup, salvarAlteracoes, numerosAtendimentos } from './utils/databaseCartas.quickAccessFunctions';
 import { createLogger } from './config/loggers.config';
 import { customContext, customOptimizationBrowserArgsLaunch, customOptimizationPageRoute, customRefreshPage } from './config/customDefinitions.config';
 
@@ -28,21 +28,12 @@ let limiteComparativo = 100;
     const context = await customContext(browser);
     let page = await context.newPage();
 
-    const reclamacoesDivergentesPeriodo = retornaReclamacoesDivergentesPeriodo({
-        dataInicial: '01/12/2022',
-        dataFinal: '01/12/2022'
-    })
+    const listaBusca = numerosAtendimentos;
 
-    //const reclamacoesDivergentes = retornaReclamacoesDivergentes();
-    //const reclamacoesFalhas = retornaReclamacoesFalhas();
-    //const reclamacoesUltimos4Meses = retornaReclamacoesUltimos4Meses();
-    const grupoBusca = [...reclamacoesDivergentesPeriodo];
-    const listaBusca = [...new Set(grupoBusca)];
+    executarBackup();
 
-    executarBackupBaseCartas();
-
-    process.on('SIGINT', () => salvarAlteracoesBaseCartas('SIGINT', allTested));
-    process.on('SIGTERM', () => salvarAlteracoesBaseCartas('SIGTERM', allTested));
+    process.on('SIGINT', () => salvarAlteracoes('SIGINT', allTested));
+    process.on('SIGTERM', () => salvarAlteracoes('SIGTERM', allTested));
 
     for (const NA of listaBusca) {
 
@@ -115,7 +106,7 @@ let limiteComparativo = 100;
                 continue;
             }
 
-            carregarAlteracoesBaseCartas(allTested);
+            carregarAlteracoes(allTested);
             allTested.length = 0;
             if (contadorOcorrencia % limiteComparativo === 0) logger.info(`${contadorOcorrencia}/${listaBusca.length} alterações carregadas com sucesso 👌`);
             contadorOcorrencia++;

@@ -9,8 +9,8 @@ const config = setDefaultFilesPath({
     directoryInputRelativePath: '../data/in/AssuntosProblemas',
     directoryOutputRelativePath: '../data/out/AssuntosProblemas',
     inputFilenames: [
-        'AssuntosProblemas-Base-Web-Scraping.xlsx',
-        'AssuntosProblemas-Base-Comparativa.xlsx'
+        'AssuntosProblemas-Web-Scraping.xlsx',
+        'AssuntosProblemas-Comparativa.xlsx'
     ]
 });
 
@@ -23,6 +23,6 @@ if (config.sucess) {
 export { inputPathAssuntosProblemas, outputPathAssuntosProblemas, filesPathAssuntosProblemas };
 
 export const baseDadosAssuntosProblemas = {
-    atual: new BaseDados(filesPathAssuntosProblemas[0]),
+    primaria: new BaseDados(filesPathAssuntosProblemas[0]),
     comparativa: new BaseDados(filesPathAssuntosProblemas[1])
 };
