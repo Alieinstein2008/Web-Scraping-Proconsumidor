@@ -20,7 +20,7 @@ let allTested: any[] = [];
 let contadorOcorrencia = 0;
 let limiteComparativo = 100;
 
-(async () => {
+export async function scraperTratativaCarta() {
 
     console.time("Tempo-de-Execução-Total");
 
@@ -120,4 +120,4 @@ let limiteComparativo = 100;
     console.timeEnd("Tempo-de-Execução-Total");
     await browser.close();
 
-})();
+};
