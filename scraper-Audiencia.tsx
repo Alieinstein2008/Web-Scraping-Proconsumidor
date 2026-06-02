@@ -37,10 +37,6 @@ export async function scraperAudiencia() {
     await page.goto("https://proconsumidor.mj.gov.br/#/inicio", { waitUntil: "networkidle", timeout: customTimeout.general });
     let allTested: any[] = [];
 
-    executarBackup();
-    process.on('SIGINT', () => salvarAlteracoes('SIGINT', allTested));
-    process.on('SIGTERM', () => salvarAlteracoes('SIGTERM', allTested));
-
     for (const NA of listaBusca) {
 
         const numeroAtendimento = new NumeroAtendimento(NA);
@@ -134,9 +130,7 @@ export async function scraperAudiencia() {
 
     console.timeEnd("Tempo-de-Execução-Total");
     await browser.close();
-    executarBackup();
-    process.on('SIGINT', () => salvarAlteracoes('SIGINT', allTested));
-    process.on('SIGTERM', () => salvarAlteracoes('SIGTERM', allTested));
+    
 };
 
 
