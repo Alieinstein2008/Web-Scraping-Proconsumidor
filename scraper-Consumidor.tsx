@@ -19,7 +19,7 @@ const logger = createLogger({
     filenameBlank: 'consumidor/consumidor-blank'
 });
 
-(async () => {
+export async function scraperConsumidor() {
 
     console.time('Tempo-de-Execução-Total');
 
@@ -158,4 +158,4 @@ const logger = createLogger({
     console.timeEnd("Tempo-de-Execução-Total");
     await browser.close();
 
-})();
+};
