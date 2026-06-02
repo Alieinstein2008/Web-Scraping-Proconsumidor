@@ -1,10 +1,9 @@
 import dotenv from 'dotenv';
 import { prefixoArquivo } from ".";
 import { baseDadosAudiencia, inputPathAudiencia, outputPathAudiencia } from "./databaseAudiencia.config";
-
 dotenv.config();
 
-const organizedMapping = {
+export const organizedMappingAudiencia = {
     baseDadosPrimaria: baseDadosAudiencia.primaria,
     baseDadosComparativa: baseDadosAudiencia.comparativa,
     inputPath: inputPathAudiencia,
@@ -15,22 +14,22 @@ const organizedMapping = {
     nomeAba: `${prefixoArquivo}Audiencias`
 }
 
-const reclamacoes = organizedMapping.baseDadosPrimaria.obterDadosDivergentes({
-    colunaHomologa: organizedMapping.colunaHomologa,
+const reclamacoes = organizedMappingAudiencia.baseDadosPrimaria.obterDadosDivergentes({
+    colunaHomologa: organizedMappingAudiencia.colunaHomologa,
     tipoNumeroAtendimento: 'Reclamacao',
-    baseComparativa: organizedMapping.baseDadosComparativa
+    baseComparativa: organizedMappingAudiencia.baseDadosComparativa
 });
 
-const consultas = organizedMapping.baseDadosPrimaria.obterDadosDivergentes({
-    colunaHomologa: organizedMapping.colunaHomologa,
+const consultas = organizedMappingAudiencia.baseDadosPrimaria.obterDadosDivergentes({
+    colunaHomologa: organizedMappingAudiencia.colunaHomologa,
     tipoNumeroAtendimento: 'Consulta',
-    baseComparativa: organizedMapping.baseDadosComparativa
+    baseComparativa: organizedMappingAudiencia.baseDadosComparativa
 });
 
-const denuncias = organizedMapping.baseDadosPrimaria.obterDadosDivergentes({
-    colunaHomologa: organizedMapping.colunaHomologa,
+const denuncias = organizedMappingAudiencia.baseDadosPrimaria.obterDadosDivergentes({
+    colunaHomologa: organizedMappingAudiencia.colunaHomologa,
     tipoNumeroAtendimento: 'Denuncia',
-    baseComparativa: organizedMapping.baseDadosComparativa
+    baseComparativa: organizedMappingAudiencia.baseDadosComparativa
 });
 
 
@@ -41,11 +40,11 @@ export const numerosAtendimentos = [
 ];
 
 export function carregarAlteracoes(data: any[]): void {
-    organizedMapping.baseDadosPrimaria.carregarAlteracoes({
+    organizedMappingAudiencia.baseDadosPrimaria.carregarAlteracoes({
         novosDados: data,
-        nomeArquivo: organizedMapping.nomeArquivoEntrada,
-        nomeAba: organizedMapping.nomeAba,
-        inputPath: organizedMapping.inputPath
+        nomeArquivo: organizedMappingAudiencia.nomeArquivoEntrada,
+        nomeAba: organizedMappingAudiencia.nomeAba,
+        inputPath: organizedMappingAudiencia.inputPath
     })
 };
 
@@ -58,10 +57,10 @@ export function salvarAlteracoes(signal: string, data: any[]): void {
 
 export function executarBackup() {
     console.log('Iniciando processo de backup da base de dados primária ⏳');
-    organizedMapping.baseDadosPrimaria.executarBackup({
-        nomeArquivo: organizedMapping.nomeArquivoBackup,
-        nomeAba: organizedMapping.nomeAba,
-        outputPath: organizedMapping.outputPath
+    organizedMappingAudiencia.baseDadosPrimaria.executarBackup({
+        nomeArquivo: organizedMappingAudiencia.nomeArquivoBackup,
+        nomeAba: organizedMappingAudiencia.nomeAba,
+        outputPath: organizedMappingAudiencia.outputPath
     });
     console.log('Backup concluído com sucesso. Finalizando processo.');
 }
