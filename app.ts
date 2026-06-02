@@ -4,8 +4,12 @@ import path from 'path';
 import fs from 'fs';
 import { fileURLToPath } from 'url';
 import { scraperAudiencia } from "./scraper-Audiencia";
+import { scraperTratativaCarta } from "./scraper-TratativaCarta";
+import { scraperConsumidor } from "./scraper-Consumidor";
 import { authenticate } from "./config/auth.function";
-
+import { organizedMappingAudiencia as organizedMappingAudiencia } from "./utils/databaseAudiencia.quickAcessFunctions";
+import { organizedMappingCarta as organizedMappingCarta} from "./utils/databaseCartas.quickAccessFunctions";
+import { organizedMappingConsumidor as organizedMappingConsumidor} from "./utils/databaseConsumidor.quickAcessFunctions";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -110,10 +114,28 @@ app.post('/upload', upload.single('file'), async (req, res) => {
     if (req.file) {
       authenticate().then(() => {
         console.log("Autenticação concluída, iniciando o scraper...");
-        console.log("Nome da coluna para o scraper:", columnName);
-        (async () => {
-          await scraperAudiencia();
-        })();
+        if(tipo === 'Audiencia') {
+          organizedMappingAudiencia.colunaHomologa = columnName;
+          console.log('Coluna homologada atualizada para o scraper de audiência:', organizedMappingAudiencia.colunaHomologa);
+          (async () => {
+            await scraperAudiencia();
+          })();
+        }
+        if(tipo === 'Carta') {
+          organizedMappingCarta.colunaHomologa = columnName;
+          console.log('Coluna homologada atualizada para o scraper de carta:', organizedMappingCarta.colunaHomologa);
+          (async () => {
+            await scraperTratativaCarta();
+          })();
+        }
+        if(tipo === 'Consumidor') {
+          organizedMappingConsumidor.colunaHomologa = columnName;
+          console.log('Coluna homologada atualizada para o scraper do consumidor:', organizedMappingConsumidor.colunaHomologa);
+          (async () => {
+            await scraperConsumidor();
+          })();
+        }
+        
 
       }).catch((error) => {
         console.error("Erro durante a autenticação:", error);
