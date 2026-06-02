@@ -4,7 +4,7 @@ import { prefixoArquivo } from ".";
 
 dotenv.config();
 
-const organizedMapping = {
+export const organizedMappingCarta = {
     baseDadosPrimaria: baseDadosCartas.primaria,
     baseDadosComparativa: baseDadosCartas.comparativa,
     inputPath: inputPathCartas,
@@ -15,22 +15,22 @@ const organizedMapping = {
     nomeAba: `${prefixoArquivo}Cartas`
 }
 
-const reclamacoes = organizedMapping.baseDadosPrimaria.obterDadosDivergentes({
-    colunaHomologa: organizedMapping.colunaHomologa,
+const reclamacoes = organizedMappingCarta.baseDadosPrimaria.obterDadosDivergentes({
+    colunaHomologa: organizedMappingCarta.colunaHomologa,
     tipoNumeroAtendimento: 'Reclamacao',
-    baseComparativa: organizedMapping.baseDadosComparativa
+    baseComparativa: organizedMappingCarta.baseDadosComparativa
 });     
 
-const consultas = organizedMapping.baseDadosPrimaria.obterDadosDivergentes({
-    colunaHomologa: organizedMapping.colunaHomologa,
+const consultas = organizedMappingCarta.baseDadosPrimaria.obterDadosDivergentes({
+    colunaHomologa: organizedMappingCarta.colunaHomologa,
     tipoNumeroAtendimento: 'Consulta',
-    baseComparativa: organizedMapping.baseDadosComparativa
+    baseComparativa: organizedMappingCarta.baseDadosComparativa
 });
 
-const denuncias = organizedMapping.baseDadosPrimaria.obterDadosDivergentes({
-    colunaHomologa: organizedMapping.colunaHomologa,
+const denuncias = organizedMappingCarta.baseDadosPrimaria.obterDadosDivergentes({
+    colunaHomologa: organizedMappingCarta.colunaHomologa,
     tipoNumeroAtendimento: 'Denuncia',
-    baseComparativa: organizedMapping.baseDadosComparativa
+    baseComparativa: organizedMappingCarta.baseDadosComparativa
 });
 
 
@@ -41,11 +41,11 @@ export const numerosAtendimentos = [
 ];
 
 export function carregarAlteracoes(data: any[]): void {
-    organizedMapping.baseDadosPrimaria.carregarAlteracoes({
+    organizedMappingCarta.baseDadosPrimaria.carregarAlteracoes({
         novosDados: data,
-        nomeArquivo: organizedMapping.nomeArquivoEntrada,
-        nomeAba: organizedMapping.nomeAba,
-        inputPath: organizedMapping.inputPath
+        nomeArquivo: organizedMappingCarta.nomeArquivoEntrada,
+        nomeAba: organizedMappingCarta.nomeAba,
+        inputPath: organizedMappingCarta.inputPath
     })
 };
 
@@ -58,10 +58,10 @@ export function salvarAlteracoes(signal: string, data: any[]): void {
 
 export function executarBackup() {
     console.log('Iniciando processo de backup da base de dados primária ⏳');
-    organizedMapping.baseDadosPrimaria.executarBackup({
-        nomeArquivo: organizedMapping.nomeArquivoBackup,
-        nomeAba: organizedMapping.nomeAba,
-        outputPath: organizedMapping.outputPath
+    organizedMappingCarta.baseDadosPrimaria.executarBackup({
+        nomeArquivo: organizedMappingCarta.nomeArquivoBackup,
+        nomeAba: organizedMappingCarta.nomeAba,
+        outputPath: organizedMappingCarta.outputPath
     });
     console.log('Backup concluído com sucesso. Finalizando processo.');
 }
