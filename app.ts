@@ -21,18 +21,20 @@ app.use(express.urlencoded({ limit: '50mb', extended: true }));
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     const tipo = file.tipo || 'temp';
-    const folder = path.join(__dirname, 'data', 'in', `${tipo}`);
-    if(!fs.existsSync(folder)) {
-      fs.mkdirSync(folder, { recursive: true });
+    const folder = path.join(__dirname, 'data', 'in', tipo);
+  
+    if (!fs.existsSync(folder)) {
+       fs.mkdirSync(folder, { recursive: true });
     }
     cb(null, folder);
-  },
+   
+},
   filename: (req, file, cb) => {
     cb(null, "Audiencias-Base-Bi-Comparativa.xlsx");
   }
 });
 
- const upload = multer({ storage:storage });
+const upload = multer({ storage: storage });
 
 // Rota GET para servir HTML
 app.get('/', (req, res) => {
@@ -42,13 +44,21 @@ app.get('/', (req, res) => {
 // Rota POST para upload e processamento
 app.post('/upload', upload.single('file'), async (req, res) => {
   try {
+    
+    if (req.file.mimetype !== 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet') {
+      return res.status(400).json({
+        success: false,
+        error: 'Tipo de arquivo inválido. Apenas arquivos .xlsx são permitidos.'
+      });
+    }
+    console.log(req.file.mimetype);
     if (!req.file) {
       return res.status(400).json({
         success: false,
         error: 'Nenhum arquivo foi enviado.'
       });
     }
-    
+
     const tipo = req.body.tipo;
     const columnName = req.body.columnName;
     const htmlContent = req.body.html;
@@ -80,35 +90,36 @@ app.post('/upload', upload.single('file'), async (req, res) => {
     console.log('='.repeat(60) + '\n');
 
     // Processar os dados
-    const arquivo = req.file;  
-    const caminhoArquivoScraper = path.join(__dirname, 'data', 'in' , `${tipo}`);
+    const arquivo = req.file;
+    const caminhoArquivoScraper = path.join(__dirname, 'data', 'in', `${tipo}`);
     fs.mkdirSync(caminhoArquivoScraper, { recursive: true });
-   
+
     const novoCaminho = path.join(caminhoArquivoScraper, `${tipo}s-Comparativa.xlsx`);
     console.log(`📂 Movendo arquivo para: ${novoCaminho}`);
     // Move o arquivo
     fs.rename(arquivo.path, novoCaminho, (err) => {
       if (err) throw err;
-     });  
-    
+    });
+
     const outputFolder = path.join(__dirname, 'data', 'out', tipo);
     fs.mkdirSync(outputFolder, { recursive: true });
 
     const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
     const resultFile = path.join(outputFolder, `resultado-${timestamp}.json`);
 
-     if (req.file) {
+    if (req.file) {
       authenticate().then(() => {
         console.log("Autenticação concluída, iniciando o scraper...");
+        console.log("Nome da coluna para o scraper:", columnName);
         (async () => {
           await scraperAudiencia();
         })();
-       
+
       }).catch((error) => {
         console.error("Erro durante a autenticação:", error);
       });
     };
-     
+
     console.log('✓ Arquivo processado e salvo com sucesso!');
 
     res.json({

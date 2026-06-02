@@ -161,6 +161,13 @@ const downloadResult = document.getElementById('download-result');
 // ============================================
 
 fileInput.addEventListener('change', (e) => {
+  const allowedType = 'application/pdf';
+
+    if (file.type !== allowedType) {
+      setError('Apenas arquivos PDF são permitidos.');
+      event.target.value = ''; // Reseta o input
+      return;
+    }
   if (e.target.files.length > 0) {
     const file = e.target.files[0];
     const sizeMB = (file.size / (1024 * 1024)).toFixed(2);
@@ -219,7 +226,6 @@ columnNameInput.addEventListener('input', () => {
 runScrapingBtn.addEventListener('click', async (e) => {
   e.preventDefault();
   hideStatus();
-
   // Validação
   if (!fileInput.files.length) {
     showStatus('❌ Selecione um arquivo XLSX', 'error', 3000);
