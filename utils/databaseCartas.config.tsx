@@ -6,8 +6,8 @@ let outputPathCartas: string = '';
 let filesPathCartas: string[] = [];
 
 const config = setDefaultFilesPath({
-    directoryInputRelativePath: '../data/in/Cartas',
-    directoryOutputRelativePath: '../data/out/Cartas',
+    directoryInputRelativePath: '../data/in/Carta',
+    directoryOutputRelativePath: '../data/out/Carta',
     inputFilenames: [
         'Cartas-Web-Scraping.xlsx',
         'Cartas-Comparativa.xlsx'
