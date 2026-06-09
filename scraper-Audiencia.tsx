@@ -3,7 +3,7 @@ import { NumeroAtendimento, TratativaAudiencia } from "./lib/definitions";
 import { TuplaInformacoesFailedAudiencia, TuplaInformacoesNulasAudiencia, TuplaInformacoesParciaisAudienciaCancelada, TuplaInformacoesParciaisAudienciaFinalizada } from "./types/audiencia.types";
 import { customContext, customOptimizationBrowserArgsLaunch, customOptimizationPageRoute, customRefreshPage, customTimeout } from "./config/customDefinitions.config";
 import { createLogger } from './config/loggers.config';
-import { carregarAlteracoes, salvarAlteracoes, executarBackup, numerosAtendimentos } from './utils/databaseAudiencia.quickAcessFunctions';
+import dbAudienciaQuick from './utils/databaseAudiencia.quickAcessFunctions';
 
 const logger = createLogger({
     filenameCombine: 'audiencia/audiencia-combine',
@@ -18,10 +18,10 @@ const regexSituacao = new RegExp(`(Finalizada|Cancelada|Aberta)`, 'i');
 const regexDataAudiencia = new RegExp(` Dia \\d{2} de [A-Za-z]+ de \\d{4}`, 'i');
 const regexDataAbertura = new RegExp('\\d{2}\\/\\d{2}\\/\\d{4}', 'i');
 
-export async function scraperAudiencia() {
+export async function scraperAudiencia(colunaHomologa: string) {
 
     console.time('Tempo-de-Execução-Total');
-
+    console.log('SIRRRRR:',colunaHomologa);
     const browser = await playwright.chromium.launch({ args: customOptimizationBrowserArgsLaunch });
     const context = await customContext(browser);
     let page = await context.newPage();
@@ -30,10 +30,10 @@ export async function scraperAudiencia() {
     const regexBusca = new RegExp(`[0-9] - ${textoBusca}`, '');
     const regexSituacao = new RegExp(`(Finalizada|Cancelada|Aberta)`, 'i');
     const regexDataAudiencia = new RegExp(` Dia \\d{2} de [A-Za-z]+ de \\d{4}`, 'i');
-    const regexDataAbertura = new RegExp('\\d{2}\\/\\d{2}\\/\\d{4}', 'i');
+    const regexDataAbertura = new RegExp('\d{2}\/\d{2}\/\d{4}', 'i');
 
-    const listaBusca = numerosAtendimentos;
-
+    const listaBusca = dbAudienciaQuick.obterNumerosAtendimentos(colunaHomologa);
+    console.log('Lista Busca', listaBusca);
     await page.goto("https://proconsumidor.mj.gov.br/#/inicio", { waitUntil: "networkidle", timeout: customTimeout.general });
     let allTested: any[] = [];
 
@@ -43,7 +43,7 @@ export async function scraperAudiencia() {
 
         try {
 
-            await page.getByPlaceholder("Nº de Atendimento").fill(numeroAtendimento.Formatacao(1));
+            await page.getByPlaceholder("Nº de Atendimento").fill(numeroAtendimento.Formatacao(2));
             await page.getByTitle("Pesquisar").first().click({ timeout: 30000 });
             await page.waitForURL(`https://proconsumidor.mj.gov.br/#/reclamacao/pesquisa/${numeroAtendimento.Formatacao(2)}`, { timeout: customTimeout.general });
             await page.waitForSelector(".loader-container", { state: "hidden" });
@@ -113,8 +113,8 @@ export async function scraperAudiencia() {
                     }
                 }
             }
-
-            carregarAlteracoes(allTested);
+            console.log(allTested);
+            dbAudienciaQuick.carregarAlteracoes(allTested);
             allTested.length = 0;
             
         } catch (error) {
@@ -123,6 +123,7 @@ export async function scraperAudiencia() {
             const audienciaFailed = new TratativaAudiencia('failed', numeroAtendimento.Formatacao(1), ...argsFailed,);
             const estruturaFailed = audienciaFailed.retornaEstrutura(0);
             allTested.push(estruturaFailed);
+            console.log(error);
             logger.log('failed', `${numeroAtendimento.Formatacao(1)} ⚖️ ❌`);
 
         }
