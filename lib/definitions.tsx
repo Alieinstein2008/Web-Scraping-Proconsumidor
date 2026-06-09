@@ -70,22 +70,31 @@ export class BaseDados {
 
     constructor(caminho: string) {
         this.caminho = caminho;
-        this.obterDadosGerais = extrairBaseCompleta.bind({ caminho: this.caminho });
-        this.obterDadosGeraisPorOrdenamentoCronologicoNumeroAtendimento = extrairDadosBasePorOrdenamentoCronologicoNumeroAtendimento.bind({ base: this.obterDadosGerais() })
-        this.obterDadosColuna = extrairColunaBase.bind({ base: this.obterDadosGerais() });
         this.obterDadosDivergentes = extrairDivergenciasColunaBaseComparativa.bind({ basePrimaria: this });
-        this.carregarAlteracoes = atualizarBase.bind({ base: this.obterDadosGerais() });
-        this.criarFiltroColunaBase = extrairDadosBasePorValorColuna.bind({ base: this.obterDadosGerais() });
-        this.executarBackup = realizarBackupBase.bind({ dadosBackup: this.obterDadosGerais() });
     }
 
     //Extração
-    public obterDadosGerais: () => any[];
-    public obterDadosGeraisPorOrdenamentoCronologicoNumeroAtendimento: ({ }: { dataInicial: string, dataFinal: string }) => any[];
-    public obterDadosColuna: (coluna: string) => any[];
+    public obterDadosGerais(): any[] {
+        return extrairBaseCompleta.call({ caminho: this.caminho });
+    }
+
+    public obterDadosGeraisPorOrdenamentoCronologicoNumeroAtendimento({ dataInicial, dataFinal }: { dataInicial: string, dataFinal: string }): any[] {
+        return extrairDadosBasePorOrdenamentoCronologicoNumeroAtendimento.call({ base: this.obterDadosGerais() }, { dataInicial, dataFinal });
+    }
+
+    public obterDadosColuna(coluna: string): any[] {
+        return extrairColunaBase.call({ base: this.obterDadosGerais() }, coluna);
+    }
+
     public obterDadosDivergentes: ({ }: { colunaHomologa: string, baseComparativa: BaseDados, tipoNumeroAtendimento?: TipoNumeroAtendimento, dataInicial?: string, dataFinal?: string }) => any[];
-    public criarFiltroColunaBase: ({ }: { colunaFiltro: string, valorFiltro: string, colunaRetorno?: string, tipoNumeroAtendimento?: TipoNumeroAtendimento }) => any[];
-    public executarBackup: ({ }: { nomeArquivo: string, nomeAba: string, outputPath: string }) => void;
+    public criarFiltroColunaBase({ colunaFiltro, valorFiltro, colunaRetorno, tipoNumeroAtendimento }: { colunaFiltro: string, valorFiltro: string, colunaRetorno?: string, tipoNumeroAtendimento?: TipoNumeroAtendimento }): any[] {
+        return extrairDadosBasePorValorColuna.call({ base: this.obterDadosGerais() }, { colunaFiltro, valorFiltro, colunaRetorno, tipoNumeroAtendimento });
+    }
+
+    public executarBackup({ nomeArquivo, nomeAba, outputPath }: { nomeArquivo: string, nomeAba: string, outputPath: string }): void {
+        return realizarBackupBase.call({ dadosBackup: this.obterDadosGerais() }, { nomeArquivo, nomeAba, outputPath });
+    }
+
 
     //Transformação
     public selecionar(coluna: string): this {
@@ -115,7 +124,7 @@ export class BaseDados {
         }
         return this;
     }
-
+    
     public obterRegistrosPorOrdenamentoCronologicoNumeroAtendimento({ dataInicial, dataFinal, colunaHomologa }: { dataInicial?: string, dataFinal?: string, colunaHomologa?: string }) {
 
         if (dataInicial !== undefined && dataFinal !== undefined) {
@@ -158,7 +167,9 @@ export class BaseDados {
     }
 
     //Carga
-    public carregarAlteracoes: ({ novosDados, nomeArquivo, nomeAba, inputPath }: { novosDados: any, nomeArquivo: string, nomeAba: string, inputPath: string }) => void;
+    public carregarAlteracoes({ novosDados, nomeArquivo, nomeAba, inputPath }: { novosDados: any, nomeArquivo: string, nomeAba: string, inputPath: string }): void {
+        return atualizarBase.call({ base: this.obterDadosGerais() }, { novosDados, nomeArquivo, nomeAba, inputPath });
+    }
 
 }
 
