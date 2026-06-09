@@ -7,9 +7,7 @@ import { scraperAudiencia } from "./scraper-Audiencia";
 import { scraperTratativaCarta } from "./scraper-TratativaCarta";
 import { scraperConsumidor } from "./scraper-Consumidor";
 import { authenticate } from "./config/auth.function";
-import { organizedMappingAudiencia as organizedMappingAudiencia } from "./utils/databaseAudiencia.quickAcessFunctions";
-import { organizedMappingCarta as organizedMappingCarta} from "./utils/databaseCartas.quickAccessFunctions";
-import { organizedMappingConsumidor as organizedMappingConsumidor} from "./utils/databaseConsumidor.quickAcessFunctions";
+import { BaseDados } from './lib/definitions';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -100,10 +98,9 @@ app.post('/upload', upload.single('file'), async (req, res) => {
 
     const novoCaminho = path.join(caminhoArquivoScraper, `${tipo}s-Comparativa.xlsx`);
     console.log(`📂 Movendo arquivo para: ${novoCaminho}`);
-    // Move o arquivo
-    fs.rename(arquivo.path, novoCaminho, (err) => {
-      if (err) throw err;
-    });
+    // Move o arquivo e aguarda a conclusão antes de iniciar o scraper
+    await fs.promises.rename(arquivo.path, novoCaminho);
+    console.log('Arquivo movido com sucesso para o caminho do scraper.');
 
     const outputFolder = path.join(__dirname, 'data', 'out', tipo);
     fs.mkdirSync(outputFolder, { recursive: true });
@@ -112,35 +109,25 @@ app.post('/upload', upload.single('file'), async (req, res) => {
     const resultFile = path.join(outputFolder, `resultado-${timestamp}.json`);
 
     if (req.file) {
-      authenticate().then(() => {
+      try {
+        await authenticate();
         console.log("Autenticação concluída, iniciando o scraper...");
         if(tipo === 'Audiencia') {
-          organizedMappingAudiencia.colunaHomologa = columnName;
-          console.log('Coluna homologada atualizada para o scraper de audiência:', organizedMappingAudiencia.colunaHomologa);
-          (async () => {
-            await scraperAudiencia();
-          })();
+          console.log('Coluna homologada atualizada para o scraper de audiência:', columnName);
+          await scraperAudiencia(columnName);
         }
         if(tipo === 'Carta') {
-          organizedMappingCarta.colunaHomologa = columnName;
-          console.log('Coluna homologada atualizada para o scraper de carta:', organizedMappingCarta.colunaHomologa);
-          (async () => {
-            await scraperTratativaCarta();
-          })();
+          console.log('Coluna homologada atualizada para o scraper de carta:', columnName);
+          await scraperTratativaCarta(columnName);
         }
         if(tipo === 'Consumidor') {
-          organizedMappingConsumidor.colunaHomologa = columnName;
-          console.log('Coluna homologada atualizada para o scraper do consumidor:', organizedMappingConsumidor.colunaHomologa);
-          (async () => {
-            await scraperConsumidor();
-          })();
+          console.log('Coluna homologada atualizada para o scraper de consumidor:', columnName);
+          await scraperConsumidor(columnName);
         }
-        
-
-      }).catch((error) => {
-        console.error("Erro durante a autenticação:", error);
-      });
-    };
+      } catch (error) {
+        console.error("Erro durante a autenticação ou execução do scraper:", error);
+      }
+    }
 
     console.log('✓ Arquivo processado e salvo com sucesso!');
 
