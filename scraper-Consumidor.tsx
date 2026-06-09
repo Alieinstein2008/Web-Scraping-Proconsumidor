@@ -19,7 +19,7 @@ const logger = createLogger({
     filenameBlank: 'consumidor/consumidor-blank'
 });
 
-export async function scraperConsumidor() {
+export async function scraperConsumidor(colunaHomologa: string) {
 
     console.time('Tempo-de-Execução-Total');
 
