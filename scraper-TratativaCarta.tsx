@@ -1,10 +1,9 @@
 import playwright from 'playwright';
 import { TuplaInformacoesFailedCarta, TuplaInformacoesNulasCarta, TuplaInformacoesParciaisCarta } from './types/index';
 import { NumeroAtendimento, TratativaCarta } from './lib/definitions';
-import { carregarAlteracoes, executarBackup, salvarAlteracoes, numerosAtendimentos } from './utils/databaseCartas.quickAccessFunctions';
 import { createLogger } from './config/loggers.config';
 import { customContext, customOptimizationBrowserArgsLaunch, customOptimizationPageRoute, customRefreshPage } from './config/customDefinitions.config';
-
+import dbCartasQuick from './utils/databaseCartas.quickAccessFunctions';
 const logger = createLogger({
     filenameCombine: 'cartas/cartas-combine',
     filenamePassed: 'cartas/cartas-passed',
@@ -20,7 +19,7 @@ let allTested: any[] = [];
 let contadorOcorrencia = 0;
 let limiteComparativo = 100;
 
-export async function scraperTratativaCarta() {
+export async function scraperTratativaCarta(colunaHomologa: string) {
 
     console.time("Tempo-de-Execução-Total");
 
@@ -28,13 +27,8 @@ export async function scraperTratativaCarta() {
     const context = await customContext(browser);
     let page = await context.newPage();
 
-    const listaBusca = numerosAtendimentos;
-
-    executarBackup();
-
-    process.on('SIGINT', () => salvarAlteracoes('SIGINT', allTested));
-    process.on('SIGTERM', () => salvarAlteracoes('SIGTERM', allTested));
-
+    const listaBusca = dbCartasQuick.obterNumerosAtendimentos(colunaHomologa);
+    console.log(listaBusca);
     for (const NA of listaBusca) {
 
         page = contadorOcorrencia % limiteComparativo === 0 ? await customRefreshPage(context, page) : page;
@@ -106,7 +100,7 @@ export async function scraperTratativaCarta() {
                 continue;
             }
 
-            carregarAlteracoes(allTested);
+             dbCartasQuick.carregarAlteracoes(allTested);
             allTested.length = 0;
             if (contadorOcorrencia % limiteComparativo === 0) logger.info(`${contadorOcorrencia}/${listaBusca.length} alterações carregadas com sucesso 👌`);
             contadorOcorrencia++;
