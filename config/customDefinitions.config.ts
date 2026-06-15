@@ -40,9 +40,11 @@ export async function customRefreshPage(context: playwright.BrowserContext, page
 };
 
 
-export const customTimeout = {
-    general: Number(process.env.LOCATOR_GENERAL_TIMEOUT_MS) | 30000,
-    click: Number(process.env.LOCATOR_CLICK_TIMEOUT_MS) | 30000
-}
+export const TIMEOUTS = {
+    NAVIGATION: 30000,
+    LOADING: 20000,
+    CLICK: 10000,
+    ELEMENT: 7500,
+} as const;
 
 
