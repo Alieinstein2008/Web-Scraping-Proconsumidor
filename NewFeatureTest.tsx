@@ -35,7 +35,7 @@ const numerosAtendimentos = [
 ];
 
 let allTested: any[] = [];
-const numeroPaginasParalelas = 2;
+const numeroPaginasParalelas = 10;
 
 const regexWaitForResponseLastUrlRequest = new RegExp('cep\/consultar(\/[a-zA-Z0-9-._]+)*\/?$');
 const regexTextPainelExtensivel = new RegExp('^Dados da (Reclamação|Consulta|Denúncia)$', 'gm');
