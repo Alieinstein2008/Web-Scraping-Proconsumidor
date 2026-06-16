@@ -2,17 +2,32 @@ import { extrairBaseCompleta, extrairColunaBase, atualizarBase, extrairDivergenc
 import { EstruturaCarta, EstruturaConsumidor, EstruturaAudiencia, TipoNumeroAtendimento } from "../types/index";
 
 export class NumeroAtendimento {
-    protected numeroAtendimento: string;
 
-    constructor(numeroAtendimento: string) {
+    constructor(public numeroAtendimento: string) {
         this.numeroAtendimento = numeroAtendimento;
     }
 
-    public Formatacao(tipo: number): string {
+    public obterTipo(retorno: 'texto' | 'numero') {
+        const indicadorTipo: number = +this.numeroAtendimento.slice(21, 22);
+        if (retorno === 'texto') {
+            switch (indicadorTipo) {
+                case 1:
+                    return 'consulta';
+                case 2:
+                    return 'denuncia';
+                case 3:
+                    return 'reclamacao';
+            }
+        } else {
+            return indicadorTipo;
+        }
+    }
+
+    public formatacao(tipo: 'Completa' | 'Apenas Números' | 'Números, simbolos e dígito indicador'): string {
         switch (tipo) {
-            case 1:
+            case 'Números, simbolos e dígito indicador':
                 return this.numeroAtendimento.slice(0, 22);
-            case 2:
+            case 'Apenas Números':
                 return this.numeroAtendimento.slice(0, 22).replace(/[^a-zA-Z0-9]/g, "");
             default:
                 return this.numeroAtendimento;
@@ -172,8 +187,8 @@ export class Calendario {
     }
 
     public prefixoArquivoDataAtual() {
-        const [dia, mes, ano] : [string, string, string] = this.dataAtual.split('/');
-        const [hora, minuto] : [number, number] = [new Date().getHours(), new Date().getMinutes()];
+        const [dia, mes, ano]: [string, string, string] = this.dataAtual.split('/');
+        const [hora, minuto]: [number, number] = [new Date().getHours(), new Date().getMinutes()];
         const minutoString = minuto < 10 ? `0${minuto}` : minuto;
         const prefixo = `${ano}-${mes}-${dia}_${hora}${minutoString}_`;
         return prefixo;
