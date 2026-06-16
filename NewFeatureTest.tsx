@@ -7,8 +7,10 @@ import { customContext, customOptimizationBrowserArgsLaunch, customOptimizationP
 //import { carregarAlteracoes, executarBackup, numerosAtendimentos, salvarAlteracoes } from './utils/databaseConsumidor.quickAcessFunctions';
 import { ConsumidorPessoaFisica, ConsumidorPessoaJuridica, NumeroAtendimento } from './lib/definitions';
 
+//'25.10.0532.006.00019-100'
+
 const numerosAtendimentos = [
-    '23.12.0532.006.00116-2', '26.04.0532.006.00080-3', '26.04.0532.006.00018-3', '26.04.0532.006.00022-3', '25.10.0532.006.00019-100',
+    '23.12.0532.006.00116-2', '26.04.0532.006.00080-3', '26.04.0532.006.00018-3', '26.04.0532.006.00022-3',
     '26.04.0532.006.00024-3', '26.04.0532.006.00026-3', '26.04.0532.006.00025-3',
     '26.04.0532.006.00069-3', '26.04.0532.006.00067-3', '26.04.0532.006.00068-3',
     '26.04.0532.006.00066-3', '26.04.0532.006.00063-3', '26.04.0532.006.00041-3',
@@ -35,7 +37,7 @@ const numerosAtendimentos = [
 ];
 
 let allTested: any[] = [];
-const numeroPaginasParalelas = 10;
+const numeroPaginasParalelas = 6;
 
 const regexWaitForResponseLastUrlRequest = new RegExp('cep\/consultar(\/[a-zA-Z0-9-._]+)*\/?$');
 const regexTextPainelExtensivel = new RegExp('^Dados da (Reclamação|Consulta|Denúncia)$', 'gm');
@@ -72,8 +74,7 @@ async function buscaAlvo(page: playwright.Page, numeroAtendimento: string, prime
 
     try {
 
-        if (primeiroAlvo) await page.goto('https://proconsumidor.mj.gov.br/#/inicio', { waitUntil: 'networkidle', timeout: TIMEOUTS.NAVIGATION });
-
+        await page.goto('https://proconsumidor.mj.gov.br/#/inicio', { waitUntil: 'networkidle', timeout: TIMEOUTS.NAVIGATION });
         await page.getByPlaceholder('Nº de Atendimento').fill(instanciaNumeroAtendimento.formatacao('Completa'));
         await page.getByTitle('Pesquisar').click({ timeout: TIMEOUTS.CLICK });
 
@@ -86,10 +87,12 @@ async function buscaAlvo(page: playwright.Page, numeroAtendimento: string, prime
             await page.waitForSelector('.loader-container', { state: 'hidden' });
         }
 
-        if (
-            await page.locator('select[name="origem"]').isVisible() &&
-            await page.$eval('select[name="origem"]', (el: HTMLSelectElement) => el.options[el.selectedIndex].text.trim()) === 'Ofício'
-        ) {
+        const origemAtendimento = await page.locator('label:has-text("Origem do Atendimento") + select')
+            .evaluate((el: HTMLSelectElement) => {
+                return el.selectedIndex !== -1 ? el.options[el.selectedIndex].text.trim() : '';
+            });
+
+        if (origemAtendimento === 'Ofício') {
             return {
                 numeroAtendimento: instanciaNumeroAtendimento.formatacao('Números, simbolos e dígito indicador'),
                 tipo: 'Reclamacao de oficio'
@@ -106,17 +109,20 @@ async function buscaAlvo(page: playwright.Page, numeroAtendimento: string, prime
 
             } else {
 
-                await painelConsumidor
-                    .getByRole('button', { expanded: false })
-                    .first()
-                    .click();
+                const botaoDropdown = painelConsumidor.locator('button.dropdown-toggle', { has: page.locator('i.fa-ellipsis-h') });
 
-                const linkDetalhar = page.locator('.dropdown-menu.show a.dropdown-item', { hasText: /^Detalhar\s*$/ });
-                linkDetalhar.click({ timeout: TIMEOUTS.CLICK });
+                await botaoDropdown.waitFor({ state: 'attached' });
 
+                if (await botaoDropdown.getAttribute('aria-expanded') === 'false') {
+                    await botaoDropdown.dispatchEvent('click');
+                }
+
+                const linkDetalhar = painelConsumidor.locator('.dropdown-menu.show a.dropdown-item').filter({ hasText: /^Detalhar\s*$/ });
+                linkDetalhar.waitFor({ state: 'visible' });
+
+                await linkDetalhar.dispatchEvent('click');
                 await page.waitForResponse(regexWaitForResponseLastUrlRequest);
                 await page.waitForSelector('.loader-container', { state: 'hidden' });
-
 
                 let naturezaConsumidor: 'Fisica' | 'Juridica' = 'Fisica';
                 let emojiNaturezaConsumidor: '👤 ✅' | '🏢 ✅' = '👤 ✅';
@@ -151,23 +157,21 @@ async function buscaAlvo(page: playwright.Page, numeroAtendimento: string, prime
 
                 await modalHeader.getByRole('button', { name: 'Close' }).click();
 
-                await modalHeader.waitFor({ state: 'hidden' });
-
-                await page.screenshot({ path: 'scren.jpg' });
+                await page.locator('.modal-backdrop.fade.show').waitFor({ state: 'hidden' });
 
                 return {
                     numeroAtendimento: instanciaNumeroAtendimento.formatacao('Números, simbolos e dígito indicador'),
-                    tipo: args,
+                    nome: args[1]
                 }
             }
         }
 
 
     } catch (error) {
-        console.log(error)
         return {
             tipo: 'failed',
             numeroAtendimento: instanciaNumeroAtendimento.formatacao('Números, simbolos e dígito indicador'),
+            error: error
         }
     }
 
