@@ -2,7 +2,7 @@ import playwright from 'playwright';
 import { customContext, customOptimizationBrowserArgsLaunch, customOptimizationPageRoute } from './config/customDefinitions.config';
 import { Calendario } from './lib/definitions';
 import { criarNovaBaseDados } from './lib/functions';
-import { outputPathAssuntosProblemas } from './utils/databaseAssuntosPoblemas.config';
+import { outputPathAssuntosProblemas } from './utils/databaseAssuntosProblemas.config';
 
 (async () => {
 
@@ -31,7 +31,7 @@ import { outputPathAssuntosProblemas } from './utils/databaseAssuntosPoblemas.co
 
             const selectProblema = page.locator(`label:has-text("Problema") + select`);
             const categoriesOfSelectProblema = await selectProblema.locator('optgroup').evaluateAll(
-                (categories) => categories.map((category) => category.getAttribute('label'))
+                (categories: Element[]) => categories.map((category) => category.getAttribute('label'))
             );
 
             for (const category of categoriesOfSelectProblema) {
