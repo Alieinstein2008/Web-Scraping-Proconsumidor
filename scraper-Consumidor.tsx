@@ -2,9 +2,12 @@ import playwright from 'playwright';
 import { createLogger } from './config/loggers.config';
 import { coordenadasCep } from './config/fetchApi.config';
 import { TuplaInfomacoesNulasConsumidor, TuplaInformacoesFailedConsumidor, TuplaInformacoesParciaisConsumidorPessoaJuridica, TuplaInformacoesParciaisConsumidorPessoaFisica } from './types/index';
-import { customContext, customOptimizationBrowserArgsLaunch, customOptimizationPageRoute, customRefreshPage, customTimeout } from './config/customDefinitions.config';
+import { customContext, customOptimizationBrowserArgsLaunch, customOptimizationPageRoute, customRefreshPage, TIMEOUTS } from './config/customDefinitions.config';
 import { carregarAlteracoes, executarBackup, numerosAtendimentos, salvarAlteracoes } from './utils/databaseConsumidor.quickAcessFunctions';
 import { ConsumidorPessoaFisica, ConsumidorPessoaJuridica, NumeroAtendimento } from './lib/definitions';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 let allTested: any[] = [];
 let limiteComparativo = 100;
@@ -43,20 +46,20 @@ const logger = createLogger({
 
         try {
 
-            if (contadorOcorrencia % limiteComparativo === 0) await page.goto('https://proconsumidor.mj.gov.br/#/inicio', { waitUntil: 'networkidle', timeout: customTimeout.general });
+            if (contadorOcorrencia % limiteComparativo === 0) await page.goto('https://proconsumidor.mj.gov.br/#/inicio', { waitUntil: 'networkidle', timeout: TIMEOUTS.NAVIGATION });
 
             const numeroAtendimento = new NumeroAtendimento(NA);
-            const regexUrlTiposAtendimento = new RegExp(`https:\/\/proconsumidor.mj.gov.br\/#\/(denuncia|consulta|reclamacao)\/pesquisa\/${numeroAtendimento.Formatacao(2)}`)
+            const regexUrlTiposAtendimento = new RegExp(`https:\/\/proconsumidor.mj.gov.br\/#\/(denuncia|consulta|reclamacao)\/pesquisa\/${numeroAtendimento.formatacao('Apenas Números')}`, '');
 
             try {
 
-                await page.getByPlaceholder('Nº de Atendimento').fill(numeroAtendimento.Formatacao(1));
-                await page.getByTitle('Pesquisar').first().click({ timeout: customTimeout.click });
-                await page.waitForURL(regexUrlTiposAtendimento, { timeout: customTimeout.general });
+                await page.getByPlaceholder('Nº de Atendimento').fill(numeroAtendimento.formatacao('Completa'));
+                await page.getByTitle('Pesquisar').first().click({ timeout: TIMEOUTS.CLICK });
+                await page.waitForURL(regexUrlTiposAtendimento, { timeout: TIMEOUTS.NAVIGATION });
                 await page.waitForSelector('.loader-container', { state: 'hidden' });
 
                 const painelExpansivel = () => {
-                    switch (numeroAtendimento.Formatacao(1).slice(21, 22)) {
+                    switch (numeroAtendimento.formatacao('Completa').slice(21, 22)) {
                         case '1':
                             return page.locator('app-dados-consulta');
                         case '2':
@@ -69,12 +72,12 @@ const logger = createLogger({
                 };
 
                 if (!await painelExpansivel().isVisible()) {
-                    await page.locator('div').filter({ hasText: regexTextPainelExtensivel }).nth(1).click({ timeout: customTimeout.click });
+                    await page.locator('div').filter({ hasText: regexTextPainelExtensivel }).nth(1).click({ timeout: TIMEOUTS.CLICK });
                 }
 
                 if (await painelExpansivel().getByLabel('Origem do Atendimento').locator('option:checked').isVisible() && await painelExpansivel().getByLabel('Origem do Atendimento').locator('option:checked').textContent() == 'Ofício ') {
-                    logger.log('blank', `${numeroAtendimento.Formatacao(1)} 📄 🖋️`);
-                    allTested.push({ NumeroAtendimento: numeroAtendimento.Formatacao(1), Bairro: 'Reclamacao de Oficio' });
+                    logger.log('blank', `${numeroAtendimento.formatacao('Completa')} 📄 🖋️`);
+                    allTested.push({ NumeroAtendimento: numeroAtendimento.formatacao('Completa'), Bairro: 'Reclamacao de Oficio' });
                 }
 
                 else {
@@ -86,10 +89,10 @@ const logger = createLogger({
 
                     if (tipoIdentidadeConsumidor === 'Anônimo') {
                         const argsBlank = Array(14).fill('') as TuplaInfomacoesNulasConsumidor;
-                        const consumidorBlank = new ConsumidorPessoaFisica('blank', numeroAtendimento.Formatacao(1), 'Anônimo', ...argsBlank);
+                        const consumidorBlank = new ConsumidorPessoaFisica('blank', numeroAtendimento.formatacao('Completa'), 'Anônimo', ...argsBlank);
                         const estruturaConsumidorBlank = consumidorBlank.retornaEstrutura(1);
                         allTested.push(estruturaConsumidorBlank);
-                        logger.log('blank', `${numeroAtendimento.Formatacao(1)} 👤 ❔`);
+                        logger.log('blank', `${numeroAtendimento.formatacao('Completa')} 👤 ❔`);
 
                     } else {
 
@@ -105,7 +108,7 @@ const logger = createLogger({
                         if (await page.locator('app-detalhe-consumidor .modal-body label', { hasText: 'CNPJ' }).isVisible()) {
                             naturezaConsumidor = 'Juridica';
                             emojiNaturezaConsumidor = '🏢 ✅';
-                            await page.waitForResponse(regexWaitForResponseLastUrlRequest, { timeout: customTimeout.general });
+                            await page.waitForResponse(regexWaitForResponseLastUrlRequest, { timeout: TIMEOUTS.NAVIGATION });
                             await page.waitForSelector('.loader-container', { state: 'hidden' });
                         };
 
@@ -124,11 +127,11 @@ const logger = createLogger({
                         const telefone: string = telefones.join(' - ');
                         const cep = naturezaConsumidor === 'Fisica' ? info[6] : info[2];
                         const [latitude, longitude] = await coordenadasCep(cep);
-                        const consumidor = args.length === 12 ? new ConsumidorPessoaFisica('passed', numeroAtendimento.Formatacao(1), ...args, telefone, latitude, longitude) : new ConsumidorPessoaJuridica('passed', numeroAtendimento.Formatacao(1), ...args, telefone, latitude, longitude);
+                        const consumidor = args.length === 12 ? new ConsumidorPessoaFisica('passed', numeroAtendimento.formatacao('Completa'), ...args, telefone, latitude, longitude) : new ConsumidorPessoaJuridica('passed', numeroAtendimento.formatacao('Completa'), ...args, telefone, latitude, longitude);
                         const estruturaConsumidor = consumidor.retornaEstrutura(1);
                         allTested.push(estruturaConsumidor);
-                        await page.getByRole('button', { name: 'Close' }).first().click({ timeout: customTimeout.general });
-                        logger.log('passed', `${numeroAtendimento.Formatacao(1)} ${emojiNaturezaConsumidor}`);
+                        await page.getByRole('button', { name: 'Close' }).first().click({ timeout: TIMEOUTS.NAVIGATION });
+                        logger.log('passed', `${numeroAtendimento.formatacao('Completa')} ${emojiNaturezaConsumidor}`);
 
                     }
                 }
@@ -136,10 +139,10 @@ const logger = createLogger({
 
             catch (error) {
                 const argsFailed = Array(16).fill('') as TuplaInformacoesFailedConsumidor;
-                const consumidorFailed = new ConsumidorPessoaFisica('failed', numeroAtendimento.Formatacao(1), '', ...argsFailed);
+                const consumidorFailed = new ConsumidorPessoaFisica('failed', numeroAtendimento.formatacao('Completa'), '', ...argsFailed);
                 const estruturaConsumidorFailed = consumidorFailed.retornaEstrutura(1);
                 allTested.push(estruturaConsumidorFailed);
-                logger.log('failed', `${numeroAtendimento.Formatacao(1)} 👤 ❌`);
+                logger.log('failed', `${numeroAtendimento.formatacao('Completa')} 👤 ❌`);
                 logger.error(error)
                 continue;
             }

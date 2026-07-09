@@ -48,9 +48,9 @@ let limiteComparativo = 100;
 
             try {
 
-                await page.getByPlaceholder('Nº de Atendimento').fill(numeroAtendimento.Formatacao(1));
+                await page.getByPlaceholder('Nº de Atendimento').fill(numeroAtendimento.formatacao('Completa'));
                 await page.getByTitle('Pesquisar').click({ timeout: 90000 });
-                await page.waitForURL(`https://proconsumidor.mj.gov.br/#/reclamacao/pesquisa/${numeroAtendimento.Formatacao(2)}`, { timeout: 90000 });
+                await page.waitForURL(`https://proconsumidor.mj.gov.br/#/reclamacao/pesquisa/${numeroAtendimento.formatacao('Apenas Números')}`, { timeout: 90000 });
                 await page.waitForSelector('.loader-container', { state: 'hidden' });
 
                 const painelTratativa = page.locator('app-tratativa');
@@ -66,10 +66,10 @@ let limiteComparativo = 100;
                 if (conjuntoCorrespondencia.length === 0) {
 
                     const argsBlank = Array(6).fill('') as TuplaInformacoesNulasCarta;
-                    const cartaBlank = new TratativaCarta('blank', numeroAtendimento.Formatacao(1), 'Ausência de Tratativa', ...argsBlank);
+                    const cartaBlank = new TratativaCarta('blank', numeroAtendimento.formatacao('Completa'), 'Ausência de Tratativa', ...argsBlank);
                     const estruturaBlank = cartaBlank.retornaEstrutura(1);
                     allTested.push(estruturaBlank);
-                    logger.log('blank', `${numeroAtendimento.Formatacao(1)} ✉️ 🔗`);
+                    logger.log('blank', `${numeroAtendimento.formatacao('Completa')} ✉️ 🔗`);
 
                 } else {
 
@@ -87,10 +87,10 @@ let limiteComparativo = 100;
                             const fornecedor = page.locator('app-reclamacao-fornecedor div.row.mb-2').filter({ has: page.locator('div.col-md-3', { hasText: args[0] }) });
                             const fornecedorCodigo = (await fornecedor.locator('input').nth(1).inputValue()).slice(22, 24);
                             const fornecedorCNPJ = await fornecedor.locator('input').nth(3).inputValue();
-                            const carta = new TratativaCarta('passed', numeroAtendimento.Formatacao(1), situacaoCarta, fornecedorCodigo, fornecedorCNPJ, ...args);
+                            const carta = new TratativaCarta('passed', numeroAtendimento.formatacao('Completa'), situacaoCarta, fornecedorCodigo, fornecedorCNPJ, ...args);
                             const estrutura = carta.retornaEstrutura(1);
                             allTested.push(estrutura);
-                            logger.log('passed', `${numeroAtendimento.Formatacao(1)} ✉️ ✅`);
+                            logger.log('passed', `${numeroAtendimento.formatacao('Completa')} ✉️ ✅`);
 
                         }
                     }
@@ -99,10 +99,10 @@ let limiteComparativo = 100;
             } catch (error) {
 
                 const argsFailed = Array(7).fill('') as TuplaInformacoesFailedCarta;
-                const cartaFailed = new TratativaCarta('failed', numeroAtendimento.Formatacao(1), ...argsFailed,);
+                const cartaFailed = new TratativaCarta('failed', numeroAtendimento.formatacao('Completa'), ...argsFailed,);
                 const estruturaFailed = cartaFailed.retornaEstrutura(1);
                 allTested.push(estruturaFailed);
-                logger.log('failed', `${numeroAtendimento.Formatacao(1)} ✉️ ❌`);
+                logger.log('failed', `${numeroAtendimento.formatacao('Completa')} ✉️ ❌`);
                 continue;
             }
 

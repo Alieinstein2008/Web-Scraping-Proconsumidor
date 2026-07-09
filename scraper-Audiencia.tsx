@@ -1,7 +1,7 @@
 import playwright from 'playwright';
 import { NumeroAtendimento, TratativaAudiencia } from "./lib/definitions";
 import { TuplaInformacoesFailedAudiencia, TuplaInformacoesNulasAudiencia, TuplaInformacoesParciaisAudienciaCancelada, TuplaInformacoesParciaisAudienciaFinalizada } from "./types/audiencia.types";
-import { customContext, customOptimizationBrowserArgsLaunch, customOptimizationPageRoute, customRefreshPage, customTimeout } from "./config/customDefinitions.config";
+import { customContext, customOptimizationBrowserArgsLaunch, customOptimizationPageRoute, customRefreshPage, TIMEOUTS } from "./config/customDefinitions.config";
 import { createLogger } from './config/loggers.config';
 import { carregarAlteracoes, salvarAlteracoes, executarBackup, numerosAtendimentos } from './utils/databaseAudiencia.quickAcessFunctions';
 
@@ -34,7 +34,7 @@ const regexDataAbertura = new RegExp('\\d{2}\\/\\d{2}\\/\\d{4}', 'i');
 
     const listaBusca = numerosAtendimentos;
 
-    await page.goto("https://proconsumidor.mj.gov.br/#/inicio", { waitUntil: "networkidle", timeout: customTimeout.general });
+    await page.goto("https://proconsumidor.mj.gov.br/#/inicio", { waitUntil: "networkidle", timeout: TIMEOUTS.NAVIGATION });
     let allTested: any[] = [];
 
     executarBackup();
@@ -47,9 +47,9 @@ const regexDataAbertura = new RegExp('\\d{2}\\/\\d{2}\\/\\d{4}', 'i');
 
         try {
 
-            await page.getByPlaceholder("Nº de Atendimento").fill(numeroAtendimento.Formatacao(1));
+            await page.getByPlaceholder("Nº de Atendimento").fill(numeroAtendimento.formatacao('Completa'));
             await page.getByTitle("Pesquisar").first().click({ timeout: 30000 });
-            await page.waitForURL(`https://proconsumidor.mj.gov.br/#/reclamacao/pesquisa/${numeroAtendimento.Formatacao(2)}`, { timeout: customTimeout.general });
+            await page.waitForURL(`https://proconsumidor.mj.gov.br/#/reclamacao/pesquisa/${numeroAtendimento.formatacao('Apenas Números')}`, { timeout: TIMEOUTS.NAVIGATION });
             await page.waitForSelector(".loader-container", { state: "hidden" });
 
             const painelTratativa = page.locator('app-tratativa');
@@ -63,10 +63,10 @@ const regexDataAbertura = new RegExp('\\d{2}\\/\\d{2}\\/\\d{4}', 'i');
             if (conjuntoCorrespondencia.length === 0) {
 
                 const argsBlank = Array(10).fill('') as TuplaInformacoesNulasAudiencia;
-                const audienciaBlank = new TratativaAudiencia('blank', numeroAtendimento.Formatacao(1), 'Ausência de Tratativa', ...argsBlank);
+                const audienciaBlank = new TratativaAudiencia('blank', numeroAtendimento.formatacao('Completa'), 'Ausência de Tratativa', ...argsBlank);
                 const estruturaBlank = audienciaBlank.retornaEstrutura(1);
                 allTested.push(estruturaBlank);
-                logger.log('blank', `${numeroAtendimento.Formatacao(1)} ⚖️ ⚠️`);
+                logger.log('blank', `${numeroAtendimento.formatacao('Completa')} ⚖️ ⚠️`);
 
             } else {
                 for (const correspondencia of conjuntoCorrespondencia) {
@@ -90,11 +90,11 @@ const regexDataAbertura = new RegExp('\\d{2}\\/\\d{2}\\/\\d{4}', 'i');
                             const fornecedorCNPJ = await painelFornecedor.locator('input').nth(3).inputValue();
                             const resultadoAudiencia = (await page.locator('app-visualizar-audiencia #resultadoAudiencia option:checked').textContent()) ?? '';
 
-                            const audiencia = new TratativaAudiencia('passed', numeroAtendimento.Formatacao(1), fornecedorCodigo, dataAbertura, args[0], fornecedorCNPJ, dataAudiencia, situacaoAudiencia, '', resultadoAudiencia, '', '', '');
+                            const audiencia = new TratativaAudiencia('passed', numeroAtendimento.formatacao('Completa'), fornecedorCodigo, dataAbertura, args[0], fornecedorCNPJ, dataAudiencia, situacaoAudiencia, '', resultadoAudiencia, '', '', '');
                             const estrutura = audiencia.retornaEstrutura(0);
 
                             allTested.push(estrutura);
-                            logger.log('passed', `${numeroAtendimento.Formatacao(1)} ⚖️ ✅`);
+                            logger.log('passed', `${numeroAtendimento.formatacao('Completa')} ⚖️ ✅`);
 
                         }
 
@@ -107,11 +107,11 @@ const regexDataAbertura = new RegExp('\\d{2}\\/\\d{2}\\/\\d{4}', 'i');
                             const fornecedorCNPJ = await fornecedor.locator('input').nth(3).inputValue();
                             const scraping = 'passed';
                             const dataAbertura = (await page.locator('app-reclamacao-cadastro div.col-md-12 div.card-body .row .col-md-3 span').first().textContent() ?? '').match(regexDataAbertura)?.[0] ?? '';
-                            const audiencia = new TratativaAudiencia('passed', numeroAtendimento.Formatacao(1), fornecedorCodigo, dataAbertura, args[0], fornecedorCNPJ, dataAudiencia, situacaoAudiencia, '', '', '', '', '');
+                            const audiencia = new TratativaAudiencia('passed', numeroAtendimento.formatacao('Completa'), fornecedorCodigo, dataAbertura, args[0], fornecedorCNPJ, dataAudiencia, situacaoAudiencia, '', '', '', '', '');
                             const estrutura = audiencia.retornaEstrutura(0);
 
                             allTested.push(estrutura);
-                            logger.log('passed', `${numeroAtendimento.Formatacao(1)} ⚖️ ✅`);
+                            logger.log('passed', `${numeroAtendimento.formatacao('Completa')} ⚖️ ✅`);
 
                         }
                     }
@@ -124,10 +124,10 @@ const regexDataAbertura = new RegExp('\\d{2}\\/\\d{2}\\/\\d{4}', 'i');
         } catch (error) {
 
             const argsFailed = Array(11).fill('') as TuplaInformacoesFailedAudiencia;
-            const audienciaFailed = new TratativaAudiencia('failed', numeroAtendimento.Formatacao(1), ...argsFailed,);
+            const audienciaFailed = new TratativaAudiencia('failed', numeroAtendimento.formatacao('Completa'), ...argsFailed,);
             const estruturaFailed = audienciaFailed.retornaEstrutura(0);
             allTested.push(estruturaFailed);
-            logger.log('failed', `${numeroAtendimento.Formatacao(1)} ⚖️ ❌`);
+            logger.log('failed', `${numeroAtendimento.formatacao('Completa')} ⚖️ ❌`);
 
         }
     }
