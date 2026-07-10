@@ -1,12 +1,12 @@
-import { customContext, customOptimizationBrowserArgsLaunch, customOptimizationPageRoute } from "./config/customDefinitions.config";
+import { customContext, customOptimizationBrowserArgsLaunch, customOptimizationPageRoute, customRefreshPage } from "./config/customDefinitions.config";
 import { createLogger } from "./config/loggers.config";
 import { prefixoArquivo } from "./utils";
 import playwright from 'playwright';
 
 const logger = createLogger({
-    filenameCombine: `${prefixoArquivo}infra-test`,
-    filenamePassed: `${prefixoArquivo}infra-test-passed`,
-    filenameFailed: `${prefixoArquivo}infra-test-failed`
+    filenameCombine: `infra-test`,
+    filenamePassed: `infra-test-passed`,
+    filenameFailed: `infra-test-failed`
 });
 
 let emExecucao = true;
@@ -15,13 +15,14 @@ let emExecucao = true;
     let browser: playwright.Browser | undefined;
     let context: playwright.BrowserContext | undefined;
     let page: playwright.Page | undefined;
+    let refreshCounter: number = 0;
 
     async function encerrarGraciosamente(sinal: string) {
-        if (!emExecucao) return; 
+        if (!emExecucao) return;
         emExecucao = false;
-        
-        logger.log('info', `\n[${sinal}] Interrompendo loop e fechando navegador... 🛑`);
-        
+
+        logger.info(`\n[${sinal}] Interrompendo loop e fechando navegador... 🛑`);
+
         try {
             if (browser) {
                 await browser.close();
@@ -30,7 +31,7 @@ let emExecucao = true;
             logger.log('failed', `Erro ao fechar o navegador: ${err}`);
         } finally {
             logger.log('info', `Processo encerrado com sucesso. 👋`);
-            process.exit(0); // Força o encerramento do Node.js
+            process.exit(0);
         }
     }
 
@@ -45,17 +46,29 @@ let emExecucao = true;
 
         while (emExecucao) {
             try {
-               
+
+                if (refreshCounter % 100 == 0) {
+                    try {
+                        page = await customRefreshPage(context, page);
+                        logger.log('passed', 'Success Page refresh 🧹✅');
+                        refreshCounter++;
+
+                    } catch (error) {
+                        logger.log('failed','Failed Page refresh 🧹❌');
+                        await encerrarGraciosamente('FIM_EXECUCAO');
+                    }
+                }
+
                 await page.goto('https://example.com/', { waitUntil: 'load' });
-                
+
                 if (emExecucao) {
                     logger.log('passed', `200  🌐✅`);
                 }
             } catch (error: any) {
-                if (!emExecucao) break; 
+                if (!emExecucao) break;
                 logger.log('failed', `400  🌐❌ - Erro: ${error.message}`);
             }
-            
+
             await new Promise(resolve => setTimeout(resolve, 500));
         }
     } catch (error) {
